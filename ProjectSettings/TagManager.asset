@@ -4,9 +4,10 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Enemy
-  - Item
-  - Spike
+  - tnt
+  - enemy
+  - player
+  - floor
   layers:
   - Default
   - TransparentFX
@@ -16,11 +17,11 @@ TagManager:
   - UI
   - 
   - 
-  - Platform
-  - Enemy
   - Player
   - PlayerDamaged
-  - 
+  - Enemy
+  - Platform
+  - Bullet
   - 
   - 
   - 

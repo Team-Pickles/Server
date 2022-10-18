@@ -90,6 +90,8 @@ public class MapDataSave : MonoBehaviour
 
                 var tile = tileMap.GetTile<TileBase>(_pos);
                 var tileSprite = tileMap.GetSprite(_pos);
+                Debug.Log($" {TileSpriteTypes.IndexOf(tileSprite.name)}, {tileSprite.name}");
+
                 infos.Add(pos, new DataClass((int)InfoTypes.tile, pos, TileSpriteTypes.IndexOf(tileSprite.name)));
             }
         }
@@ -140,6 +142,7 @@ public class MapDataSave : MonoBehaviour
     }
 
     public void Save() {
+        
         infos = new Dictionary<Vector3, DataClass>();
         fullFilePath = filePath + fileName;
 

@@ -11,10 +11,10 @@ public enum InfoTypes {
 }
 
 public enum TileTypes {
-    Unity_Total_29 = 0, Unity_Total_30, Unity_Total_31, Unity_Total_32, Unity_Total_33,
-        Unity_Total_34, Unity_Total_35, Unity_Total_36, Unity_Total_37, Unity_Total_38,
-        Unity_Total_39, Unity_Total_40, Unity_Total_41, Unity_Total_42, Unity_Total_43,
-        Unity_Total_44, Unity_Total_45
+    PlatformerTiles_0 = 0, PlatformerTiles_1, PlatformerTiles_2, tiles_packed_80, tiles_packed_81,
+    tiles_packed_82, tiles_packed_83, tiles_packed_100, tiles_packed_101, tiles_packed_102,
+    tiles_packed_103, tiles_packed_120, tiles_packed_121, tiles_packed_122, tiles_packed_123,
+    tiles_packed_140, tiles_packed_141, tiles_packed_142, tiles_packed_143,
 }
 
 public enum ItemTypes {
