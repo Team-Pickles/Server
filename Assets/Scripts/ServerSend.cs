@@ -80,8 +80,8 @@ public class ServerSend
         }
     }
 
-    //¼ÒÈ¯ÇÒ ¶§ ÇÑ¹ø¸¸ »ç¿ëÇÏ±â ¶§¹®¿¡ TCP·Î Àü¼Û
-    //TCP´Â µµÂøÀÌ º¸ÀåµÊ
+    //ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½ ï¿½Ñ¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ TCPï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    //TCPï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     public static void SpawnPlayer(int _toclient, Player _player)
     {
         
@@ -142,12 +142,16 @@ public class ServerSend
         }
     }
 
-    public static void ProjectilesExploded(Projectile _projectile)
+    public static void ProjectilesExploded(Projectile _projectile, Collider2D[] _colliders)
     {
         using (Packet _packet = new Packet((int)ServerPackets.projectileExploded))
         {
             _packet.Write(_projectile.id);
             _packet.Write(_projectile.transform.position);
+            _packet.Write(_colliders.Length);
+            foreach (Collider2D _collider in _colliders) {
+                _packet.Write(_collider.transform.position);
+            }
 
             sendTCPDataToAll(_packet);
         }

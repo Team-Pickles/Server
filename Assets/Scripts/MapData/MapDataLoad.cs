@@ -47,6 +47,7 @@ public class MapDataLoad : MonoBehaviour
                     GameObject tileClone = Instantiate(tilePrefab, data.GetPos(), Quaternion.identity);
                     tileClone.name = ((TileTypes)tileType).ToString() + "_" + tileIds[tileType];
                     tileClone.transform.parent = TileGroup.transform;
+                    tileClone.tag = "floor";
                     ++tileIds[tileType];
                     break;
                 case InfoTypes.item:

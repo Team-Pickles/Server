@@ -34,7 +34,7 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log($"{collision.otherCollider}");
+        Debug.Log($"{collision.collider.name} - {collision.otherCollider.name}");
         Explode();
     }
 
@@ -46,27 +46,32 @@ public class Projectile : MonoBehaviour
 
     private void Explode()
     {
-        ServerSend.ProjectilesExploded(this);
+        Collider2D[] _colliders = Physics2D.OverlapCircleAll(this.transform.position, explosionRadius);
+        ServerSend.ProjectilesExploded(this, _colliders);
 
-        Collider[] _colliders = Physics.OverlapSphere(transform.position, explosionRadius);
-        /*foreach (Collider _collider in _colliders)
+        foreach (Collider2D _collider in _colliders)
         {
-            if (_collider.CompareTag("Player"))
+            // if (_collider.CompareTag("Player"))
+            // {
+            //     _collider.GetComponent<Player>().TakeDamage(explosionDamage);
+            // }
+            // else if (_collider.CompareTag("Enemy"))
+            // {
+            //     _collider.GetComponent<Enemy>().TakeDamage(explosionDamage);
+            // }
+            if(_collider.CompareTag("floor"))
             {
-                _collider.GetComponent<Player>().TakeDamage(explosionDamage);
+                Debug.Log(_collider.transform.position);
+                Destroy(_collider.gameObject);
             }
-            else if (_collider.CompareTag("Enemy"))
-            {
-                _collider.GetComponent<Enemy>().TakeDamage(explosionDamage);
-            }
-        }*/
+        }
         projectiles.Remove(id);
         Destroy(gameObject);
     }
 
     private IEnumerator ExplodeAfterTime()
     {
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(5f);
 
         Explode();
     }
