@@ -12,6 +12,7 @@ public class Client
     public TCP tcp;
     public UDP udp;
     public Player player;
+    
 
     public Client(int _clientId)
     {
@@ -237,5 +238,13 @@ public class Client
                 ServerSend.SpawnPlayer(_client.id, player);
             }
         }
+
+        foreach (Item _item in Item.items.Values)
+        {
+            ServerSend.SpawnItem(id, _item);
+        }
+
+
+
     }
 }

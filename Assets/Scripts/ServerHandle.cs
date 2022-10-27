@@ -49,4 +49,23 @@ public class ServerHandle
 
         Server.clients[_fromClient].player.Shoot(_shootDirection);
     }
+
+
+    public static void PlayerStartVaccume(int _fromClient, Packet _packet)
+    {
+        Vector3 _vaccumeDirection = _packet.ReadVector3();
+        Server.clients[_fromClient].player.StartVaccume(_vaccumeDirection);
+    }
+
+    public static void PlayerEndVaccume(int _fromClient, Packet _packet)
+    {
+        Server.clients[_fromClient].player.EndVaccume();
+    }
+
+    public static void ItemCollide(int _fromClient, Packet _packet)
+    {
+        int _ItemID = _packet.ReadInt();
+        Item.items[_ItemID].DeleteItem();
+        ServerSend.ItemCollide(_ItemID, _fromClient);
+    }
 }

@@ -10,6 +10,9 @@ public class NetworkManager : MonoBehaviour
     public GameObject projectilePrefab;
     public GameObject enemyPrefab;
     public GameObject bulletPrefab;
+    public GameObject itemPrefab;
+
+    public Item item;
 
     private void Awake()
     {
@@ -30,6 +33,10 @@ public class NetworkManager : MonoBehaviour
         Application.targetFrameRate = 60;
 
         Server.Start(4, 26950);
+
+        //loadtile
+        //load item
+        NetworkManager.instance.InstantiatItemPrefab();
     }
 
     private void OnApplicationQuit()
@@ -50,6 +57,11 @@ public class NetworkManager : MonoBehaviour
     public Bullet InstantiatbBulletPrefab(Transform _shootOrigin)
     {
         return Instantiate(bulletPrefab, _shootOrigin.position + _shootOrigin.right * 1.3f, Quaternion.identity).GetComponent<Bullet>();
+    }
+
+    public Item InstantiatItemPrefab()
+    {
+        return Instantiate(itemPrefab, new Vector3(5f, -2.5f, 0f), Quaternion.identity).GetComponent<Item>();
     }
 
 }

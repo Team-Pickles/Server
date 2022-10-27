@@ -8,6 +8,8 @@ TagManager:
   - enemy
   - player
   - floor
+  - Item
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -22,7 +24,7 @@ TagManager:
   - Enemy
   - Platform
   - Bullet
-  - 
+  - Item
   - 
   - 
   - 
