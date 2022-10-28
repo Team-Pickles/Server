@@ -80,8 +80,8 @@ public class ServerSend
         }
     }
 
-    //��ȯ�� �� �ѹ��� ����ϱ� ������ TCP�� ����
-    //TCP�� ������ �����
+    //소환할 때 한번만 사용하기 때문에 TCP로 전송
+    //TCP는 도착이 보장됨
     public static void SpawnPlayer(int _toclient, Player _player)
     {
         
@@ -186,8 +186,40 @@ public class ServerSend
         {
             _packet.Write(_bullet.id);
 
+            sendTCPDataToAll(_packet);
+        }
+    }
+
+    public static void SpawnItem(int _toclient, Item _item)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.spawnItem))
+        {
+            _packet.Write(_item.id);
+            _packet.Write(_item.transform.position);
+
+            sendTCPData(_toclient, _packet);
+        }
+    }
+
+    public static void ItemPosition(Item _item)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.ItemPosition))
+        {
+            _packet.Write(_item.id);
+            _packet.Write(_item.transform.position);
+
             sendUDPDataToAll(_packet);
         }
     }
+    public static void ItemCollide(int _itemID, int _exceptClient)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.itemCollide))
+        {
+            _packet.Write(_itemID);
+
+            sendTCPDataToAll(_exceptClient, _packet);
+        }
+    }
+
 
 }

@@ -26,6 +26,9 @@ public enum ServerPackets
     spawnBullet,
     bulletPosition,
     bulletCollide,
+    ItemPosition,
+    spawnItem,
+    itemCollide,
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -35,7 +38,10 @@ public enum ClientPackets
     playerMovement,
     playerShoot,
     playerThrowItem,
-    udpTestReceive
+    udpTestReceive,
+    playerStartVacuume,
+    playerEndVacuume,
+    ItemCollide,
 }
 
 public class Packet : IDisposable

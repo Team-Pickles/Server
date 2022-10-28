@@ -134,6 +134,9 @@ public class Server
             { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
             { (int)ClientPackets.playerThrowItem, ServerHandle.playerThrowItem },
             { (int)ClientPackets.playerShoot, ServerHandle.PlayerShoot },
+            { (int)ClientPackets.playerStartVacuume, ServerHandle.PlayerStartVaccume },
+            { (int)ClientPackets.playerEndVacuume, ServerHandle.PlayerEndVaccume },
+            { (int)ClientPackets.ItemCollide, ServerHandle.ItemCollide },
         };
 
         Debug.Log("Initialized pakcets.");

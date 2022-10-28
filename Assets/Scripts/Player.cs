@@ -19,6 +19,8 @@ public class Player : MonoBehaviour
     public int itemAmount = 0;
     public int maxItemAmount = 3;
     public bool onGround = false;
+    public Vector3 facing = Vector3.zero;
+    public GameObject _curItem;
 
     private float _hPoint = 0, _vPoint = 0;
     private const float _hSpeed = 4.0f, _vSpeed = 5.0f;
@@ -26,6 +28,8 @@ public class Player : MonoBehaviour
 
     private bool[] inputs;
     private float yVelocity = 0;
+
+    private bool isVaccume = false;
 
     private void Start()
     {
@@ -71,6 +75,11 @@ public class Player : MonoBehaviour
             _inputDirection.x -= 1;
         }
         Move(_inputDirection);
+
+        if (isVaccume==true)
+        {
+            Vaccume();
+        }
     }
 
     public void Move(Vector2 _inputDirection)
@@ -148,4 +157,54 @@ public class Player : MonoBehaviour
         NetworkManager.instance.InstantiatbBulletPrefab(shootOrigin).Initialize(_viewDirection, throwForce, id);
     }
 
+    public void StartVaccume(Vector3 _vaccumeDirection)
+    {
+        facing = _vaccumeDirection;
+        isVaccume = true;
+    }
+
+    public void EndVaccume()
+    {
+        isVaccume = false;
+    }
+
+    public void Vaccume()
+    {
+        float _yPosition = shootOrigin.position.y >= 0 ? shootOrigin.position.y * 0.9f : shootOrigin.position.y * 1.1f;
+        Vector2 _startOrigin = new Vector2(shootOrigin.position.x + shootOrigin.right.x * 1.2f, _yPosition);
+        float _rayLength = 8.0f;
+
+        int layerMask = 1 << LayerMask.NameToLayer("Item") | 1 << LayerMask.NameToLayer("Platform");
+
+        for (int i = -5; i <= 5; i++)
+        {
+            Vector2 _rayDirection = new Vector2(Mathf.Cos(i * Mathf.Deg2Rad), Mathf.Sin(i * Mathf.Deg2Rad));
+            RaycastHit2D hit = Physics2D.Raycast(_startOrigin, _rayDirection* shootOrigin.right.x, _rayLength, layerMask);
+            
+            if (hit.collider != null)
+            {
+                Debug.DrawLine(_startOrigin, hit.point, Color.green);
+                if (hit.transform.CompareTag("Item"))
+                {
+                    _curItem = hit.transform.gameObject;
+                    _curItem.GetComponent<Rigidbody2D>().AddForce((hit.point - _startOrigin).normalized * -0.5f);
+                }
+            }
+
+        }
+
+    }
+    
+    /*
+    private void OnCollisionEnter2D(Collision2D _collision)
+    {
+        
+        if(_collision.gameObject.CompareTag("Item") && isVaccume)
+        {
+            Item _item = _collision.gameObject.GetComponent<Item>();
+            _item.DeleteItem();
+            ServerSend.ItemCollide(_item);
+        }
+    }
+    */
 }
