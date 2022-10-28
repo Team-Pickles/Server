@@ -88,7 +88,7 @@ public class Player : MonoBehaviour
         Vector2 _moveDirection = transform.right * _inputDirection.x;
         if (transform.rotation == Quaternion.Euler(0, 180, 0))
             _moveDirection *= -1;
-        var _speed = inputs[3] == true ? _hSpeed * 1.3f : _hSpeed ;
+        var _speed = inputs[3] == true ? _hSpeed * 2f : _hSpeed ;
         if (IsGrouned())
         {
             yVelocity = 0f;
@@ -100,7 +100,7 @@ public class Player : MonoBehaviour
  
         //controller.Move(_moveDirection);
 
-        rigidbody.velocity = new Vector2(_moveDirection.x * _speed, GetComponent<Rigidbody2D>().velocity.y + _vPoint * _vSpeed);
+        rigidbody.velocity = new Vector2((_moveDirection.x * _speed)/1.005f, GetComponent<Rigidbody2D>().velocity.y + _vPoint * _vSpeed);
         _vPoint = 0.0f;
         ServerSend.PlayerPosition(this);
         ServerSend.PlayerRotation(this);
