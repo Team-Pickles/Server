@@ -4,19 +4,15 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    public static Dictionary<int, Item> items = new Dictionary<int, Item>();
-    private static int nextItemId = 1;
+    public Dictionary<int, Item> items = new Dictionary<int, Item>();
+    private int nextItemId = 1;
 
     public int id;
     public Rigidbody2D rigidbody;
     public Server server;
 
-    public Item(Server server)
-    {
-        this.server = server;
-    }
 
-    private void Start()
+    public void Init()
     {
         id = nextItemId;
         nextItemId++;

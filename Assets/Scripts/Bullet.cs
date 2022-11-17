@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public static Dictionary<int, Bullet> bullet = new Dictionary<int, Bullet>();
+    public Dictionary<int, Bullet> bullet = new Dictionary<int, Bullet>();
     private static int nextBulletId = 1;
 
     public int id;
@@ -13,29 +13,12 @@ public class Bullet : MonoBehaviour
     public Vector3 initalForce;
     public Server server;
 
-    public Bullet (Server server)
-    {
-        this.server = server;
-    }
-
-    private void Start()
-    {
-        id = nextBulletId;
-        nextBulletId++;
-        bullet.Add(id, this);
-
-        server.serverSend.SpawnBullet(this, thrownByPlayer);
-
-        rigidbody.AddForce(initalForce);
-
-    }
-
     private void FixedUpdate()
     {
         server.serverSend.BulletPosition(this);
     }
 
-    //Ãæµ¹ ±â¹İÀÌ±â ¶§¹®¿¡ ÇÃ·¹ÀÌ¾î¿ÍÀÇ Ãæµ¹À» ¿¡µğÅÍ¿¡¼­ ¹«½ÃÇØ¾ßÇÔ
+    //ì¶©ëŒ ê¸°ë°˜ì´ê¸° ë•Œë¬¸ì— í”Œë ˆì´ì–´ì™€ì˜ ì¶©ëŒì„ ì—ë””í„°ì—ì„œ ë¬´ì‹œí•´ì•¼í•¨
     private void OnCollisionEnter2D(Collision2D collision)
     {
         //take damage... etc
@@ -44,10 +27,20 @@ public class Bullet : MonoBehaviour
         server.serverSend.BulletCollide(this);
     }
 
-    public void Initialize(Vector3 _initialMovementDirection, float _initialForceStrength, int _thrownByPlayer)
+    public void Initialize(Vector3 _initialMovementDirection, float _initialForceStrength, int _thrownByPlayer, Server _server)
     {
         initalForce = _initialMovementDirection * _initialForceStrength;
         thrownByPlayer = _thrownByPlayer;
+        server = _server;
+
+        id = nextBulletId;
+        nextBulletId++;
+        bullet.Add(id, this);
+
+        server.serverSend.SpawnBullet(this, thrownByPlayer);
+
+        rigidbody.AddForce(initalForce);
+        Debug.Log(nextBulletId);
     }
 
 }
