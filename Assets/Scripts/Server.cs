@@ -11,9 +11,8 @@ using System.Net.Sockets;
 
 public class Server
 {
-    public static int MaxPlayer { get; private set; }
-
-    public static int Port { get; private set; }
+    public int MaxPlayer { get; private set; }
+    public int Port { get; private set; }
 
     private TcpListener tcpListener;
     private UdpClient udpListener;
@@ -24,10 +23,6 @@ public class Server
 
     public ServerHandle serverHandle;
     public ServerSend serverSend;
-    //public Projectile projectile;
-    public Player player;
-    //public Bullet bullet;
-    public Item item;
 
     public void Start(int _maxPlayer, int _port)
     {
@@ -45,12 +40,6 @@ public class Server
 
         udpListener = new UdpClient(Port);
         udpListener.BeginReceive(UDPReceiveCallback, null);
-
-
-        //projectile = new Projectile(this);
-        player = new Player(this);
-        //bullet = new Bullet(this);
-        item = new Item(this);
 
         Debug.Log($"Server started on {Port}.");
     }
