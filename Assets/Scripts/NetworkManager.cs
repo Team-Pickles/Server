@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Net; 
 
 public class NetworkManager : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class NetworkManager : MonoBehaviour
     public GameObject itemPrefab;
 
     public Item item;
+
+    Server server1;
 
     private void Awake()
     {
@@ -32,16 +35,17 @@ public class NetworkManager : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
 
-        Server.Start(4, 26950);
-
+        server1 = new Server();
+        server1.Start(4,26950);
+        //Server.Start(4, 26950);
         //loadtile
         //load item
-        NetworkManager.instance.InstantiatItemPrefab();
+
     }
 
     private void OnApplicationQuit()
     {
-        Server.Stop();
+        server1.Stop();
     }
 
     public Player InstantiatePlayer()

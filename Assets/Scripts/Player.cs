@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class Player : MonoBehaviour
 {
     public int id;
@@ -30,9 +29,16 @@ public class Player : MonoBehaviour
     private float yVelocity = 0;
 
     private bool isVaccume = false;
+    public Server server;
+
+    public Player(Server server)
+    {
+        this.server = server;
+    }
 
     private void Start()
     {
+        Debug.Log(server);
         gravity *= Time.fixedDeltaTime* Time.fixedDeltaTime;
         moveSpeed *= Time.fixedDeltaTime;
         jumpSpeed *= Time.fixedDeltaTime;
@@ -102,8 +108,8 @@ public class Player : MonoBehaviour
 
         rigidbody.velocity = new Vector2((_moveDirection.x * _speed)/1.005f, GetComponent<Rigidbody2D>().velocity.y + _vPoint * _vSpeed);
         _vPoint = 0.0f;
-        ServerSend.PlayerPosition(this);
-        ServerSend.PlayerRotation(this);
+        server.serverSend.PlayerPosition(this);
+        server.serverSend.PlayerRotation(this);
     }
 
     public bool IsGrouned()

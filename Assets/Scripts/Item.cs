@@ -9,19 +9,23 @@ public class Item : MonoBehaviour
 
     public int id;
     public Rigidbody2D rigidbody;
+    public Server server;
+
+    public Item(Server server)
+    {
+        this.server = server;
+    }
 
     private void Start()
     {
         id = nextItemId;
         nextItemId++;
         items.Add(id, this);
-
-
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        ServerSend.ItemPosition(this);
+        server.serverSend.ItemPosition(this);
     }
 
    public void DeleteItem()

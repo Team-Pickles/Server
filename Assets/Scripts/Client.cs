@@ -12,15 +12,19 @@ public class Client
     public TCP tcp;
     public UDP udp;
     public Player player;
+
+    private Server server;
     
 
-    public Client(int _clientId)
+    public Client(int _clientId, Server _server)
     {
         id = _clientId;
-        tcp = new TCP(id);
-        udp = new UDP(id);
+        server = _server;
+        tcp = new TCP(id, server);
+        udp = new UDP(id, server);
     }
 
+    
     private void Disconnect()
     {
         Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has disconnencted");
@@ -34,7 +38,7 @@ public class Client
         tcp.Disconnect();
         udp.Disconnect();
 
-        ServerSend.PlayerDisnconnect(id);
+        server.serverSend.PlayerDisnconnect(id);
     }
 
     public class TCP
@@ -46,10 +50,12 @@ public class Client
         private byte[] receiveBuffer;
 
         private Packet receiveData;
+        private Server server;
 
-        public TCP(int _id)
+        public TCP(int _id, Server server)
         {
             id = _id;
+            this.server = server;
         }
 
         public void Disconnect()
@@ -88,7 +94,7 @@ public class Client
             receiveBuffer = new byte[dataBufferSize];
             stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 
-            ServerSend.Welcome(id, "TCP Connection Attept arrived to Server");
+            server.serverSend.Welcome(id, "TCP Connection Attept arrived to Server");
         }
 
         public static string ToReadbleByteArray(byte[] bytes)
@@ -107,7 +113,7 @@ public class Client
                 
                 if (_byteLength <= 0)
                 {
-                    Server.clients[id].Disconnect();
+                    server.clients[id].Disconnect();
                     return;
                 }
 
@@ -121,7 +127,7 @@ public class Client
             catch (Exception _ex)
             {
                 Debug.Log($"Error receiving TCP data: {_ex}");
-                Server.clients[id].Disconnect();
+                server.clients[id].Disconnect();
             }
         }
 
@@ -149,7 +155,7 @@ public class Client
                     {
                         int _packetId = _packet.ReadInt();
                         
-                        Server.packetHandler[_packetId](id, _packet);
+                        server.packetHandler[_packetId](id, _packet);
                     }
                 });
 
@@ -175,16 +181,18 @@ public class Client
     {
         public IPEndPoint endPoint;
         private int id;
+        private Server server;
 
-        public UDP(int _id)
+        public UDP(int _id, Server server)
         {
             id = _id;
+            this.server = server;
         }
 
         public void Connect(IPEndPoint _endPoint)
         {
             endPoint = _endPoint;
-            ServerSend.UDPTest(id);
+            server.serverSend.UDPTest(id);
         }
 
         public void Disconnect()
@@ -194,7 +202,7 @@ public class Client
 
         public void SendData(Packet _packet)
         {
-            Server.SendUDPData(endPoint, _packet);
+            server.SendUDPData(endPoint, _packet);
         }
 
         public void HandleData(Packet _packetData)
@@ -207,7 +215,7 @@ public class Client
                 using (Packet _packet = new Packet(_packetBytes))
                 {
                     int _packetId = _packet.ReadInt();
-                    Server.packetHandler[_packetId](id, _packet);
+                    server.packetHandler[_packetId](id, _packet);
                 }
             });
         }
@@ -216,33 +224,35 @@ public class Client
 
     public void SendIntoGame(string _username)
     {
+
+        //NetworkManager.instance.InstantiatItemPrefab();
         player = NetworkManager.instance.InstantiatePlayer();
         player.Initialize(id, _username);
 
         //새로 접속하는 클라이언트에게 
         //기존의 플레이어 정보를 넘겨줌
-        foreach (Client _client in Server.clients.Values)
+        foreach (Client _client in server.clients.Values)
         {
             if (_client.player != null)
             {
                 if (_client.id != id)
-                    ServerSend.SpawnPlayer(id, _client.player);
+                    server.serverSend.SpawnPlayer(id, _client.player);
             }
         }
 
         //모든 클라이언트에게 새로 접속하는 클라이언트의 정보를 넘겨줌
-        foreach (Client _client in Server.clients.Values)
+        foreach (Client _client in server.clients.Values)
         {
             if (_client.player != null)
             {
-                ServerSend.SpawnPlayer(_client.id, player);
+                server.serverSend.SpawnPlayer(_client.id, player);
             }
         }
 
-        foreach (Item _item in Item.items.Values)
-        {
-            ServerSend.SpawnItem(id, _item);
-        }
+        //foreach (Item _item in Item.items.Values)
+        //{
+        //    server.serverSend.SpawnItem(id, _item);
+        //}
 
 
 

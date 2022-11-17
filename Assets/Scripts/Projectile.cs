@@ -13,6 +13,11 @@ public class Projectile : MonoBehaviour
     public Vector3 initalForce;
     public float explosionRadius = 1.5f;
     public float explosionDamage = 75f;
+    public Server server;
+    public Projectile(Server server)
+    {
+        this.server = server;
+    }
 
     private void Start()
     {
@@ -20,7 +25,7 @@ public class Projectile : MonoBehaviour
         nextProjectiledId++;
         projectiles.Add(id, this);
 
-        ServerSend.SpawnProjectile(this, thrownByPlayer);
+        server.serverSend.SpawnProjectile(this, thrownByPlayer);
 
         rigidbody.AddForce(initalForce);
         StartCoroutine(ExplodeAfterTime());
@@ -29,7 +34,7 @@ public class Projectile : MonoBehaviour
 
     private void FixedUpdate()
     {
-        ServerSend.ProjectilesPosition(this);
+        server.serverSend.ProjectilesPosition(this);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -47,7 +52,7 @@ public class Projectile : MonoBehaviour
     private void Explode()
     {
         Collider2D[] _colliders = Physics2D.OverlapCircleAll(this.transform.position, explosionRadius);
-        ServerSend.ProjectilesExploded(this, _colliders);
+        server.serverSend.ProjectilesExploded(this, _colliders);
 
         foreach (Collider2D _collider in _colliders)
         {

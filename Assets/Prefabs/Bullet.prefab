@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
-  rigidbody: {fileID: 703785543101880961}
+  rigidbody: {fileID: 0}
   thrownByPlayer: 0
   initalForce: {x: 0, y: 0, z: 0}
 --- !u!50 &703785543101880961

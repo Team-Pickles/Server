@@ -11,6 +11,12 @@ public class Bullet : MonoBehaviour
     public Rigidbody2D rigidbody;
     public int thrownByPlayer;
     public Vector3 initalForce;
+    public Server server;
+
+    public Bullet (Server server)
+    {
+        this.server = server;
+    }
 
     private void Start()
     {
@@ -18,7 +24,7 @@ public class Bullet : MonoBehaviour
         nextBulletId++;
         bullet.Add(id, this);
 
-        ServerSend.SpawnBullet(this, thrownByPlayer);
+        server.serverSend.SpawnBullet(this, thrownByPlayer);
 
         rigidbody.AddForce(initalForce);
 
@@ -26,7 +32,7 @@ public class Bullet : MonoBehaviour
 
     private void FixedUpdate()
     {
-        ServerSend.BulletPosition(this);
+        server.serverSend.BulletPosition(this);
     }
 
     //충돌 기반이기 때문에 플레이어와의 충돌을 에디터에서 무시해야함
@@ -35,7 +41,7 @@ public class Bullet : MonoBehaviour
         //take damage... etc
         bullet.Remove(id);
         Destroy(gameObject);
-        ServerSend.BulletCollide(this);
+        server.serverSend.BulletCollide(this);
     }
 
     public void Initialize(Vector3 _initialMovementDirection, float _initialForceStrength, int _thrownByPlayer)
