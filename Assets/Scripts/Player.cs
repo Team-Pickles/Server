@@ -6,7 +6,6 @@ public class Player : MonoBehaviour
     public int id;
     public string username;
     public Transform shootOrigin;
-    public Rigidbody2D rigidbody;
     public CharacterController controller;
     public float gravity = -9.18f;
     public float moveSpeed = 5.0f;
@@ -31,17 +30,12 @@ public class Player : MonoBehaviour
     private bool isVaccume = false;
     public Server server;
 
-    public Player(Server server)
-    {
-        this.server = server;
-    }
-
     private void Start()
     {
-        Debug.Log(server);
         gravity *= Time.fixedDeltaTime* Time.fixedDeltaTime;
         moveSpeed *= Time.fixedDeltaTime;
         jumpSpeed *= Time.fixedDeltaTime;
+        shootOrigin = transform;
     }
 
     public void Initialize(int _id, string _username)
@@ -103,10 +97,10 @@ public class Player : MonoBehaviour
                 _vPoint = jumpSpeed;
             }
         }
- 
+
         //controller.Move(_moveDirection);
 
-        rigidbody.velocity = new Vector2((_moveDirection.x * _speed)/1.005f, GetComponent<Rigidbody2D>().velocity.y + _vPoint * _vSpeed);
+        GetComponent<Rigidbody2D>().velocity = new Vector2((_moveDirection.x * _speed)/1.005f, GetComponent<Rigidbody2D>().velocity.y + _vPoint * _vSpeed);
         _vPoint = 0.0f;
         server.serverSend.PlayerPosition(this);
         server.serverSend.PlayerRotation(this);
@@ -137,7 +131,9 @@ public class Player : MonoBehaviour
         {
             return;
         }
-        NetworkManager.instance.InstantiatProjectile(shootOrigin).Initialize(_throwDirection, throwForce, id);
+        GameObject obj = NetworkManager.instance.InstantiatProjectile(shootOrigin);
+        Projectile projectile =  obj.GetComponent<Projectile>();
+        projectile.Initialize(_throwDirection, throwForce, id, this.server);
 
     }
 
@@ -160,7 +156,9 @@ public class Player : MonoBehaviour
             }
         }*/
 
-        NetworkManager.instance.InstantiatbBulletPrefab(shootOrigin).Initialize(_viewDirection, throwForce, id);
+        GameObject obj = NetworkManager.instance.InstantiatbBulletPrefab(shootOrigin);
+        Bullet bullet = obj.GetComponent<Bullet>();
+        bullet.Initialize(_viewDirection, throwForce, id, this.server);
     }
 
     public void StartVaccume(Vector3 _vaccumeDirection)

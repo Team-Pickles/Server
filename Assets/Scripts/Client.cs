@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using UnityEngine;
 
 public class Client
@@ -12,7 +13,7 @@ public class Client
     public TCP tcp;
     public UDP udp;
     public Player player;
-
+    public Item item;
     private Server server;
     
 
@@ -108,7 +109,7 @@ public class Client
         {
             try
             {
-                //NetworkStream¿¡¼­ ÀĞÀº ¹ÙÀÌÆ® ¼ö ¹İÈ¯
+                //NetworkStreamì—ì„œ ì½ì€ ë°”ì´íŠ¸ ìˆ˜ ë°˜í™˜
                 int _byteLength = stream.EndRead(_result);
                 
                 if (_byteLength <= 0)
@@ -136,9 +137,9 @@ public class Client
             int _packetLength = 0;
 
             receiveData.SetBytes(_data);
-            //TCP ÆĞÅ¶ÀÇ ¸ÇÃ³À½¿¡´Â dataÀÇ ±æÀÌ¸¦ ¾Ë·ÁÁÖ´Â intÇü Á¤¼ö°¡ µé¾îÀÖÀ½
-            //±×·¡¼­ ¸ÕÀú int Å©±â ¸¸Å­ÀÌ ÀÖ´ÂÁö È®ÀÎÇÏ°í
-            //_packetLength¿¡ dataÀÇ Å©±â¸¦ ÀúÀåÇÔ.
+            //TCP íŒ¨í‚·ì˜ ë§¨ì²˜ìŒì—ëŠ” dataì˜ ê¸¸ì´ë¥¼ ì•Œë ¤ì£¼ëŠ” intí˜• ì •ìˆ˜ê°€ ë“¤ì–´ìˆìŒ
+            //ê·¸ë˜ì„œ ë¨¼ì € int í¬ê¸° ë§Œí¼ì´ ìˆëŠ”ì§€ í™•ì¸í•˜ê³ 
+            //_packetLengthì— dataì˜ í¬ê¸°ë¥¼ ì €ì¥í•¨.
             if (receiveData.UnreadLength() >= 4)
             {
                 _packetLength = receiveData.ReadInt();
@@ -226,11 +227,19 @@ public class Client
     {
 
         //NetworkManager.instance.InstantiatItemPrefab();
-        player = NetworkManager.instance.InstantiatePlayer();
-        player.Initialize(id, _username);
+        GameObject itemObj = NetworkManager.instance.InstantiatItemPrefab();
+        item = itemObj.GetComponent<Item>();
+        item.Init();
+        item.server = this.server;
 
-        //»õ·Î Á¢¼ÓÇÏ´Â Å¬¶óÀÌ¾ğÆ®¿¡°Ô 
-        //±âÁ¸ÀÇ ÇÃ·¹ÀÌ¾î Á¤º¸¸¦ ³Ñ°ÜÁÜ
+        GameObject playerObj = NetworkManager.instance.InstantiatePlayer();
+        
+        player = playerObj.GetComponent<Player>();
+        player.Initialize(id, _username);
+        player.server = this.server;
+
+        //ìƒˆë¡œ ì ‘ì†í•˜ëŠ” í´ë¼ì´ì–¸íŠ¸ì—ê²Œ 
+        //ê¸°ì¡´ì˜ í”Œë ˆì´ì–´ ì •ë³´ë¥¼ ë„˜ê²¨ì¤Œ
         foreach (Client _client in server.clients.Values)
         {
             if (_client.player != null)
@@ -240,7 +249,7 @@ public class Client
             }
         }
 
-        //¸ğµç Å¬¶óÀÌ¾ğÆ®¿¡°Ô »õ·Î Á¢¼ÓÇÏ´Â Å¬¶óÀÌ¾ğÆ®ÀÇ Á¤º¸¸¦ ³Ñ°ÜÁÜ
+        //ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ìƒˆë¡œ ì ‘ì†í•˜ëŠ” í´ë¼ì´ì–¸íŠ¸ì˜ ì •ë³´ë¥¼ ë„˜ê²¨ì¤Œ
         foreach (Client _client in server.clients.Values)
         {
             if (_client.player != null)
@@ -249,10 +258,10 @@ public class Client
             }
         }
 
-        //foreach (Item _item in Item.items.Values)
-        //{
-        //    server.serverSend.SpawnItem(id, _item);
-        //}
+        foreach (Item _item in item.items.Values)
+        {
+            server.serverSend.SpawnItem(id, _item);
+        }
 
 
 
