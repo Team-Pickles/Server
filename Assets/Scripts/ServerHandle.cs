@@ -31,7 +31,7 @@ public class ServerHandle
 
     public void PlayerMovement(int _fromClient, Packet _packet)
     {
-        // ÆĞÅ¶¿¡¼­ ±æÀÌ¸¦ ÀĞ¾î¿Í¼­ ±× ±æÀÌ ¸¸Å­ÀÇ ºÎ¿ï ¹è¿­À» ¸¸µç´Ù.
+        // íŒ¨í‚·ì—ì„œ ê¸¸ì´ë¥¼ ì½ì–´ì™€ì„œ ê·¸ ê¸¸ì´ ë§Œí¼ì˜ ë¶€ìš¸ ë°°ì—´ì„ ë§Œë“ ë‹¤.
         bool[] _inputs = new bool[_packet.ReadInt()];
         for (int i = 0; i < _inputs.Length; i++)
         {
@@ -71,7 +71,8 @@ public class ServerHandle
     public void ItemCollide(int _fromClient, Packet _packet)
     {
         int _ItemID = _packet.ReadInt();
-        Item.items[_ItemID].DeleteItem();
+        server.clients[_fromClient].item.items[_ItemID].DeleteItem();
+        //
         server.serverSend.ItemCollide(_ItemID, _fromClient);
     }
 }
