@@ -95,9 +95,9 @@ GameObject:
   - component: {fileID: 5091156043021300391}
   - component: {fileID: 5091156043021300390}
   - component: {fileID: 5091156043021300385}
-  - component: {fileID: -1935719335372440663}
   - component: {fileID: 649106589578425333}
   - component: {fileID: 4947116753849335981}
+  - component: {fileID: 5068690233980963835}
   m_Layer: 8
   m_Name: Player 1
   m_TagString: player
@@ -193,35 +193,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &-1935719335372440663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5091156043021300394}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3ae414fd5d946c449bef683306bc29e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: 0
-  username: 
-  shootOrigin: {fileID: 5091156043021300391}
-  rigidbody: {fileID: 649106589578425333}
-  controller: {fileID: 0}
-  gravity: -9.18
-  moveSpeed: 5
-  dashSpeed: 7.5
-  jumpSpeed: 15
-  throwForce: 600
-  health: 0
-  maxHealth: 100
-  itemAmount: 0
-  maxItemAmount: 3
-  onGround: 0
-  facing: {x: 0, y: 0, z: 0}
-  _curItem: {fileID: 0}
 --- !u!50 &649106589578425333
 Rigidbody2D:
   serializedVersion: 4
@@ -269,3 +240,32 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.8, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &5068690233980963835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5091156043021300394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3ae414fd5d946c449bef683306bc29e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  username: 
+  shootOrigin: {fileID: 0}
+  rigidbody: {fileID: 649106589578425333}
+  controller: {fileID: 0}
+  gravity: -9.18
+  moveSpeed: 5
+  dashSpeed: 7
+  jumpSpeed: 5
+  throwForce: 500
+  health: 0
+  maxHealth: 100
+  itemAmount: 0
+  maxItemAmount: 3
+  onGround: 0
+  facing: {x: 0, y: 0, z: 0}
+  _curItem: {fileID: 0}

@@ -21,14 +21,14 @@ public class ServerSend
     private void sendTCPDataToAll(Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayer; i++)
+        for (int i = 1; i <= server.MaxPlayer; i++)
             server.clients[i].tcp.SendData(_packet);
     }
 
     private void sendTCPDataToAll(int _exceptClient, Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayer; i++)
+        for (int i = 1; i <= server.MaxPlayer; i++)
             if (i != _exceptClient)
                 server.clients[i].tcp.SendData(_packet);
     }
@@ -44,14 +44,14 @@ public class ServerSend
     private void sendUDPDataToAll(Packet _packet)
     {
         _packet.WriteLength();
-        for (int i=1; i<Server.MaxPlayer; i++)
+        for (int i=1; i< server.MaxPlayer; i++)
             server.clients[i].udp.SendData(_packet);
     }
 
     private void sendUDPDataToAll(int _exceptClient, Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i < Server.MaxPlayer; i++)
+        for (int i = 1; i < server.MaxPlayer; i++)
             if (i != _exceptClient)
                 server.clients[i].udp.SendData(_packet);
     }
@@ -203,7 +203,7 @@ public class ServerSend
         {
             _packet.Write(_item.id);
             _packet.Write(_item.transform.position);
-
+            Debug.Log("spawn item");
             sendTCPData(_toclient, _packet);
         }
     }
