@@ -31302,6 +31302,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 0}
   bulletPrefab: {fileID: 8324424231299544829, guid: 88fa4f87e7856c2428698880a153da94, type: 3}
   itemPrefab: {fileID: 8776486889826405664, guid: 4322894dc47fd9f4eb44ed937d8d1dd2, type: 3}
+  item: {fileID: 0}
 --- !u!1 &1918009205
 GameObject:
   m_ObjectHideFlags: 0

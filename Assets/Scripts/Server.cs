@@ -11,18 +11,20 @@ using System.Net.Sockets;
 
 public class Server
 {
-    public static int MaxPlayer { get; private set; }
+    public int MaxPlayer { get; private set; }
+    public int Port { get; private set; }
 
-    public static int Port { get; private set; }
+    private TcpListener tcpListener;
+    private UdpClient udpListener;
 
-    private static TcpListener tcpListener;
-    private static UdpClient udpListener;
-
-    public static Dictionary<int,Client> clients = new Dictionary<int, Client>();
+    public Dictionary<int,Client> clients = new Dictionary<int, Client>();
     public delegate void PacketHandler(int _fromClient, Packet _packet);
-    public static Dictionary<int, PacketHandler> packetHandler;
+    public Dictionary<int, PacketHandler> packetHandler;
 
-    public static void Start(int _maxPlayer, int _port)
+    public ServerHandle serverHandle;
+    public ServerSend serverSend;
+
+    public void Start(int _maxPlayer, int _port)
     {
         MaxPlayer = _maxPlayer;
         Port = _port;
@@ -42,7 +44,7 @@ public class Server
         Debug.Log($"Server started on {Port}.");
     }
 
-    private static void TCPConnectionCallback(IAsyncResult _result)
+    private void TCPConnectionCallback(IAsyncResult _result)
     {
         TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
         tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectionCallback), null);
@@ -60,7 +62,7 @@ public class Server
         Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server Full!");
     }
 
-    private static void UDPReceiveCallback(IAsyncResult _result)
+    private void UDPReceiveCallback(IAsyncResult _result)
     {
         try
         {
@@ -104,7 +106,7 @@ public class Server
 
 
 
-    public static void SendUDPData(IPEndPoint _clientEndPoint, Packet _packet)
+    public void SendUDPData(IPEndPoint _clientEndPoint, Packet _packet)
     {
         try
         {
@@ -120,29 +122,30 @@ public class Server
     }
 
 
-    private static void InitalizeServerData()
+    private void InitalizeServerData()
     {
         for (int i=1; i<= MaxPlayer; i++)
         {
-            clients.Add(i,new Client(i));
+            clients.Add(i,new Client(i,this));
         }
-
+        serverHandle = new ServerHandle(this);
+        serverSend = new ServerSend(this);
         packetHandler = new Dictionary<int, PacketHandler>()
         {
-            { (int)ClientPackets.TCPConnenctinCheckReceived, ServerHandle.TCPConnenctinCheckReceived },
-            { (int)ClientPackets.udpTestReceive, ServerHandle.UDPTestReceive },
-            { (int)ClientPackets.playerMovement, ServerHandle.PlayerMovement },
-            { (int)ClientPackets.playerThrowItem, ServerHandle.playerThrowItem },
-            { (int)ClientPackets.playerShoot, ServerHandle.PlayerShoot },
-            { (int)ClientPackets.playerStartVacuume, ServerHandle.PlayerStartVaccume },
-            { (int)ClientPackets.playerEndVacuume, ServerHandle.PlayerEndVaccume },
-            { (int)ClientPackets.ItemCollide, ServerHandle.ItemCollide },
+            { (int)ClientPackets.TCPConnenctinCheckReceived, serverHandle.TCPConnenctinCheckReceived },
+            { (int)ClientPackets.udpTestReceive, serverHandle.UDPTestReceive },
+            { (int)ClientPackets.playerMovement, serverHandle.PlayerMovement },
+            { (int)ClientPackets.playerThrowItem, serverHandle.playerThrowItem },
+            { (int)ClientPackets.playerShoot, serverHandle.PlayerShoot },
+            { (int)ClientPackets.playerStartVacuume, serverHandle.PlayerStartVaccume },
+            { (int)ClientPackets.playerEndVacuume, serverHandle.PlayerEndVaccume },
+            { (int)ClientPackets.ItemCollide, serverHandle.ItemCollide },
         };
 
         Debug.Log("Initialized pakcets.");
     }
 
-    public static void Stop()
+    public void Stop()
     {
         tcpListener.Stop();
         udpListener.Close();

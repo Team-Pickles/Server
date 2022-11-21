@@ -4,28 +4,34 @@ using UnityEngine;
 
 public class ServerHandle
 {
-    public static void TCPConnenctinCheckReceived(int _fromClient, Packet _packet)
+    private Server server;
+
+    public ServerHandle(Server server)
+    {
+        this.server = server;
+    }
+    public void TCPConnenctinCheckReceived(int _fromClient, Packet _packet)
     {
         int _clientIdCheck = _packet.ReadInt();
         string _username = _packet.ReadString();
 
-        Debug.Log($"{Server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connencted successfully and is now player {_fromClient}");
+        Debug.Log($"{server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connencted successfully and is now player {_fromClient}");
         if (_fromClient != _clientIdCheck)
         {
             Debug.Log($"Player \"{_username}\" (ID: {_fromClient}) has assumes the wrong client ID({_clientIdCheck})!");
         }
-        Server.clients[_fromClient].SendIntoGame(_username);
+        server.clients[_fromClient].SendIntoGame(_username);
     }
 
-    public static void UDPTestReceive(int _fromClient, Packet _packet)
+    public void UDPTestReceive(int _fromClient, Packet _packet)
     {
         string _msg = _packet.ReadString();
         Debug.Log($"{_msg}");
     }
 
-    public static void PlayerMovement(int _fromClient, Packet _packet)
+    public void PlayerMovement(int _fromClient, Packet _packet)
     {
-        // ÆĞÅ¶¿¡¼­ ±æÀÌ¸¦ ÀĞ¾î¿Í¼­ ±× ±æÀÌ ¸¸Å­ÀÇ ºÎ¿ï ¹è¿­À» ¸¸µç´Ù.
+        // íŒ¨í‚·ì—ì„œ ê¸¸ì´ë¥¼ ì½ì–´ì™€ì„œ ê·¸ ê¸¸ì´ ë§Œí¼ì˜ ë¶€ìš¸ ë°°ì—´ì„ ë§Œë“ ë‹¤.
         bool[] _inputs = new bool[_packet.ReadInt()];
         for (int i = 0; i < _inputs.Length; i++)
         {
@@ -33,39 +39,40 @@ public class ServerHandle
         }
         Quaternion _rotation = _packet.ReadQuaternion();
 
-        Server.clients[_fromClient].player.SetInput(_inputs, _rotation);
+        server.clients[_fromClient].player.SetInput(_inputs, _rotation);
     }
 
-    public static void playerThrowItem(int _fromClient, Packet _packet)
+    public void playerThrowItem(int _fromClient, Packet _packet)
     {
         Debug.Log($"get gerenade from {_fromClient}");
         Vector3 _throwDirection = _packet.ReadVector3();
-        Server.clients[_fromClient].player.ThrowItem(_throwDirection);
+        server.clients[_fromClient].player.ThrowItem(_throwDirection);
     }
 
-    public static void PlayerShoot(int _fromClient, Packet _packet)
+    public void PlayerShoot(int _fromClient, Packet _packet)
     {
         Vector3 _shootDirection = _packet.ReadVector3();
 
-        Server.clients[_fromClient].player.Shoot(_shootDirection);
+        server.clients[_fromClient].player.Shoot(_shootDirection);
     }
 
 
-    public static void PlayerStartVaccume(int _fromClient, Packet _packet)
+    public void PlayerStartVaccume(int _fromClient, Packet _packet)
     {
         Vector3 _vaccumeDirection = _packet.ReadVector3();
-        Server.clients[_fromClient].player.StartVaccume(_vaccumeDirection);
+        server.clients[_fromClient].player.StartVaccume(_vaccumeDirection);
     }
 
-    public static void PlayerEndVaccume(int _fromClient, Packet _packet)
+    public void PlayerEndVaccume(int _fromClient, Packet _packet)
     {
-        Server.clients[_fromClient].player.EndVaccume();
+        server.clients[_fromClient].player.EndVaccume();
     }
 
-    public static void ItemCollide(int _fromClient, Packet _packet)
+    public void ItemCollide(int _fromClient, Packet _packet)
     {
         int _ItemID = _packet.ReadInt();
-        Item.items[_ItemID].DeleteItem();
-        ServerSend.ItemCollide(_ItemID, _fromClient);
+        server.clients[_fromClient].item.items[_ItemID].DeleteItem();
+        //
+        server.serverSend.ItemCollide(_ItemID, _fromClient);
     }
 }

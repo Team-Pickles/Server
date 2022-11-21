@@ -4,53 +4,60 @@ using UnityEngine;
 
 public class ServerSend
 {
+    private Server server;
+
+    public ServerSend(Server server)
+    {
+        this.server = server;
+    }
+
     #region TCP
-    private static void sendTCPData(int _toClient, Packet _packet)
+    private void sendTCPData(int _toClient, Packet _packet)
     {
         _packet.WriteLength();
-        Server.clients[_toClient].tcp.SendData(_packet);
+        server.clients[_toClient].tcp.SendData(_packet);
     }
 
-    private static void sendTCPDataToAll(Packet _packet)
+    private void sendTCPDataToAll(Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayer; i++)
-            Server.clients[i].tcp.SendData(_packet);
+        for (int i = 1; i <= server.MaxPlayer; i++)
+            server.clients[i].tcp.SendData(_packet);
     }
 
-    private static void sendTCPDataToAll(int _exceptClient, Packet _packet)
+    private void sendTCPDataToAll(int _exceptClient, Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayer; i++)
+        for (int i = 1; i <= server.MaxPlayer; i++)
             if (i != _exceptClient)
-                Server.clients[i].tcp.SendData(_packet);
+                server.clients[i].tcp.SendData(_packet);
     }
     #endregion
 
     #region udp
-    private static void sendUDPData(int _toClient, Packet _packet)
+    private void sendUDPData(int _toClient, Packet _packet)
     {
         _packet.WriteLength();
-        Server.clients[_toClient].udp.SendData(_packet);
+        server.clients[_toClient].udp.SendData(_packet);
     }
 
-    private static void sendUDPDataToAll(Packet _packet)
+    private void sendUDPDataToAll(Packet _packet)
     {
         _packet.WriteLength();
-        for (int i=1; i<Server.MaxPlayer; i++) 
-            Server.clients[i].udp.SendData(_packet);
+        for (int i=1; i< server.MaxPlayer; i++)
+            server.clients[i].udp.SendData(_packet);
     }
 
-    private static void sendUDPDataToAll(int _exceptClient, Packet _packet)
+    private void sendUDPDataToAll(int _exceptClient, Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i < Server.MaxPlayer; i++)
+        for (int i = 1; i < server.MaxPlayer; i++)
             if (i != _exceptClient)
-            Server.clients[i].udp.SendData(_packet);
+                server.clients[i].udp.SendData(_packet);
     }
     #endregion
 
-    public static void Welcome(int _toClient, string _msg)
+    public void Welcome(int _toClient, string _msg)
     {
         using (Packet _packet = new Packet((int)ServerPackets.tcpConnenctinCheck))
         {
@@ -61,7 +68,7 @@ public class ServerSend
         }
     }
 
-    public static void UDPTest(int _toClient)
+    public void UDPTest(int _toClient)
     {
         using (Packet _packet = new Packet((int)ServerPackets.udpTest))
         {
@@ -70,7 +77,7 @@ public class ServerSend
         }
     }
 
-    public static void PlayerDisnconnect(int _playerId)
+    public void PlayerDisnconnect(int _playerId)
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerDisconnected))
         {
@@ -82,7 +89,7 @@ public class ServerSend
 
     //소환할 때 한번만 사용하기 때문에 TCP로 전송
     //TCP는 도착이 보장됨
-    public static void SpawnPlayer(int _toclient, Player _player)
+    public void SpawnPlayer(int _toclient, Player _player)
     {
         
         using (Packet _packet = new Packet((int)ServerPackets.spawnPlayer))
@@ -98,7 +105,7 @@ public class ServerSend
         }
     }
 
-    public static void PlayerPosition(Player _player)
+    public void PlayerPosition(Player _player)
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
         {
@@ -109,7 +116,7 @@ public class ServerSend
         }
     }
 
-    public static void PlayerRotation(Player _player)
+    public void PlayerRotation(Player _player)
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerRotation))
         {
@@ -119,7 +126,7 @@ public class ServerSend
         }
     }
 
-    public static void SpawnProjectile(Projectile _projectile, int _thrownByplayer)
+    public void SpawnProjectile(Projectile _projectile, int _thrownByplayer)
     {
         using (Packet _packet = new Packet((int)ServerPackets.spawnProjectile))
         {
@@ -131,7 +138,7 @@ public class ServerSend
         }
     }
 
-    public static void ProjectilesPosition(Projectile _projectile)
+    public void ProjectilesPosition(Projectile _projectile)
     {
         using (Packet _packet = new Packet((int)ServerPackets.projectilePosition))
         {
@@ -142,7 +149,7 @@ public class ServerSend
         }
     }
 
-    public static void ProjectilesExploded(Projectile _projectile, Collider2D[] _colliders)
+    public void ProjectilesExploded(Projectile _projectile, Collider2D[] _colliders)
     {
         using (Packet _packet = new Packet((int)ServerPackets.projectileExploded))
         {
@@ -157,7 +164,7 @@ public class ServerSend
         }
     }
 
-    public static void SpawnBullet(Bullet _bullet, int _thrownByplayer)
+    public void SpawnBullet(Bullet _bullet, int _thrownByplayer)
     {
         using(Packet _packet = new Packet((int)ServerPackets.spawnBullet))
         {
@@ -169,7 +176,7 @@ public class ServerSend
         }
     }
 
-    public static void BulletPosition(Bullet _bullet)
+    public void BulletPosition(Bullet _bullet)
     {
         using(Packet _packet = new Packet((int)ServerPackets.bulletPosition))
         {
@@ -180,7 +187,7 @@ public class ServerSend
         }
     }
 
-    public static void BulletCollide(Bullet _bullet)
+    public void BulletCollide(Bullet _bullet)
     {
         using (Packet _packet = new Packet((int)ServerPackets.bulletCollide))
         {
@@ -190,18 +197,18 @@ public class ServerSend
         }
     }
 
-    public static void SpawnItem(int _toclient, Item _item)
+    public void SpawnItem(int _toclient, Item _item)
     {
         using (Packet _packet = new Packet((int)ServerPackets.spawnItem))
         {
             _packet.Write(_item.id);
             _packet.Write(_item.transform.position);
-
+            Debug.Log("spawn item");
             sendTCPData(_toclient, _packet);
         }
     }
 
-    public static void ItemPosition(Item _item)
+    public void ItemPosition(Item _item)
     {
         using (Packet _packet = new Packet((int)ServerPackets.ItemPosition))
         {
@@ -211,7 +218,7 @@ public class ServerSend
             sendUDPDataToAll(_packet);
         }
     }
-    public static void ItemCollide(int _itemID, int _exceptClient)
+    public void ItemCollide(int _itemID, int _exceptClient)
     {
         using (Packet _packet = new Packet((int)ServerPackets.itemCollide))
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public static Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
+    public Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
     private static int nextProjectiledId = 1;
 
     public int id;
@@ -13,23 +13,12 @@ public class Projectile : MonoBehaviour
     public Vector3 initalForce;
     public float explosionRadius = 1.5f;
     public float explosionDamage = 75f;
+    public Server server;
 
-    private void Start()
-    {
-        id = nextProjectiledId;
-        nextProjectiledId++;
-        projectiles.Add(id, this);
-
-        ServerSend.SpawnProjectile(this, thrownByPlayer);
-
-        rigidbody.AddForce(initalForce);
-        StartCoroutine(ExplodeAfterTime());
-
-    }
 
     private void FixedUpdate()
     {
-        ServerSend.ProjectilesPosition(this);
+        server.serverSend.ProjectilesPosition(this);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -38,16 +27,27 @@ public class Projectile : MonoBehaviour
         Explode();
     }
 
-    public void Initialize(Vector3 _initialMovementDirection, float _initialForceStrength, int _thrownByPlayer)
+    public void Initialize(Vector3 _initialMovementDirection, float _initialForceStrength, int _thrownByPlayer, Server server)
     {
         initalForce = _initialMovementDirection * _initialForceStrength;
         thrownByPlayer = _thrownByPlayer;
+        this.server = server;
+
+        id = nextProjectiledId;
+        nextProjectiledId++;
+        projectiles.Add(id, this);
+
+        server.serverSend.SpawnProjectile(this, thrownByPlayer);
+
+        rigidbody.AddForce(initalForce);
+        StartCoroutine(ExplodeAfterTime());
+
     }
 
     private void Explode()
     {
         Collider2D[] _colliders = Physics2D.OverlapCircleAll(this.transform.position, explosionRadius);
-        ServerSend.ProjectilesExploded(this, _colliders);
+        server.serverSend.ProjectilesExploded(this, _colliders);
 
         foreach (Collider2D _collider in _colliders)
         {
