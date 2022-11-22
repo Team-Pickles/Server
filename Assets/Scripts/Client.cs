@@ -15,6 +15,7 @@ public class Client
     public Player player;
     public Item item;
     private Server server;
+    public string roomId;
     
 
     public Client(int _clientId, Server _server)
@@ -33,6 +34,14 @@ public class Client
         ThreadManager.ExecuteOnMainThread(() =>
         {
             UnityEngine.Object.Destroy(player.gameObject);
+            server.rooms[roomId].members.Remove(id);
+            if(server.rooms[roomId].members.Count == 0)
+            {
+                UnityEngine.Object.Destroy(server.rooms[roomId].room);
+                RoomManager.instance.DeletedPosList.Add(server.rooms[roomId].mapAddPosition);
+                server.rooms.Remove(roomId);
+                NetworkManager.instance.roomInfos.Remove(roomId);
+            }
             player = null;
         });
 
@@ -222,48 +231,5 @@ public class Client
         }
 
     }
-
-    public void SendIntoGame(string _username)
-    {
-
-        //NetworkManager.instance.InstantiatItemPrefab();
-        GameObject itemObj = NetworkManager.instance.InstantiatItemPrefab();
-        item = itemObj.GetComponent<Item>();
-        item.Init();
-        item.server = this.server;
-
-        GameObject playerObj = NetworkManager.instance.InstantiatePlayer();
-        
-        player = playerObj.GetComponent<Player>();
-        player.Initialize(id, _username);
-        player.server = this.server;
-
-        //새로 접속하는 클라이언트에게 
-        //기존의 플레이어 정보를 넘겨줌
-        foreach (Client _client in server.clients.Values)
-        {
-            if (_client.player != null)
-            {
-                if (_client.id != id)
-                    server.serverSend.SpawnPlayer(id, _client.player);
-            }
-        }
-
-        //모든 클라이언트에게 새로 접속하는 클라이언트의 정보를 넘겨줌
-        foreach (Client _client in server.clients.Values)
-        {
-            if (_client.player != null)
-            {
-                server.serverSend.SpawnPlayer(_client.id, player);
-            }
-        }
-
-        foreach (Item _item in item.items.Values)
-        {
-            server.serverSend.SpawnItem(id, _item);
-        }
-
-
-
-    }
+    // SendIntoGame Delete.
 }

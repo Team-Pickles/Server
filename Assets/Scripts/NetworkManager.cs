@@ -17,10 +17,13 @@ public class NetworkManager : MonoBehaviour
     public GameObject enemyPrefab;
     public GameObject bulletPrefab;
     public GameObject itemPrefab;
+    public GameObject DefaultMapPrefab;
+    public Transform RoomGroup;
 
     private int _port;
 
-    public Dictionary<string, int> rooms = new Dictionary<string, int>();
+    public Dictionary<int, Server> servers = new Dictionary<int, Server>();
+    public Dictionary<string, int> roomInfos = new Dictionary<string, int>();
 
     private void Awake()
     {
@@ -76,8 +79,13 @@ public class NetworkManager : MonoBehaviour
             Debug.Log("test");
             Sender _sender = new Sender();
             _sender.Start(clientSocket);
+            string msg = "Welcome to Server";
+            foreach (KeyValuePair<string, int> roomInfo in instance.roomInfos)
+            {
+                msg += $",{roomInfo.Key}";
+            }
 
-            byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to Server");
+            byte[] sendBuff = Encoding.UTF8.GetBytes(msg);
             _sender.Send(sendBuff);
 
             //Thread.Sleep(1000);
@@ -131,44 +139,7 @@ public class NetworkManager : MonoBehaviour
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
         }
-        #region generate room name
-        public string GenerateRoomName()
-        {
-            string allCharacter = "*ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            string _roomId = "";
-            Debug.Log("nametest1");
-            while (true)
-            {
-                Debug.Log("nametest2");
-                for (int i = 0; i < 8; ++i)
-                {
-                    Debug.Log("nametest3");
-                    Random rand = new Random();
-                    var temp = rand.Next(0, allCharacter.Length);
-                    _roomId += allCharacter[temp];
-                }
-               
-                if (!CheckDuplicateRoomName(_roomId))
-                    break;
-               
-                _roomId = "";
-            }
-            Debug.Log("nametest4");
-            return _roomId;
-        }
-
-        public bool CheckDuplicateRoomName(string _roomName)
-        {
-            foreach (string roomName in instance.rooms.Keys)
-            {
-                if (roomName == _roomName)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-    #endregion
+//
         #region Network comuunication, creat join room
         void RegisterRecv(SocketAsyncEventArgs recvArgs)
         {
@@ -182,42 +153,64 @@ public class NetworkManager : MonoBehaviour
             //연결이 끊긴다거나 하는 경우 체크
             if (recvArgs.BytesTransferred > 0 && recvArgs.SocketError == SocketError.Success)
             {
-                //TODO
+                //
                 try
                 {
                     string recvData = Encoding.UTF8.GetString(recvArgs.Buffer, recvArgs.Offset, recvArgs.BytesTransferred);
                     Debug.Log($"[From Client]{recvData}");
-                    if (recvData == "Create Room")
+                    string[] requests = recvData.Split(' ');
+                    if (requests[0] == "CreateRoom")
                     {
-                        Debug.Log("test");
+                        Debug.Log("Start to create room.");
                         TcpListener l = new TcpListener(IPAddress.Loopback, 0);
                         l.Start();
                         int port = ((IPEndPoint)l.LocalEndpoint).Port;
                         l.Stop();
-                        Debug.Log("test2");
-                        Server server = new Server();
-                        server.Start(4,port);
-                        string roomNmae = GenerateRoomName();
-                        instance.rooms.Add(roomNmae, port);
-                        Debug.Log(roomNmae);
-                        byte[] sendBuff = Encoding.UTF8.GetBytes(roomNmae);
+
+                        int _serverPort = port;
+                        foreach(Server _server in instance.servers.Values)
+                        {
+                            if(_server.rooms.Count < 20)
+                            {
+                                _serverPort = _server.Port;
+                                break;
+                            }
+                        }
+
+                        if(_serverPort == port)
+                        {
+                            bool isDone = false;
+                            while(!isDone) {
+                                Server server = new Server();
+                                isDone = server.Start(4,port);
+                                instance.servers.Add(port, server);
+                            }
+                        }
+
+                        string _roomName = requests[1];
+                        string _roomId = RoomManager.instance.CreateRoom(_roomName, _serverPort);
+                        instance.roomInfos.Add(_roomId, _serverPort);
+                        string result = $"{_roomId} {_roomName}";
+                        byte[] sendBuff = Encoding.UTF8.GetBytes(result);
+                        Debug.Log(result);
                         Send(sendBuff);
                     }
-                    else if (recvData == "Refresh Room")
+                    else if (requests[0] == "RefreshRoom")
                     {
                         string result = "";
-                        foreach (string roomName in instance.rooms.Keys)
+                        foreach (KeyValuePair<string, int> roomInfo in instance.roomInfos)
                         {
-                            result += roomName+",";
+                            result += $"{roomInfo.Key},";
                         }
                         byte[] sendBuff = Encoding.UTF8.GetBytes(result);
                         Send(sendBuff);
                     }
                     else
                     {
-                        string ReplaceResult = recvData.Replace("Join Room", "");
-                        int port = instance.rooms[ReplaceResult];
-                        byte[] sendBuff = Encoding.UTF8.GetBytes(port.ToString());
+                        string ReplaceResult = recvData.Replace("JoinRoom", "");
+                        int result = -1;
+                        instance.roomInfos.TryGetValue(ReplaceResult, out result);
+                        byte[] sendBuff = Encoding.UTF8.GetBytes(result.ToString());
                         Send(sendBuff);
                     }
 
@@ -241,7 +234,7 @@ public class NetworkManager : MonoBehaviour
             _sendArgs.SetBuffer(buff, 0, buff.Length);
 
             bool pending = _socket.SendAsync(_sendArgs);
-            Debug.Log("test2");
+            
             if (pending == false)
                 OnSendCompleted(null, _sendArgs);
         }
@@ -353,5 +346,8 @@ public class NetworkManager : MonoBehaviour
     {
         return Instantiate(itemPrefab, new Vector3(5f, -2.5f, 0f), Quaternion.identity);
     }
-
+    
+    public GameObject InstantiateRoomPrefab() {
+        return Instantiate(DefaultMapPrefab, RoomGroup);
+    }
 }

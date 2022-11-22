@@ -10,13 +10,15 @@ public class Item : MonoBehaviour
     public int id;
     public Rigidbody2D rigidbody;
     public Server server;
+    public string roomId;
 
 
-    public void Init()
+    public void Init(string _roomId)
     {
         id = nextItemId;
         nextItemId++;
         items.Add(id, this);
+        roomId = _roomId;
     }
 
     private void Update()

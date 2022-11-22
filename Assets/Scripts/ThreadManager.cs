@@ -3,11 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class CreateRoomData {
+    public string roomId;
+    public string roomName;
+    public int serverPort;
+    public Vector3 roomPos;
+
+    public CreateRoomData(string _roomId, string _roomName, int _serverPort, Vector3 _roomPos)
+    {
+        this.roomId = _roomId;
+        this.roomName = _roomName;
+        this.serverPort = _serverPort;
+        this.roomPos = _roomPos;
+    }
+}
+
 public class ThreadManager : MonoBehaviour
 {
     private static readonly List<Action> executeOnMainThread = new List<Action>();
     private static readonly List<Action> executeCopiedOnMainThread = new List<Action>();
+    public static readonly List<CreateRoomData> createRoomOnMainThread = new List<CreateRoomData>();
     private static bool actionToExecuteOnMainThread = false;
+    private static bool executeCreateRoomOnMainThread = false;
 
     private void FixedUpdate()
     {
@@ -48,6 +65,24 @@ public class ThreadManager : MonoBehaviour
             {
                 executeCopiedOnMainThread[i]();
             }
+        }
+        if (createRoomOnMainThread.Count > 0 && !executeCreateRoomOnMainThread)
+        {
+            executeCreateRoomOnMainThread = true;
+            foreach(CreateRoomData _roomData in createRoomOnMainThread)
+            {
+                GameObject _room = NetworkManager.instance.InstantiateRoomPrefab();
+                _room.name = _roomData.roomId;
+
+                Room _roomObject = new Room(_roomData.roomId, _roomData.roomName, _roomData.serverPort, _roomData.roomPos, _room);
+
+                NetworkManager.instance.servers[_roomData.serverPort].rooms.Add(_roomData.roomId, _roomObject);
+                
+                int result = 0;
+                NetworkManager.instance.roomInfos.TryGetValue(_roomData.roomId, out result);
+            }
+            createRoomOnMainThread.Clear();
+            executeCreateRoomOnMainThread = false;
         }
     }
 }
