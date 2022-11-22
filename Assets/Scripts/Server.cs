@@ -18,13 +18,14 @@ public class Server
     private UdpClient udpListener;
 
     public Dictionary<int,Client> clients = new Dictionary<int, Client>();
+    public Dictionary<string, Room> rooms = new Dictionary<string, Room>();
     public delegate void PacketHandler(int _fromClient, Packet _packet);
     public Dictionary<int, PacketHandler> packetHandler;
 
     public ServerHandle serverHandle;
     public ServerSend serverSend;
 
-    public void Start(int _maxPlayer, int _port)
+    public bool Start(int _maxPlayer, int _port)
     {
         MaxPlayer = _maxPlayer;
         Port = _port;
@@ -42,6 +43,8 @@ public class Server
         udpListener.BeginReceive(UDPReceiveCallback, null);
 
         Debug.Log($"Server started on {Port}.");
+
+        return true;
     }
 
     private void TCPConnectionCallback(IAsyncResult _result)
@@ -120,7 +123,7 @@ public class Server
             Debug.Log($"Error occured with : {_ex}");
         }
     }
-
+    
 
     private void InitalizeServerData()
     {

@@ -18,6 +18,21 @@ public class ServerSend
         server.clients[_toClient].tcp.SendData(_packet);
     }
 
+    private void sendTCPDataToAllInRoom(string _roomId, Packet _packet)
+    {
+        _packet.WriteLength();
+        foreach(KeyValuePair<int, Client> _member in server.rooms[_roomId].members)
+            _member.Value.tcp.SendData(_packet);
+    }
+
+    private void sendTCPDataToAllInRoom(int _exceptClient, string _roomId, Packet _packet)
+    {
+        _packet.WriteLength();
+        foreach(KeyValuePair<int, Client> _member in server.rooms[_roomId].members)
+            if (_member.Key != _exceptClient)
+                _member.Value.tcp.SendData(_packet);
+    }
+
     private void sendTCPDataToAll(Packet _packet)
     {
         _packet.WriteLength();
@@ -39,6 +54,21 @@ public class ServerSend
     {
         _packet.WriteLength();
         server.clients[_toClient].udp.SendData(_packet);
+    }
+
+    private void sendUDPDataToAllInRoom(string _roomId, Packet _packet)
+    {
+        _packet.WriteLength();
+        foreach(KeyValuePair<int, Client> _member in server.rooms[_roomId].members)
+            _member.Value.udp.SendData(_packet);
+    }
+
+    private void sendUDPDataToAllInRoom(int _exceptClient, string _roomId, Packet _packet)
+    {
+        _packet.WriteLength();
+        foreach(KeyValuePair<int, Client> _member in server.rooms[_roomId].members)
+            if (_member.Key != _exceptClient)
+                _member.Value.udp.SendData(_packet);
     }
 
     private void sendUDPDataToAll(Packet _packet)
@@ -96,7 +126,7 @@ public class ServerSend
         {
             _packet.Write(_player.id);
             _packet.Write(_player.username);
-            _packet.Write(_player.transform.position);
+            _packet.Write(_player.transform.localPosition);
             _packet.Write(_player.transform.rotation);
 
             Debug.Log($"server send {(int)ServerPackets.spawnPlayer}, {_toclient}");
@@ -110,9 +140,9 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
         {
             _packet.Write(_player.id);
-            _packet.Write(_player.transform.position);
+            _packet.Write(_player.transform.localPosition);
 
-            sendUDPDataToAll(_packet);
+            sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
         }
     }
 
@@ -122,7 +152,7 @@ public class ServerSend
         {
             _packet.Write(_player.id);
             _packet.Write(_player.transform.rotation);
-            sendUDPDataToAll(_packet);
+            sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
         }
     }
 
@@ -131,10 +161,9 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.spawnProjectile))
         {
             _packet.Write(_projectile.id);
-            _packet.Write(_projectile.transform.position);
+            _packet.Write(_projectile.transform.localPosition);
             _packet.Write(_thrownByplayer);
-
-            sendTCPDataToAll(_packet);
+            sendTCPDataToAllInRoom(server.clients[_thrownByplayer].roomId, _packet);
         }
     }
 
@@ -143,9 +172,8 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.projectilePosition))
         {
             _packet.Write(_projectile.id);
-            _packet.Write(_projectile.transform.position);
-
-            sendUDPDataToAll(_packet);
+            _packet.Write(_projectile.transform.localPosition);
+            sendUDPDataToAllInRoom(server.clients[_projectile.thrownByPlayer].roomId, _packet);
         }
     }
 
@@ -154,13 +182,12 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.projectileExploded))
         {
             _packet.Write(_projectile.id);
-            _packet.Write(_projectile.transform.position);
+            _packet.Write(_projectile.transform.localPosition);
             _packet.Write(_colliders.Length);
             foreach (Collider2D _collider in _colliders) {
-                _packet.Write(_collider.transform.position);
+                _packet.Write(_collider.transform.localPosition);
             }
-
-            sendTCPDataToAll(_packet);
+            sendTCPDataToAllInRoom(server.clients[_projectile.thrownByPlayer].roomId, _packet);
         }
     }
 
@@ -169,10 +196,10 @@ public class ServerSend
         using(Packet _packet = new Packet((int)ServerPackets.spawnBullet))
         {
             _packet.Write(_bullet.id);
-            _packet.Write(_bullet.transform.position);
+            _packet.Write(_bullet.transform.localPosition);
             _packet.Write(_thrownByplayer);
 
-            sendTCPDataToAll(_packet);
+            sendTCPDataToAllInRoom(server.clients[_thrownByplayer].roomId, _packet);
         }
     }
 
@@ -181,9 +208,9 @@ public class ServerSend
         using(Packet _packet = new Packet((int)ServerPackets.bulletPosition))
         {
             _packet.Write(_bullet.id);
-            _packet.Write(_bullet.transform.position);
+            _packet.Write(_bullet.transform.localPosition);
 
-            sendUDPDataToAll(_packet);
+            sendUDPDataToAllInRoom(server.clients[_bullet.thrownByPlayer].roomId, _packet);
         }
     }
 
@@ -192,8 +219,7 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.bulletCollide))
         {
             _packet.Write(_bullet.id);
-
-            sendTCPDataToAll(_packet);
+            sendTCPDataToAllInRoom(server.clients[_bullet.thrownByPlayer].roomId, _packet);
         }
     }
 
@@ -202,7 +228,7 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.spawnItem))
         {
             _packet.Write(_item.id);
-            _packet.Write(_item.transform.position);
+            _packet.Write(_item.transform.localPosition);
             Debug.Log("spawn item");
             sendTCPData(_toclient, _packet);
         }
@@ -213,18 +239,17 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.ItemPosition))
         {
             _packet.Write(_item.id);
-            _packet.Write(_item.transform.position);
+            _packet.Write(_item.transform.localPosition);
 
-            sendUDPDataToAll(_packet);
+            sendUDPDataToAllInRoom(_item.roomId, _packet);
         }
     }
-    public void ItemCollide(int _itemID, int _exceptClient)
+    public void ItemCollide(int _itemID, string _roomId, int _exceptClient)
     {
         using (Packet _packet = new Packet((int)ServerPackets.itemCollide))
         {
             _packet.Write(_itemID);
-
-            sendTCPDataToAll(_exceptClient, _packet);
+            sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
         }
     }
 

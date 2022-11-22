@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
 
     private bool isVaccume = false;
     public Server server;
+    public Room room;
 
     private void Start()
     {
@@ -131,7 +132,7 @@ public class Player : MonoBehaviour
         {
             return;
         }
-        GameObject obj = NetworkManager.instance.InstantiatProjectile(shootOrigin);
+        GameObject obj = RoomManager.instance.InstatiateGrenade(room.PlayerGroup, shootOrigin);
         Projectile projectile =  obj.GetComponent<Projectile>();
         projectile.Initialize(_throwDirection, throwForce, id, this.server);
 
@@ -143,20 +144,7 @@ public class Player : MonoBehaviour
         {
             return;
         }
-        /*
-        if (Physics.Raycast(shootOrigin.position, _viewDirection, out RaycastHit _hit, 25f))
-        {
-            if (_hit.collider.CompareTag("Player"))
-            {
-                _hit.collider.GetComponent<Player>().TakeDamage(50f);
-            }
-            else if (_hit.collider.CompareTag("Enemy"))
-            {
-                _hit.collider.GetComponent<Enemy>().TakeDamage(50f);
-            }
-        }*/
-
-        GameObject obj = NetworkManager.instance.InstantiatbBulletPrefab(shootOrigin);
+        GameObject obj = RoomManager.instance.InstatiateBullet(room.PlayerGroup, shootOrigin);
         Bullet bullet = obj.GetComponent<Bullet>();
         bullet.Initialize(_viewDirection, throwForce, id, this.server);
     }

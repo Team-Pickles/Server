@@ -14,13 +14,15 @@ public class ServerHandle
     {
         int _clientIdCheck = _packet.ReadInt();
         string _username = _packet.ReadString();
+        string _roomId = _packet.ReadString();
 
         Debug.Log($"{server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connencted successfully and is now player {_fromClient}");
         if (_fromClient != _clientIdCheck)
         {
             Debug.Log($"Player \"{_username}\" (ID: {_fromClient}) has assumes the wrong client ID({_clientIdCheck})!");
         }
-        server.clients[_fromClient].SendIntoGame(_username);
+        server.clients[_fromClient].roomId = _roomId;
+        RoomManager.instance.JoinRoom(_roomId, _fromClient, server.Port);
     }
 
     public void UDPTestReceive(int _fromClient, Packet _packet)
@@ -71,8 +73,9 @@ public class ServerHandle
     public void ItemCollide(int _fromClient, Packet _packet)
     {
         int _ItemID = _packet.ReadInt();
+        string _roomId = server.clients[_fromClient].item.items[_ItemID].roomId;
         server.clients[_fromClient].item.items[_ItemID].DeleteItem();
         //
-        server.serverSend.ItemCollide(_ItemID, _fromClient);
+        server.serverSend.ItemCollide(_ItemID, _roomId, _fromClient);
     }
 }
