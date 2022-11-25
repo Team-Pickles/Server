@@ -14,6 +14,7 @@ public class Projectile : MonoBehaviour
     public float explosionRadius = 1.5f;
     public float explosionDamage = 75f;
     public Server server;
+    public Room room;
 
 
     private void FixedUpdate()
@@ -27,11 +28,12 @@ public class Projectile : MonoBehaviour
         Explode();
     }
 
-    public void Initialize(Vector3 _initialMovementDirection, float _initialForceStrength, int _thrownByPlayer, Server server)
+    public void Initialize(Vector3 _initialMovementDirection, float _initialForceStrength, int _thrownByPlayer, Server server, Room room)
     {
         initalForce = _initialMovementDirection * _initialForceStrength;
         thrownByPlayer = _thrownByPlayer;
         this.server = server;
+        this.room = room;
 
         id = nextProjectiledId;
         nextProjectiledId++;
@@ -46,25 +48,17 @@ public class Projectile : MonoBehaviour
 
     private void Explode()
     {
-        Collider2D[] _colliders = Physics2D.OverlapCircleAll(this.transform.position, explosionRadius);
-        server.serverSend.ProjectilesExploded(this, _colliders);
-
-        foreach (Collider2D _collider in _colliders)
+        List<Vector3Int> positions = new List<Vector3Int>();
+        for (int i=-3;i<=3;i++)
         {
-            // if (_collider.CompareTag("Player"))
-            // {
-            //     _collider.GetComponent<Player>().TakeDamage(explosionDamage);
-            // }
-            // else if (_collider.CompareTag("Enemy"))
-            // {
-            //     _collider.GetComponent<Enemy>().TakeDamage(explosionDamage);
-            // }
-            if(_collider.CompareTag("floor"))
+            for (int j=-3;j<=3;j++)
             {
-                Debug.Log(_collider.transform.position);
-                Destroy(_collider.gameObject);
+                Vector3Int position = new Vector3Int((int)this.transform.localPosition.x + i, (int)this.transform.localPosition.y + j, 0);
+                room.TileGroup.SetTile(position, null);
+                positions.Add(position);
             }
         }
+        server.serverSend.ProjectilesExploded(this, positions);
         projectiles.Remove(id);
         Destroy(gameObject);
     }

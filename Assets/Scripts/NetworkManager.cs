@@ -161,6 +161,13 @@ public class NetworkManager : MonoBehaviour
                     string[] requests = recvData.Split(' ');
                     if (requests[0] == "CreateRoom")
                     {
+                        if(instance.roomInfos.ContainsKey(requests[1]))
+                        {
+                            string result = "None";
+                            byte[] sendBuff = Encoding.UTF8.GetBytes(result);
+                            Send(sendBuff);
+                            return;
+                        }
                         Debug.Log("Start to create room.");
                         TcpListener l = new TcpListener(IPAddress.Loopback, 0);
                         l.Start();
@@ -176,7 +183,7 @@ public class NetworkManager : MonoBehaviour
                                 break;
                             }
                         }
-
+                        
                         if(_serverPort == port)
                         {
                             bool isDone = false;
@@ -186,14 +193,18 @@ public class NetworkManager : MonoBehaviour
                                 instance.servers.Add(port, server);
                             }
                         }
-
-                        string _roomName = requests[1];
-                        string _roomId = RoomManager.instance.CreateRoom(_roomName, _serverPort);
-                        instance.roomInfos.Add(_roomId, _serverPort);
-                        string result = $"{_roomId} {_roomName}";
-                        byte[] sendBuff = Encoding.UTF8.GetBytes(result);
-                        Debug.Log(result);
-                        Send(sendBuff);
+                        try {
+                            string _roomName = requests[1];
+                            string _roomId = RoomManager.instance.CreateRoom(_roomName, _serverPort);
+                            instance.roomInfos.Add(_roomId, _serverPort);
+                            string result = $"{_roomId} {_roomName}";
+                            byte[] sendBuff = Encoding.UTF8.GetBytes(result);
+                            Debug.Log(result);
+                            Send(sendBuff);
+                        } catch(Exception _e)
+                        {
+                            Debug.Log(_e.Message);
+                        }
                     }
                     else if (requests[0] == "RefreshRoom")
                     {

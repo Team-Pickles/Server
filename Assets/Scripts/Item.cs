@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    public Dictionary<int, Item> items = new Dictionary<int, Item>();
-    private int nextItemId = 1;
+
+    private static int nextItemId = 1;
 
     public int id;
     public Rigidbody2D rigidbody;
@@ -17,7 +17,7 @@ public class Item : MonoBehaviour
     {
         id = nextItemId;
         nextItemId++;
-        items.Add(id, this);
+        
         roomId = _roomId;
     }
 

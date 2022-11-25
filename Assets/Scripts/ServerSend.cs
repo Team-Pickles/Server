@@ -59,16 +59,24 @@ public class ServerSend
     private void sendUDPDataToAllInRoom(string _roomId, Packet _packet)
     {
         _packet.WriteLength();
-        foreach(KeyValuePair<int, Client> _member in server.rooms[_roomId].members)
+        Room _room = null;
+        server.rooms.TryGetValue(_roomId, out _room);
+        if(_room!=null){
+            foreach(KeyValuePair<int, Client> _member in server.rooms[_roomId].members)
             _member.Value.udp.SendData(_packet);
+        }
     }
 
     private void sendUDPDataToAllInRoom(int _exceptClient, string _roomId, Packet _packet)
     {
         _packet.WriteLength();
-        foreach(KeyValuePair<int, Client> _member in server.rooms[_roomId].members)
-            if (_member.Key != _exceptClient)
-                _member.Value.udp.SendData(_packet);
+        Room _room = null;
+        server.rooms.TryGetValue(_roomId, out _room);
+        if(_room!=null){
+            foreach(KeyValuePair<int, Client> _member in server.rooms[_roomId].members)
+                if (_member.Key != _exceptClient)
+                    _member.Value.udp.SendData(_packet);
+        }
     }
 
     private void sendUDPDataToAll(Packet _packet)
@@ -95,6 +103,21 @@ public class ServerSend
             _packet.Write(_toClient);
             
             sendTCPData(_toClient, _packet);
+        }
+    }
+
+    public void JoinDone(int _toClient)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.roomJoined))
+        {
+            string _roomId = server.clients[_toClient].roomId;
+            string memberNames = "";
+            foreach(Client _member in server.rooms[_roomId].members.Values)
+            {
+                memberNames += _member.username + ",";
+            }
+            _packet.Write(memberNames);
+            sendTCPDataToAllInRoom(_roomId, _packet);
         }
     }
 
@@ -177,15 +200,15 @@ public class ServerSend
         }
     }
 
-    public void ProjectilesExploded(Projectile _projectile, Collider2D[] _colliders)
+    public void ProjectilesExploded(Projectile _projectile, List<Vector3Int> _positions)
     {
         using (Packet _packet = new Packet((int)ServerPackets.projectileExploded))
         {
             _packet.Write(_projectile.id);
             _packet.Write(_projectile.transform.localPosition);
-            _packet.Write(_colliders.Length);
-            foreach (Collider2D _collider in _colliders) {
-                _packet.Write(_collider.transform.localPosition);
+            _packet.Write(_positions.Count);
+            foreach (Vector3Int _position in _positions) {
+                _packet.Write(_position);
             }
             sendTCPDataToAllInRoom(server.clients[_projectile.thrownByPlayer].roomId, _packet);
         }
