@@ -73,9 +73,16 @@ public class ServerHandle
     public void ItemCollide(int _fromClient, Packet _packet)
     {
         int _ItemID = _packet.ReadInt();
-        string _roomId = server.clients[_fromClient].item.items[_ItemID].roomId;
-        server.clients[_fromClient].item.items[_ItemID].DeleteItem();
+        string _roomId = server.clients[_fromClient].roomId;
+        server.rooms[_roomId].items[_ItemID].DeleteItem();
         //
         server.serverSend.ItemCollide(_ItemID, _roomId, _fromClient);
+    }
+
+    public void StartGameInRoom(int _fromClient, Packet _packet)
+    {
+        string _roomId = _packet.ReadString();
+        int _mapId = _packet.ReadInt();
+        server.rooms[_roomId].StartGame(_mapId);
     }
 }

@@ -40,3 +40,8 @@ public class Serialization<T> {
         this.target = target;
     }
 }
+
+
+public class MapDatas {
+    public MapDataClass[] Items;
+}

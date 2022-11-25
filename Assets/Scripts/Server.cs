@@ -129,7 +129,7 @@ public class Server
     {
         for (int i=1; i<= MaxPlayer; i++)
         {
-            clients.Add(i,new Client(i,this));
+            clients.Add(i,new Client(i, $"tester_{i}", this));
         }
         serverHandle = new ServerHandle(this);
         serverSend = new ServerSend(this);
@@ -143,6 +143,7 @@ public class Server
             { (int)ClientPackets.playerStartVacuume, serverHandle.PlayerStartVaccume },
             { (int)ClientPackets.playerEndVacuume, serverHandle.PlayerEndVaccume },
             { (int)ClientPackets.ItemCollide, serverHandle.ItemCollide },
+            { (int)ClientPackets.startGame, serverHandle.StartGameInRoom}
         };
 
         Debug.Log("Initialized pakcets.");

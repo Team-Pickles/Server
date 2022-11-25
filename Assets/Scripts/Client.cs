@@ -10,18 +10,20 @@ public class Client
 {
     public static int dataBufferSize = 4096;
     public int id;
+    public string username;
     public TCP tcp;
     public UDP udp;
     public Player player;
-    public Item item;
+    
     private Server server;
     public string roomId;
     
 
-    public Client(int _clientId, Server _server)
+    public Client(int _clientId, string _username, Server _server)
     {
         id = _clientId;
         server = _server;
+        username = _username;
         tcp = new TCP(id, server);
         udp = new UDP(id, server);
     }
@@ -33,7 +35,8 @@ public class Client
 
         ThreadManager.ExecuteOnMainThread(() =>
         {
-            UnityEngine.Object.Destroy(player.gameObject);
+            if(player != null)
+                UnityEngine.Object.Destroy(player.gameObject);
             server.rooms[roomId].members.Remove(id);
             if(server.rooms[roomId].members.Count == 0)
             {

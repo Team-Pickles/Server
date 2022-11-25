@@ -134,7 +134,7 @@ public class Player : MonoBehaviour
         }
         GameObject obj = RoomManager.instance.InstatiateGrenade(room.PlayerGroup, shootOrigin);
         Projectile projectile =  obj.GetComponent<Projectile>();
-        projectile.Initialize(_throwDirection, throwForce, id, this.server);
+        projectile.Initialize(_throwDirection, throwForce, id, this.server, this.room);
 
     }
 

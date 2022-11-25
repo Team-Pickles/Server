@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class Room
 {
@@ -13,12 +14,15 @@ public class Room
 
     public GameObject room;
     public GameObject PlayerGroup;
-    public GameObject TileGroup;
+    public Tilemap TileGroup;
     public GameObject EnemyGroup;
     public GameObject ItemGroup;
 
     public Dictionary<int, Client> members = new Dictionary<int, Client>();
-    public Item items;
+    public Dictionary<Vector3, int> ItemInfos = new Dictionary<Vector3, int>();
+    public Dictionary<Vector3, int> EnemyInfos = new Dictionary<Vector3, int>();
+    public Vector3 spawnPoint = new Vector3(0, 0, 0);
+    public Dictionary<int, Item> items = new Dictionary<int, Item>();
 
     public Room(string _roomId, string _roomName, int _serverPort, Vector3 _mapAddPosition, GameObject _room)
     {
@@ -34,7 +38,7 @@ public class Room
             switch(now.name)
             {
                 case "TileGroup":
-                    TileGroup = now;
+                    TileGroup = now.GetComponentInChildren<Tilemap>();
                     break;
                 case "ItemGroup":
                     ItemGroup = now;
@@ -49,7 +53,7 @@ public class Room
         }
     }
 
-    public void StartGame()
+    public void StartGame(int map_id)
     {
         if(room == null)
         {
@@ -59,7 +63,7 @@ public class Room
         Debug.Log("Spawn");
         ThreadManager.ExecuteOnMainThread(() => 
             {
-                SetMapInfo(-1);
+                SetMapInfo(map_id);
                 SpawnPlayerAndItems();
             }
         );
@@ -72,7 +76,7 @@ public class Room
         {
             GameObject playerClone = RoomManager.instance.InstatiatePlayer(PlayerGroup, 0);
             playerClone.name = "Player " + _member.id;
-            playerClone.transform.localPosition = new Vector3(0, 0, 0);
+            playerClone.transform.localPosition = spawnPoint;
 
             Player _player = playerClone.GetComponent<Player>();
             _player.Initialize(_member.id, "tester");
@@ -94,7 +98,7 @@ public class Room
                 }
             }
             if(items != null) {
-                foreach (Item _item in items.items.Values)
+                foreach (Item _item in items.Values)
                 {
                     NetworkManager.instance.servers[serverPort].serverSend.SpawnItem(_member.id, _item);
                 }
@@ -104,10 +108,6 @@ public class Room
 
     private void SetMapInfo(int map_id)
     {
-        // for test
-        if(map_id == -1)
-        {
-            RoomManager.instance.LoadTestMap(this);
-        }
+        RoomManager.instance.LoadMap(this, map_id);
     }
 }
