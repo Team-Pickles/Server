@@ -5,6 +5,7 @@ using UnityEngine.Tilemaps;
 public class Room
 {
     public string roomId;
+    public int mapId;
     public string roomName;
     public int maxPlayer;
     public int masterId;
@@ -14,6 +15,7 @@ public class Room
 
     public GameObject room;
     public GameObject PlayerGroup;
+    public Grid TileGroupGrid;
     public Tilemap TileGroup;
     public GameObject EnemyGroup;
     public GameObject ItemGroup;
@@ -23,6 +25,7 @@ public class Room
     public Dictionary<Vector3, int> EnemyInfos = new Dictionary<Vector3, int>();
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
     public Dictionary<int, Item> items = new Dictionary<int, Item>();
+    public Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();
 
     public Room(string _roomId, string _roomName, int _serverPort, Vector3 _mapAddPosition, GameObject _room)
     {
@@ -38,6 +41,7 @@ public class Room
             switch(now.name)
             {
                 case "TileGroup":
+                    TileGroupGrid = now.GetComponent<Grid>();
                     TileGroup = now.GetComponentInChildren<Tilemap>();
                     break;
                 case "ItemGroup":
@@ -83,7 +87,11 @@ public class Room
             _player.server = NetworkManager.instance.servers[serverPort];
             _player.room = this;
             _member.player = _player;
+
+            TileGroupGrid.GetComponent<MapManager>().players.Add(playerClone);
         }
+
+        TileGroupGrid.GetComponent<MapManager>().Init();
 
         foreach(Client _member in members.Values)
         {
@@ -103,11 +111,24 @@ public class Room
                     NetworkManager.instance.servers[serverPort].serverSend.SpawnItem(_member.id, _item);
                 }
             }
+            if(enemies != null) {
+                foreach (Enemy _enemy in enemies.Values)
+                {
+                    NetworkManager.instance.servers[serverPort].serverSend.SpawnEnemy(_enemy, _member.id);
+                }
+            }
         }
     }
 
     private void SetMapInfo(int map_id)
     {
         RoomManager.instance.LoadMap(this, map_id);
+    }
+
+    public Vector3Int GetTopLeftBasePosition(Vector3 position)
+    {
+        // local X. Calculate with world position.
+        Vector3Int temp = TileGroup.WorldToCell(position);
+        return new Vector3Int(temp.x + TileGroup.size.x, TileGroup.size.y - temp.y);
     }
 }

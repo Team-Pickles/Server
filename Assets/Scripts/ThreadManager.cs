@@ -77,9 +77,7 @@ public class ThreadManager : MonoBehaviour
                 Room _roomObject = new Room(_roomData.roomId, _roomData.roomName, _roomData.serverPort, _roomData.roomPos, _room);
 
                 NetworkManager.instance.servers[_roomData.serverPort].rooms.Add(_roomData.roomId, _roomObject);
-                
-                int result = 0;
-                NetworkManager.instance.roomInfos.TryGetValue(_roomData.roomId, out result);
+                //
             }
             createRoomOnMainThread.Clear();
             executeCreateRoomOnMainThread = false;

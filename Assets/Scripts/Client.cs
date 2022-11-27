@@ -32,7 +32,9 @@ public class Client
     private void Disconnect()
     {
         Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has disconnencted");
-
+        NetworkManager.instance.roomInfos.Remove(roomId);
+        NetworkManager.instance.roomNameIds.Remove(roomId);
+        
         ThreadManager.ExecuteOnMainThread(() =>
         {
             if(player != null)
@@ -43,7 +45,7 @@ public class Client
                 UnityEngine.Object.Destroy(server.rooms[roomId].room);
                 RoomManager.instance.DeletedPosList.Add(server.rooms[roomId].mapAddPosition);
                 server.rooms.Remove(roomId);
-                NetworkManager.instance.roomInfos.Remove(roomId);
+
             }
             player = null;
         });

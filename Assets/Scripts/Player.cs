@@ -187,16 +187,8 @@ public class Player : MonoBehaviour
 
     }
     
-    /*
-    private void OnCollisionEnter2D(Collision2D _collision)
-    {
-        
-        if(_collision.gameObject.CompareTag("Item") && isVaccume)
-        {
-            Item _item = _collision.gameObject.GetComponent<Item>();
-            _item.DeleteItem();
-            ServerSend.ItemCollide(_item);
-        }
+    public void OnDamaged(){
+        Debug.Log("Damaged");
     }
-    */
+
 }
