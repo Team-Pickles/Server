@@ -21,6 +21,7 @@ public class ServerHandle
         {
             Debug.Log($"Player \"{_username}\" (ID: {_fromClient}) has assumes the wrong client ID({_clientIdCheck})!");
         }
+        server.clients[_fromClient].username = _username;
         server.clients[_fromClient].roomId = _roomId;
         RoomManager.instance.JoinRoom(_roomId, _fromClient, server.Port);
     }
