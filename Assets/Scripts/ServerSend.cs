@@ -276,5 +276,45 @@ public class ServerSend
         }
     }
 
+    public void SpawnEnemy(Enemy _enemy, int _toClient)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.spawnEnemy))
+        {
+            _packet.Write(_enemy.id);
+            _packet.Write(_enemy.transform.localPosition);
+            Debug.Log("spawn enemy");
+            sendTCPData(_toClient, _packet);
+        }
+    }
 
+    public void EnemyPosition(Enemy _enemy)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.enemyPosition))
+        {
+            _packet.Write(_enemy.id);
+            _packet.Write(_enemy.transform.localPosition);
+
+            sendUDPDataToAllInRoom(_enemy.room.roomId, _packet);
+        }
+    }
+
+    public void EnemyHealth(Enemy _enemy)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.enemyHealth))
+        {
+            // Now, enemy's health = 1. ATTACKED = ENEMY_DIE
+            _packet.Write(_enemy.id);
+
+            sendUDPDataToAllInRoom(_enemy.room.roomId, _packet);
+        }
+    }
+
+    public void MapIdSendToAllInRoom(string _roomId, int _mapId, int _exceptClient)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.mapIdSelected))
+        {
+            _packet.Write(_mapId);
+            sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
+        }
+    }
 }

@@ -143,7 +143,8 @@ public class Server
             { (int)ClientPackets.playerStartVacuume, serverHandle.PlayerStartVaccume },
             { (int)ClientPackets.playerEndVacuume, serverHandle.PlayerEndVaccume },
             { (int)ClientPackets.ItemCollide, serverHandle.ItemCollide },
-            { (int)ClientPackets.startGame, serverHandle.StartGameInRoom}
+            { (int)ClientPackets.startGame, serverHandle.StartGameInRoom},
+            { (int)ClientPackets.mapIdSelected, serverHandle.MapIdSelected}
         };
 
         Debug.Log("Initialized pakcets.");

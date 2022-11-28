@@ -84,7 +84,7 @@ public class RoomManager : MonoBehaviour
             {
                 int itemType = data.GetAdditionalInfo();
                 Debug.Log($"{itemType}, {itemType - (int)TileTypes.Item}, {ItemPrefabs.Count}");
-                GameObject itemPrefab = ItemPrefabs[0];
+
                 GameObject itemClone = InstatiateItem(_room.ItemGroup, 0);
                 Item _item = itemClone.GetComponent<Item>();
                 _item.Init(_room.roomId);
@@ -97,12 +97,16 @@ public class RoomManager : MonoBehaviour
             }
             else if(_infoType == InfoTypes.enemy)
             {
-                // int enemyType = data.GetAdditionalInfo();
-                // GameObject enemyPrefab = EnemyPrefabs[enemyType - (int)TileTypes.Enemy];
-                // GameObject enemyClone = Instantiate(enemyPrefab, _room.EnemyGroup.transform);
-                // enemyClone.name = ((TileTypes)enemyType).ToString() + "_" + enemyIds[enemyType - (int)TileTypes.Enemy];
-                // enemyClone.transform.localPosition = data.GetPos();
-                // ++enemyIds[enemyType - (int)TileTypes.Enemy];
+                int enemyType = data.GetAdditionalInfo();
+                Debug.Log($"{enemyType}, {enemyType - (int)TileTypes.Enemy}, {EnemyPrefabs.Count}");
+                GameObject enemyClone = InstantiateEnemy(_room.EnemyGroup, 0);
+                Enemy _enemy = enemyClone.GetComponent<Enemy>();
+                _enemy.Initialize(NetworkManager.instance.servers[_room.serverPort], _room);
+                _room.enemies.Add(_enemy.id, _enemy);
+
+                enemyClone.name = ((TileTypes)enemyType).ToString() + "_" + enemyIds[0];
+                enemyClone.transform.localPosition = data.GetPos();
+                ++enemyIds[enemyType - (int)TileTypes.Enemy];
             } else {
                 _room.spawnPoint = data.GetPos();
             }
@@ -170,5 +174,10 @@ public class RoomManager : MonoBehaviour
         GameObject _grenade = Instantiate(ProjectilePrefab, _playerGroup.transform);
         _grenade.transform.localPosition = _shootOrigin.localPosition + new Vector3(_shootOrigin.localPosition.x * 0.3f, 0, 0);
         return _grenade;
+    }
+
+    public GameObject InstantiateEnemy(GameObject _enemyGroup, int _enemyType)
+    {
+        return Instantiate(EnemyPrefabs[_enemyType], _enemyGroup.transform);
     }
 }

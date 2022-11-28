@@ -21,6 +21,7 @@ public class ServerHandle
         {
             Debug.Log($"Player \"{_username}\" (ID: {_fromClient}) has assumes the wrong client ID({_clientIdCheck})!");
         }
+        server.clients[_fromClient].username = _username;
         server.clients[_fromClient].roomId = _roomId;
         RoomManager.instance.JoinRoom(_roomId, _fromClient, server.Port);
     }
@@ -84,5 +85,14 @@ public class ServerHandle
         string _roomId = _packet.ReadString();
         int _mapId = _packet.ReadInt();
         server.rooms[_roomId].StartGame(_mapId);
+    }
+
+    public void MapIdSelected(int _fromClient, Packet _packet)
+    {
+        string _roomId = _packet.ReadString();
+        int _mapId = _packet.ReadInt();
+        Debug.Log("MapIdSelected_" + _mapId);
+        server.rooms[_roomId].mapId = _mapId;
+        server.serverSend.MapIdSendToAllInRoom(_roomId, _mapId, _fromClient);
     }
 }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3801665731974859876}
   - component: {fileID: 3801665731974859883}
   - component: {fileID: 3801665731974859879}
-  - component: {fileID: 3801665731974859872}
+  - component: {fileID: -8671492993718887468}
   m_Layer: 9
   m_Name: Enemy
   m_TagString: Enemy
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 3801665731974859882}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -44.2, y: 15.99, z: 53.109154}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5644, y: 0.5644, z: 0.5644}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -77,8 +77,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -4730476394837474725, guid: cff9d297bd887344f878091b0dfe4d0c,
-    type: 3}
+  m_Sprite: {fileID: -4730476394837474725, guid: cff9d297bd887344f878091b0dfe4d0c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -146,7 +145,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &3801665731974859872
+--- !u!114 &-8671492993718887468
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -155,8 +154,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3801665731974859882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3560fecc4ed50c3448a50a63dada3f8b, type: 3}
+  m_Script: {fileID: 11500000, guid: c2fe6c21141593a4f953df98d91aa338, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 0
-  nextMove: 0
+  id: 0

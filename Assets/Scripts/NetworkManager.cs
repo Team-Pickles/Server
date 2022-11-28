@@ -24,6 +24,7 @@ public class NetworkManager : MonoBehaviour
 
     public Dictionary<int, Server> servers = new Dictionary<int, Server>();
     public Dictionary<string, int> roomInfos = new Dictionary<string, int>();
+    public Dictionary<string, string> roomNameIds = new Dictionary<string, string>();
 
     private void Awake()
     {
@@ -82,7 +83,7 @@ public class NetworkManager : MonoBehaviour
             string msg = "Welcome to Server";
             foreach (KeyValuePair<string, int> roomInfo in instance.roomInfos)
             {
-                msg += $",{roomInfo.Key}";
+                msg += $",{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]}";
             }
 
             byte[] sendBuff = Encoding.UTF8.GetBytes(msg);
@@ -158,7 +159,7 @@ public class NetworkManager : MonoBehaviour
                 {
                     string recvData = Encoding.UTF8.GetString(recvArgs.Buffer, recvArgs.Offset, recvArgs.BytesTransferred);
                     Debug.Log($"[From Client]{recvData}");
-                    string[] requests = recvData.Split(' ');
+                    string[] requests = recvData.Split('-');
                     if (requests[0] == "CreateRoom")
                     {
                         if(instance.roomInfos.ContainsKey(requests[1]))
@@ -197,7 +198,8 @@ public class NetworkManager : MonoBehaviour
                             string _roomName = requests[1];
                             string _roomId = RoomManager.instance.CreateRoom(_roomName, _serverPort);
                             instance.roomInfos.Add(_roomId, _serverPort);
-                            string result = $"{_roomId} {_roomName}";
+                            instance.roomNameIds.Add(_roomId, _roomName);
+                            string result = $"{_roomId}-{_roomName}";
                             byte[] sendBuff = Encoding.UTF8.GetBytes(result);
                             Debug.Log(result);
                             Send(sendBuff);
@@ -211,8 +213,9 @@ public class NetworkManager : MonoBehaviour
                         string result = "";
                         foreach (KeyValuePair<string, int> roomInfo in instance.roomInfos)
                         {
-                            result += $"{roomInfo.Key},";
+                            result += $"{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]},";
                         }
+                        Debug.Log($"REFRESH {result}");
                         byte[] sendBuff = Encoding.UTF8.GetBytes(result);
                         Send(sendBuff);
                     }

@@ -10,6 +10,7 @@ TagManager:
   - floor
   - Item
   - Enemy
+  - bullet
   layers:
   - Default
   - TransparentFX
