@@ -65,7 +65,19 @@ public class RoomManager : MonoBehaviour
 
     public void LoadMap(Room _room, int map_id)
     {
-        string _json = APIMapDataLoader.instance.mapListItems[map_id].map_info;
+        string _json;
+        if(map_id == 0)
+        {
+            string path = "MapData/MyMap.json";
+            if(File.Exists(path) == false){
+                Debug.LogError("Load failed. There is no file(MyMap.json).");
+                return;
+            }
+            _json = File.ReadAllText(path);
+        }
+        else
+            _json = APIMapDataLoader.instance.mapListItems[map_id].map_info;
+            
         Dictionary<Vector3, DataClass> loaded = JsonUtility.FromJson<Serialization<Vector3, DataClass>>(_json).ToDictionary();
         
 

@@ -31,6 +31,11 @@ public enum ServerPackets
     itemCollide,
     roomJoined,
     mapIdSelected,
+    roomCreated,
+    roomList,
+    charactorFlip,
+    ropeACK,
+    startGame
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -44,7 +49,12 @@ public enum ClientPackets
     playerStartVacuume,
     playerEndVacuume,
     ItemCollide,
+    createRoom,
+    joinRoom,
     startGame,
+    roomList,
+    playerJump,
+    playerRopeMove,
     mapIdSelected
 }
 

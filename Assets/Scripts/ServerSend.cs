@@ -317,4 +317,13 @@ public class ServerSend
             sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
         }
     }
+
+    public void StartGame(string _roomId, int _mapId, int _exceptClient)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.startGame))
+        {
+            _packet.Write(_mapId);
+            sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
+        }
+    }
 }

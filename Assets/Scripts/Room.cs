@@ -57,7 +57,7 @@ public class Room
         }
     }
 
-    public void StartGame(int map_id)
+    public void StartGame(int map_id, int _fromclient)
     {
         if(room == null)
         {
@@ -68,13 +68,13 @@ public class Room
         ThreadManager.ExecuteOnMainThread(() => 
             {
                 SetMapInfo(map_id);
-                SpawnPlayerAndItems();
+                SpawnPlayerAndItems(_fromclient);
             }
         );
         
     }
 
-    public void SpawnPlayerAndItems()
+    public void SpawnPlayerAndItems(int _fromclient)
     {
         foreach(Client _member in members.Values)
         {
@@ -118,6 +118,8 @@ public class Room
                 }
             }
         }
+
+        NetworkManager.instance.servers[serverPort].serverSend.StartGame(roomId, mapId, _fromclient);
     }
 
     private void SetMapInfo(int map_id)
