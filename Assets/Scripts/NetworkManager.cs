@@ -160,6 +160,7 @@ public class NetworkManager : MonoBehaviour
                     string recvData = Encoding.UTF8.GetString(recvArgs.Buffer, recvArgs.Offset, recvArgs.BytesTransferred);
                     Debug.Log($"[From Client]{recvData}");
                     string[] requests = recvData.Split('-');
+                    Debug.Log(requests.Length);
                     if (requests[0] == "CreateRoom")
                     {
                         if(instance.roomInfos.ContainsKey(requests[1]))

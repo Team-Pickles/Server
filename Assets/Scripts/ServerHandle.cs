@@ -84,7 +84,7 @@ public class ServerHandle
     {
         string _roomId = _packet.ReadString();
         int _mapId = _packet.ReadInt();
-        server.rooms[_roomId].StartGame(_mapId);
+        server.rooms[_roomId].StartGame(_mapId, _fromClient);
     }
 
     public void MapIdSelected(int _fromClient, Packet _packet)
