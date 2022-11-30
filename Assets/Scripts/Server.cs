@@ -138,12 +138,13 @@ public class Server
             { (int)ClientPackets.TCPConnenctinCheckReceived, serverHandle.TCPConnenctinCheckReceived },
             { (int)ClientPackets.udpTestReceive, serverHandle.UDPTestReceive },
             { (int)ClientPackets.playerMovement, serverHandle.PlayerMovement },
-            { (int)ClientPackets.playerThrowItem, serverHandle.playerThrowItem },
             { (int)ClientPackets.playerShoot, serverHandle.PlayerShoot },
             { (int)ClientPackets.playerStartVacuume, serverHandle.PlayerStartVaccume },
             { (int)ClientPackets.playerEndVacuume, serverHandle.PlayerEndVaccume },
             { (int)ClientPackets.ItemCollide, serverHandle.ItemCollide },
-            { (int)ClientPackets.startGame, serverHandle.StartGameInRoom},
+          { (int)ClientPackets.startGame, serverHandle.StartGameInRoom},
+            { (int)ClientPackets.playerJump, serverHandle.PlayerJump },
+            { (int)ClientPackets.playerRopeMove, serverHandle.PlayerRopeMove },
             { (int)ClientPackets.mapIdSelected, serverHandle.MapIdSelected}
         };
 

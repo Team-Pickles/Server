@@ -45,13 +45,6 @@ public class ServerHandle
         server.clients[_fromClient].player.SetInput(_inputs, _rotation);
     }
 
-    public void playerThrowItem(int _fromClient, Packet _packet)
-    {
-        Debug.Log($"get gerenade from {_fromClient}");
-        Vector3 _throwDirection = _packet.ReadVector3();
-        server.clients[_fromClient].player.ThrowItem(_throwDirection);
-    }
-
     public void PlayerShoot(int _fromClient, Packet _packet)
     {
         Vector3 _shootDirection = _packet.ReadVector3();
@@ -78,6 +71,16 @@ public class ServerHandle
         server.rooms[_roomId].items[_ItemID].DeleteItem();
         //
         server.serverSend.ItemCollide(_ItemID, _roomId, _fromClient);
+    }
+
+    public void PlayerJump(int _fromClient, Packet _packet)
+    {
+        server.clients[_fromClient].player.Jump();
+    }
+
+    public void PlayerRopeMove(int _fromClient, Packet _packet)
+    {
+        server.clients[_fromClient].player.OnRopeAction();
     }
 
     public void StartGameInRoom(int _fromClient, Packet _packet)
