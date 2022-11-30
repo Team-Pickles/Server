@@ -27,9 +27,8 @@ public class Bullet : MonoBehaviour
         server.serverSend.BulletCollide(this);
     }
 
-    public void Initialize(Vector3 _initialMovementDirection, float _initialForceStrength, int _thrownByPlayer, Server _server)
+    public void Initialize(int _thrownByPlayer, Server _server, int isFlip)
     {
-        initalForce = _initialMovementDirection * _initialForceStrength;
         thrownByPlayer = _thrownByPlayer;
         server = _server;
 
@@ -39,8 +38,7 @@ public class Bullet : MonoBehaviour
 
         server.serverSend.SpawnBullet(this, thrownByPlayer);
 
-        rigidbody.AddForce(initalForce);
-        Debug.Log(nextBulletId);
+        rigidbody.AddForce(new Vector2(500.0f * isFlip, 0.0f));
     }
 
 }
