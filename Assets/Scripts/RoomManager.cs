@@ -170,21 +170,20 @@ public class RoomManager : MonoBehaviour
         return Instantiate(ItemPrefabs[_itemType], _itemGroup.transform);
     }
 
-    public GameObject InstatiateBullet(GameObject _playerGroup, Transform _shootOrigin)
+    public GameObject InstatiateBullet(GameObject _playerGroup, Transform _shootOrigin, int _id)
     {
-        GameObject _bullet = Instantiate(BulletPrefab, _playerGroup.transform);
-        if(_shootOrigin.rotation.y == -1f){
-            _bullet.transform.localPosition = _shootOrigin.localPosition - new Vector3(_shootOrigin.localScale.x / 2.0f * 1.1f, 0, 0);
-        } else {
-            _bullet.transform.localPosition = _shootOrigin.localPosition + new Vector3(_shootOrigin.localScale.x / 2.0f * 1.1f, 0, 0);
-        }
+        GameObject _player = GameObject.Find("Player " + _id);
+        GameObject _bullet = Instantiate(BulletPrefab, _player.transform);
+        _bullet.transform.localPosition = _shootOrigin.localPosition;
+
         return _bullet;
     }
 
-    public GameObject InstatiateGrenade(GameObject _playerGroup, Transform _shootOrigin)
+    public GameObject InstatiateGrenade(GameObject _playerGroup, Transform _shootOrigin, int _id)
     {
-        GameObject _grenade = Instantiate(ProjectilePrefab, _playerGroup.transform);
-        _grenade.transform.localPosition = _shootOrigin.localPosition + new Vector3(_shootOrigin.localPosition.x * 0.3f, 0, 0);
+        GameObject _player = GameObject.Find("Player " + _id);
+        GameObject _grenade = Instantiate(ProjectilePrefab, _player.transform);
+        _grenade.transform.localPosition = _shootOrigin.localPosition;
         return _grenade;
     }
 

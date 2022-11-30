@@ -11,6 +11,10 @@ TagManager:
   - Item
   - Enemy
   - bullet
+  - trash
+  - rope
+  - GrenadeItem
+  - GlassBottleItem
   layers:
   - Default
   - TransparentFX

@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 8324424231299544704}
   - component: {fileID: 8324424231299544831}
   - component: {fileID: 8324424231299544830}
-  - component: {fileID: 703785543101880961}
   - component: {fileID: -3939078336108843880}
   - component: {fileID: 3098784742023584998}
+  - component: {fileID: 3361212282161288977}
   m_Layer: 12
   m_Name: Bullet
   m_TagString: bullet
@@ -114,27 +114,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!50 &703785543101880961
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8324424231299544829}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 1
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!96 &-3939078336108843880
 TrailRenderer:
   serializedVersion: 2
@@ -256,6 +235,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
-  rigidbody: {fileID: 703785543101880961}
+  rigidbody: {fileID: 3361212282161288977}
   thrownByPlayer: 0
   initalForce: {x: 0, y: 0, z: 0}
+--- !u!50 &3361212282161288977
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8324424231299544829}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

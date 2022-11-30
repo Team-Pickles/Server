@@ -1,12 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+public enum KeyInput
+{
+    RIGHT = 0,
+    LEFT,
+    DASH,
+    CHANGE,
+    UPARROW,
+    DOWNARROW,
+    //0: RIGHT
+    //1: LEFT
+    //2: DASH (X)
+    //3: CHANGE (Z)
+    //4: UP
+    //5: DOWN
+}
+
 public class Player : MonoBehaviour
 {
     public int id;
     public string username;
-    public Transform shootOrigin;
-    public CharacterController controller;
     public float gravity = -9.18f;
     public float moveSpeed = 5.0f;
     public float dashSpeed = 7f;
@@ -18,25 +32,40 @@ public class Player : MonoBehaviour
     public int maxItemAmount = 3;
     public bool onGround = false;
     public Vector3 facing = Vector3.zero;
-    public GameObject _curItem;
 
+    //Vacume
+    public GameObject _curItem;
+    private bool isVaccume = false;
+
+    //Shoot
+    public string currnetShootObject = "Bullet";
+    private GameObject _firePoint;
+
+    //Hanging
+    public bool onRope = false;
+    public bool isHanging = false;
+    Vector3 ropePosition;
+
+    //Move
     private float _hPoint = 0, _vPoint = 0;
     private const float _hSpeed = 4.0f, _vSpeed = 5.0f;
-    float speed = 1.0f;
+    float speed = 1.5f;
+    public bool isFlip;
+    public bool isJumping;
 
     private bool[] inputs;
-    private float yVelocity = 0;
 
-    private bool isVaccume = false;
     public Server server;
     public Room room;
+   
+    private bool isJumpPressed = false;
+    bool temp = false;
+    public int _fromClient;
+
 
     private void Start()
     {
-        gravity *= Time.fixedDeltaTime* Time.fixedDeltaTime;
-        moveSpeed *= Time.fixedDeltaTime;
-        jumpSpeed *= Time.fixedDeltaTime;
-        shootOrigin = transform;
+        _firePoint = GameObject.Find("FirePoint");
     }
 
     public void Initialize(int _id, string _username)
@@ -44,21 +73,12 @@ public class Player : MonoBehaviour
         id = _id;
         username = _username;
         health = maxHealth;
-        inputs = new bool[4];
+        inputs = new bool[6];
     }
 
     public void SetInput(bool[] _inputs, Quaternion _rotation)
     {
         inputs = _inputs;
-        if (inputs[0])
-        {
-            transform.rotation = Quaternion.Euler(0, 0, 0);
-        }
-        else if (inputs[1])
-        {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-        }
-            
     }
 
     public void FixedUpdate()
@@ -66,52 +86,109 @@ public class Player : MonoBehaviour
         if (health <= 0)
             return;
 
-        Vector2 _inputDirection = Vector2.zero;
-        if (inputs[0])
-        {
-            _inputDirection.x += 1;
-        }
-        if (inputs[1])
-        {
-            _inputDirection.x -= 1;
-        }
-        Move(_inputDirection);
+        Move();
+        if (isHanging)
+            GetComponent<Rigidbody2D>().velocity = new Vector2(_hPoint * _hSpeed, _vPoint * _vSpeed);
+        else
+            GetComponent<Rigidbody2D>().velocity = new Vector2(_hPoint * _hSpeed, GetComponent<Rigidbody2D>().velocity.y + _vPoint * _vSpeed);
 
-        if (isVaccume==true)
+        server.serverSend.PlayerPosition(this);
+        server.serverSend.PlayerRotation(this);
+        server.serverSend.SendFlip(this);
+
+        if (isJumping)
+        {
+            isJumping = IsGrouned() ? false : true;
+        }
+
+        if (isVaccume == true)
         {
             Vaccume();
         }
+
+        _vPoint = 0.0f;
+        speed = 1.5f;
+        _hPoint = 0.0f;
     }
 
-    public void Move(Vector2 _inputDirection)
+    public void Move()
     {
-       
-        Vector2 _moveDirection = transform.right * _inputDirection.x;
-        if (transform.rotation == Quaternion.Euler(0, 180, 0))
-            _moveDirection *= -1;
-        var _speed = inputs[3] == true ? _hSpeed * 2f : _hSpeed ;
-        if (IsGrouned())
+
+        if (isHanging)
         {
-            yVelocity = 0f;
-            if (inputs[2])
-            {
-                _vPoint = jumpSpeed;
-            }
+            _vPoint = (inputs[(int)KeyInput.UPARROW] ? 0.8f : 0) + (inputs[(int)KeyInput.DOWNARROW] ? -0.8f : 0);
         }
 
-        //controller.Move(_moveDirection);
 
-        GetComponent<Rigidbody2D>().velocity = new Vector2((_moveDirection.x * _speed)/1.005f, GetComponent<Rigidbody2D>().velocity.y + _vPoint * _vSpeed);
-        _vPoint = 0.0f;
-        server.serverSend.PlayerPosition(this);
-        server.serverSend.PlayerRotation(this);
+        else if (!isHanging)
+        {
+            speed += inputs[(int)KeyInput.DASH] ? 1 : 0;
+            _hPoint = (inputs[(int)KeyInput.LEFT] ? -speed : 0) + (inputs[(int)KeyInput.RIGHT] ? speed : 0);
+
+            if (_hPoint > 0)
+            {
+                if (_firePoint.transform.localPosition.x < 0)
+                    _firePoint.transform.localPosition = new Vector3(-_firePoint.transform.localPosition.x, _firePoint.transform.localPosition.y, 0.0f);
+
+                Vector2 offset = GetComponent<BoxCollider2D>().offset;
+                offset.x = 0.06f;
+                isFlip = false;
+            }
+            else if (_hPoint < 0)
+            {
+                if (_firePoint.transform.localPosition.x > 0)
+                    _firePoint.transform.localPosition = new Vector3(-_firePoint.transform.localPosition.x, _firePoint.transform.localPosition.y, 0.0f);
+
+                Vector2 offset = GetComponent<BoxCollider2D>().offset;
+                offset.x = 0.06f;
+                isFlip = true;
+            }
+        }
+    }
+
+    public void Jump()
+    {
+        if (isJumping)
+            return;
+
+        if (isHanging)
+        {
+            _vPoint = 1.2f;
+            isJumping = true;
+            isHanging = false;
+            GetComponent<Rigidbody2D>().gravityScale = 1.0f;
+            server.serverSend.RopeACK(this);
+        }
+
+        if (!isJumping && IsGrouned())
+        {
+            _vPoint = 1.2f;
+            isJumping = true;
+        }
+
+    }
+
+    public void OnRopeAction()
+    {
+        if (onRope && !isHanging)
+        {
+            isHanging = true;
+            isJumping = false;
+            transform.position = new Vector2(ropePosition.x, transform.position.y);
+            GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            GetComponent<Rigidbody2D>().gravityScale = 0.0f;
+            _hPoint = 0.0f;
+            server.serverSend.RopeACK(this);
+        }
+
     }
 
     public bool IsGrouned()
     {
- 
-        RaycastHit2D _hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y-1.3f), Vector2.down, 0.2f);
-       if (_hit.collider == null)
+        RaycastHit2D _hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - transform.localScale.y / 2.0f), Vector2.down, 0.04f);
+        //Debug.DrawRay(new Vector2(transform.position.x, transform.position.y - transform.localScale.y / 2.0f), Vector2.down * 0.04f, Color.red, 0.5f);
+
+        if (_hit.collider == null)
         {
             return false;
         }
@@ -122,31 +199,40 @@ public class Player : MonoBehaviour
                 return true;
             }
         }
-            
-            return false;
-
-    }
-    public void ThrowItem(Vector3 _throwDirection)
-    {
-        if (health <= 0f)
-        {
-            return;
-        }
-        GameObject obj = RoomManager.instance.InstatiateGrenade(room.PlayerGroup, shootOrigin);
-        Projectile projectile =  obj.GetComponent<Projectile>();
-        projectile.Initialize(_throwDirection, throwForce, id, this.server, this.room);
-
+        return false;
     }
 
     public void Shoot(Vector3 _viewDirection)
     {
+        GameObject obj;
         if (health <= 0f)
         {
             return;
         }
-        GameObject obj = RoomManager.instance.InstatiateBullet(room.PlayerGroup, shootOrigin);
-        Bullet bullet = obj.GetComponent<Bullet>();
-        bullet.Initialize(_viewDirection, throwForce, id, this.server);
+
+        if (currnetShootObject == "Bullet")
+        {
+            int _isFlip = isFlip ? -1 : 1;
+            obj = RoomManager.instance.InstatiateBullet(room.PlayerGroup, _firePoint.transform, id);
+            Bullet bullet = obj.GetComponent<Bullet>();
+            bullet.Initialize(id, this.server, _isFlip);
+        }
+
+        if (currnetShootObject == "Grenade")
+        {
+            int _isFlip = isFlip ? -1 : 1;
+            obj = RoomManager.instance.InstatiateGrenade(room.PlayerGroup, _firePoint.transform, id);
+            Projectile projectile = obj.GetComponent<Projectile>();
+            projectile.Initialize(id, this.server, this.room, _isFlip);
+        }
+
+
+        //if (currnetShootObject == "GlassBottIetem")
+        //{
+        //    obj = RoomManager.instance.InstatiateGlassBottIe(room.PlayerGroup, _firePoint);
+        //    GlassBottIe glassBottIe = obj.GetComponent<Bullet>();
+        //    glassBottIe.Initialize(_viewDirection, throwForce, id, this.server);
+        //}
     }
 
     public void StartVaccume(Vector3 _vaccumeDirection)
@@ -162,31 +248,59 @@ public class Player : MonoBehaviour
 
     public void Vaccume()
     {
-        float _yPosition = shootOrigin.position.y >= 0 ? shootOrigin.position.y * 0.9f : shootOrigin.position.y * 1.1f;
-        Vector2 _startOrigin = new Vector2(shootOrigin.position.x + shootOrigin.right.x * 1.2f, _yPosition);
         float _rayLength = 8.0f;
+        Vector2 rayOrigin = _firePoint.transform.position;
 
         int layerMask = 1 << LayerMask.NameToLayer("Item") | 1 << LayerMask.NameToLayer("Platform");
 
         for (int i = -5; i <= 5; i++)
         {
-            Vector2 _rayDirection = new Vector2(Mathf.Cos(i * Mathf.Deg2Rad), Mathf.Sin(i * Mathf.Deg2Rad));
-            RaycastHit2D hit = Physics2D.Raycast(_startOrigin, _rayDirection* shootOrigin.right.x, _rayLength, layerMask);
-            
+            Vector2 _rayDirection = new Vector2(Mathf.Cos(i * Mathf.Deg2Rad) * (isFlip ? -1 : 1), Mathf.Sin(i * Mathf.Deg2Rad));
+            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, _rayDirection, _rayLength, layerMask);
+
             if (hit.collider != null)
             {
-                Debug.DrawLine(_startOrigin, hit.point, Color.green);
-                if (hit.transform.CompareTag("Item"))
+                Debug.DrawLine(rayOrigin, hit.point, Color.green);
+                if (hit.transform.CompareTag("trash"))
                 {
                     _curItem = hit.transform.gameObject;
-                    _curItem.GetComponent<Rigidbody2D>().AddForce((hit.point - _startOrigin).normalized * -0.5f);
+                    _curItem.GetComponent<Rigidbody2D>().AddForce((hit.point - rayOrigin).normalized * -3.0f);
+                    _curItem.GetComponent<Rigidbody2D>().angularVelocity = 200.0f;
                 }
             }
 
         }
 
     }
-    
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("GrenadeItem") && inputs[(int)KeyInput.CHANGE])
+        {
+            currnetShootObject = "Grenade";
+        }
+
+        if (collision.gameObject.CompareTag("GlassBottIetem") && inputs[(int)KeyInput.CHANGE])
+        {
+            currnetShootObject = "GlassBottom";
+        }
+
+        if (collision.gameObject.CompareTag("rope"))
+        {
+            onRope = true;
+            ropePosition = collision.transform.position;
+        }
+
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("rope"))
+        {
+            onRope = false;
+        }
+    }
+
     public void OnDamaged(){
         Debug.Log("Damaged");
     }

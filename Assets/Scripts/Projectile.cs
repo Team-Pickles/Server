@@ -24,13 +24,11 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log($"{collision.collider.name} - {collision.otherCollider.name}");
-        Explode();
+        //Debug.Log($"{collision.collider.name} - {collision.otherCollider.name}");
     }
 
-    public void Initialize(Vector3 _initialMovementDirection, float _initialForceStrength, int _thrownByPlayer, Server server, Room room)
+    public void Initialize(int _thrownByPlayer, Server server, Room room, int isFlip)
     {
-        initalForce = _initialMovementDirection * _initialForceStrength;
         thrownByPlayer = _thrownByPlayer;
         this.server = server;
         this.room = room;
@@ -41,7 +39,7 @@ public class Projectile : MonoBehaviour
 
         server.serverSend.SpawnProjectile(this, thrownByPlayer);
 
-        rigidbody.AddForce(initalForce);
+        GetComponent<Rigidbody2D>().AddForce(new Vector2(100.0f * isFlip, 500.0f));
         StartCoroutine(ExplodeAfterTime());
 
     }

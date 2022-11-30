@@ -179,6 +179,27 @@ public class ServerSend
         }
     }
 
+    public void SendFlip(Player _player)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.charactorFlip))
+        {
+            _packet.Write(_player.id);
+            _packet.Write(_player.isFlip);
+            sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
+        }
+    }
+
+    public void RopeACK(Player _player)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.ropeACK))
+        {
+            _packet.Write(_player.id);
+            _packet.Write(_player.isHanging);
+            sendTCPData(server.clients[_player.id].id, _packet);
+        }
+    }
+
+
     public void SpawnProjectile(Projectile _projectile, int _thrownByplayer)
     {
         using (Packet _packet = new Packet((int)ServerPackets.spawnProjectile))
