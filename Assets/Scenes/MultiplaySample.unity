@@ -31258,7 +31258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 637c136762ed8394b8acae7bbb13b799, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 5091156043021300394, guid: 3f3874b8675eac840871aec21669c4d4, type: 3}
+  playerPrefab: {fileID: 5091156043021300394, guid: 0360358f1f549094a8d107cdfc3c8b9e, type: 3}
   projectilePrefab: {fileID: 3305180255072280105, guid: 0aa89409d460d2040bd26e1954bf7afe, type: 3}
   enemyPrefab: {fileID: 0}
   bulletPrefab: {fileID: 8324424231299544829, guid: 88fa4f87e7856c2428698880a153da94, type: 3}
@@ -31378,7 +31378,7 @@ MonoBehaviour:
   ItemPrefabs:
   - {fileID: 8776486889826405664, guid: 4322894dc47fd9f4eb44ed937d8d1dd2, type: 3}
   PlayerPrefabs:
-  - {fileID: 5091156043021300394, guid: 3f3874b8675eac840871aec21669c4d4, type: 3}
+  - {fileID: 5091156043021300394, guid: 0360358f1f549094a8d107cdfc3c8b9e, type: 3}
   EnemyPrefabs:
   - {fileID: 3801665731974859882, guid: 5c651779cfe9cc74a906485271807596, type: 3}
   ProjectilePrefab: {fileID: 3305180255072280105, guid: 0aa89409d460d2040bd26e1954bf7afe, type: 3}
