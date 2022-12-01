@@ -83,19 +83,18 @@ public class ServerHandle
         server.clients[_fromClient].player.OnRopeAction();
     }
 
-    public void StartGameInRoom(int _fromClient, Packet _packet)
+    public void ReadyToStartGame(int _fromClient, Packet _packet)
     {
         string _roomId = _packet.ReadString();
-        int _mapId = _packet.ReadInt();
-        server.rooms[_roomId].StartGame(_mapId, _fromClient);
+        server.rooms[_roomId].readyPlayerCount += 1;
+        Debug.Log("READY TO START: " + server.rooms[_roomId].readyPlayerCount + "/" + server.rooms[_roomId].members.Count);
+        if(server.rooms[_roomId].readyPlayerCount == server.rooms[_roomId].members.Count)
+        {
+            server.serverSend.StartGame(_roomId, server.rooms[_roomId].mapId);
+            server.rooms[_roomId].StartGame(server.rooms[_roomId].mapId);
+        }
+        //
     }
 
-    public void MapIdSelected(int _fromClient, Packet _packet)
-    {
-        string _roomId = _packet.ReadString();
-        int _mapId = _packet.ReadInt();
-        Debug.Log("MapIdSelected_" + _mapId);
-        server.rooms[_roomId].mapId = _mapId;
-        server.serverSend.MapIdSendToAllInRoom(_roomId, _mapId, _fromClient);
-    }
+    
 }

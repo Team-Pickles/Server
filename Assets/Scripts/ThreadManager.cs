@@ -8,13 +8,15 @@ public class CreateRoomData {
     public string roomName;
     public int serverPort;
     public Vector3 roomPos;
+    public int mapId;
 
-    public CreateRoomData(string _roomId, string _roomName, int _serverPort, Vector3 _roomPos)
+    public CreateRoomData(string _roomId, string _roomName, int _serverPort, Vector3 _roomPos, int _mapId)
     {
         this.roomId = _roomId;
         this.roomName = _roomName;
         this.serverPort = _serverPort;
         this.roomPos = _roomPos;
+        this.mapId = _mapId;
     }
 }
 
@@ -75,7 +77,7 @@ public class ThreadManager : MonoBehaviour
                 _room.name = _roomData.roomId;
 
                 Room _roomObject = new Room(_roomData.roomId, _roomData.roomName, _roomData.serverPort, _roomData.roomPos, _room);
-
+                _roomObject.mapId = _roomData.mapId;
                 NetworkManager.instance.servers[_roomData.serverPort].rooms.Add(_roomData.roomId, _roomObject);
                 //
             }

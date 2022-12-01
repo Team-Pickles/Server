@@ -40,12 +40,16 @@ public class Client
             if(player != null)
                 UnityEngine.Object.Destroy(player.gameObject);
             server.rooms[roomId].members.Remove(id);
+            server.rooms[roomId].readyPlayerCount -= 1;
             if(server.rooms[roomId].members.Count == 0)
             {
                 UnityEngine.Object.Destroy(server.rooms[roomId].room);
                 RoomManager.instance.DeletedPosList.Add(server.rooms[roomId].mapAddPosition);
                 server.rooms.Remove(roomId);
-
+            }
+            else
+            {
+                server.serverSend.PlayerDisnconnect(id, roomId);
             }
             player = null;
         });
@@ -53,7 +57,7 @@ public class Client
         tcp.Disconnect();
         udp.Disconnect();
 
-        server.serverSend.PlayerDisnconnect(id);
+
     }
 
     public class TCP

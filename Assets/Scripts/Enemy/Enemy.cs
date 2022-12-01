@@ -42,7 +42,7 @@ public class Enemy : MonoBehaviour
         Dictionary<Vector3, float> playerEnemyDistances = new Dictionary<Vector3, float>();
         foreach(Vector3 _playerPos in mapManager.playerPositions)
         {
-            playerEnemyDistances.Add(_playerPos, Mathf.Pow(enemyPosition.x - _playerPos.x,2) + Mathf.Pow(enemyPosition.y - _playerPos.y,2));
+            playerEnemyDistances.TryAdd(_playerPos, Mathf.Pow(enemyPosition.x - _playerPos.x,2) + Mathf.Pow(enemyPosition.y - _playerPos.y,2));
         }
         Debug.Log(Mathf.Pow(enemyPosition.x - mapManager.playerPositions[0].x,2));
         Debug.Log((enemyPosition.x - mapManager.playerPositions[0].x) * (enemyPosition.x - mapManager.playerPositions[0].x));

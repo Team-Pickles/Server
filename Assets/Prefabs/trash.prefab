@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8324424231299544830}
   - component: {fileID: 703785543101880961}
   - component: {fileID: -3939078336108843880}
+  - component: {fileID: 4100038660997830688}
   m_Layer: 13
   m_Name: trash
   m_TagString: trash
@@ -242,3 +243,18 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!114 &4100038660997830688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8324424231299544829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 648c7ee9e7dcca842ab6c5636b304aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  rigidbody: {fileID: 703785543101880961}
+  roomId: 

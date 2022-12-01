@@ -111,12 +111,14 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.roomJoined))
         {
             string _roomId = server.clients[_toClient].roomId;
+            _packet.Write(server.rooms[_roomId].mapId);
             string memberNames = "";
             foreach(Client _member in server.rooms[_roomId].members.Values)
             {
                 memberNames += _member.username + ",";
             }
             _packet.Write(memberNames);
+            _packet.Write(server.rooms[_roomId].roomName);
             sendTCPDataToAllInRoom(_roomId, _packet);
         }
     }
@@ -130,13 +132,18 @@ public class ServerSend
         }
     }
 
-    public void PlayerDisnconnect(int _playerId)
+    public void PlayerDisnconnect(int _playerId, string _roomId)
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerDisconnected))
         {
             _packet.Write(_playerId);
-
-            sendTCPDataToAll(_packet);
+            string memberNames = "";
+            foreach(Client _member in server.rooms[_roomId].members.Values)
+            {
+                memberNames += _member.username + ",";
+            }
+            _packet.Write(memberNames);
+            sendTCPDataToAllInRoom(_roomId, _packet);
         }
     }
 
@@ -330,21 +337,14 @@ public class ServerSend
         }
     }
 
-    public void MapIdSendToAllInRoom(string _roomId, int _mapId, int _exceptClient)
-    {
-        using (Packet _packet = new Packet((int)ServerPackets.mapIdSelected))
-        {
-            _packet.Write(_mapId);
-            sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
-        }
-    }
 
-    public void StartGame(string _roomId, int _mapId, int _exceptClient)
+
+    public void StartGame(string _roomId, int _mapId)
     {
         using (Packet _packet = new Packet((int)ServerPackets.startGame))
         {
             _packet.Write(_mapId);
-            sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
+            sendTCPDataToAllInRoom(_roomId, _packet);
         }
     }
 }

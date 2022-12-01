@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -22,7 +23,7 @@ public class RoomManager : MonoBehaviour
     }
 
     public List<TileBase> TileBases;
-    public List<GameObject> TilePrefabs;
+    
     public List<GameObject> ItemPrefabs;
     public List<GameObject> PlayerPrefabs;
     public List<GameObject> EnemyPrefabs;
@@ -33,7 +34,7 @@ public class RoomManager : MonoBehaviour
     private Vector3[] RoomPosList = new Vector3[] {new Vector3(0, 16f, 0), new Vector3(0, -16f, 0)};
     private Vector3 spawnPosition = new Vector3(0,0,0);
 
-    public string CreateRoom(string _roomName, int _serverPort)
+    public string CreateRoom(string _roomName, int _serverPort, int _mapId)
     {
         string _roomId = GenerateRoomId();
         int roomCnt = NetworkManager.instance.roomInfos.Count;
@@ -47,7 +48,7 @@ public class RoomManager : MonoBehaviour
         }
         
         try {
-            ThreadManager.createRoomOnMainThread.Add(new CreateRoomData(_roomId, _roomName, _serverPort, _roomPos));
+            ThreadManager.createRoomOnMainThread.Add(new CreateRoomData(_roomId, _roomName, _serverPort, _roomPos, _mapId));
             return _roomId;
         } catch(System.Exception e)
         {
@@ -96,16 +97,16 @@ public class RoomManager : MonoBehaviour
             {
                 int itemType = data.GetAdditionalInfo();
                 Debug.Log($"{itemType}, {itemType - (int)TileTypes.Item}, {ItemPrefabs.Count}");
-
-                GameObject itemClone = InstatiateItem(_room.ItemGroup, 0);
+                int itemIdx = itemType - (int)TileTypes.Item - 1;
+                GameObject itemClone = InstatiateItem(_room.ItemGroup, itemIdx);
                 Item _item = itemClone.GetComponent<Item>();
                 _item.Init(_room.roomId);
                 _item.server = NetworkManager.instance.servers[_room.serverPort];
                 _room.items.Add(_item.id, _item);
 
-                itemClone.name = ((TileTypes)itemType).ToString() + "_" + itemIds[0];
+                itemClone.name = ((TileTypes)itemType).ToString() + "_" + itemIds[itemIdx];
                 itemClone.transform.localPosition = data.GetPos();
-                ++itemIds[itemType - (int)TileTypes.Item];
+                ++itemIds[itemIdx];
             }
             else if(_infoType == InfoTypes.enemy)
             {

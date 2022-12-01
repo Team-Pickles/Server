@@ -25,6 +25,7 @@ public enum TileTypes
     tiles_packed_81, tiles_packed_82, tiles_packed_83, tiles_packed_100, tiles_packed_101,
     tiles_packed_102, tiles_packed_103, tiles_packed_120, tiles_packed_121, tiles_packed_122,
     tiles_packed_123, tiles_packed_140, tiles_packed_141, tiles_packed_142, tiles_packed_143,
+    PlatformerTiles_0, PlatformerTiles_1, PlatformerTiles_2,
     Item =100,
     tiles_packed_151, tiles_packed_44, Bullet, trash, grenade2,
     Enemy=200,

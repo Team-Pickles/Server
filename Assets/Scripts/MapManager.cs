@@ -29,6 +29,9 @@ public class MapManager : MonoBehaviour
         {
             for(int _playerIdx = 0; _playerIdx < players.Count; _playerIdx++)
             {
+                if(players[_playerIdx] == null) {
+                    break;
+                }
                 _map[oldPositions[_playerIdx].y][oldPositions[_playerIdx].x] = 0;
                 playerPositions[_playerIdx] = GetTopLeftBasePosition(players[_playerIdx].transform.position);
                 _map[playerPositions[_playerIdx].y][playerPositions[_playerIdx].x] = 5;
