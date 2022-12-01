@@ -10,6 +10,7 @@ public class Room
     public int maxPlayer;
     public int masterId;
     public int serverPort;
+    public int readyPlayerCount = 0;
     
     public Vector3 mapAddPosition;
 
@@ -57,7 +58,7 @@ public class Room
         }
     }
 
-    public void StartGame(int map_id, int _fromclient)
+    public void StartGame(int map_id)
     {
         if(room == null)
         {
@@ -68,13 +69,13 @@ public class Room
         ThreadManager.ExecuteOnMainThread(() => 
             {
                 SetMapInfo(map_id);
-                SpawnPlayerAndItems(_fromclient);
+                SpawnPlayerAndItems();
             }
         );
         
     }
 
-    public void SpawnPlayerAndItems(int _fromclient)
+    public void SpawnPlayerAndItems()
     {
         foreach(Client _member in members.Values)
         {
@@ -118,8 +119,7 @@ public class Room
                 }
             }
         }
-
-        NetworkManager.instance.servers[serverPort].serverSend.StartGame(roomId, mapId, _fromclient);
+        //
     }
 
     private void SetMapInfo(int map_id)

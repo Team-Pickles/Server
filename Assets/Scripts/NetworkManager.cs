@@ -161,15 +161,21 @@ public class NetworkManager : MonoBehaviour
                     Debug.Log($"[From Client]{recvData}");
                     string[] requests = recvData.Split('-');
                     Debug.Log(requests.Length);
-                    if (requests[0] == "CreateRoom")
+                    if(requests[0] == "RoomNameCheck")
                     {
                         if(instance.roomInfos.ContainsKey(requests[1]))
                         {
-                            string result = "None";
+                            string result = "Duplicated";
                             byte[] sendBuff = Encoding.UTF8.GetBytes(result);
                             Send(sendBuff);
-                            return;
+                        } else {
+                            string result = "Ok";
+                            byte[] sendBuff = Encoding.UTF8.GetBytes(result);
+                            Send(sendBuff);
                         }
+                    }
+                    else if (requests[0] == "CreateRoom")
+                    {
                         Debug.Log("Start to create room.");
                         TcpListener l = new TcpListener(IPAddress.Loopback, 0);
                         l.Start();
@@ -197,7 +203,7 @@ public class NetworkManager : MonoBehaviour
                         }
                         try {
                             string _roomName = requests[1];
-                            string _roomId = RoomManager.instance.CreateRoom(_roomName, _serverPort);
+                            string _roomId = RoomManager.instance.CreateRoom(_roomName, _serverPort, Convert.ToInt32(requests[2]));
                             instance.roomInfos.Add(_roomId, _serverPort);
                             instance.roomNameIds.Add(_roomId, _roomName);
                             string result = $"{_roomId}-{_roomName}";
