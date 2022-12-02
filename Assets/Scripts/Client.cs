@@ -32,8 +32,8 @@ public class Client
     private void Disconnect()
     {
         Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has disconnencted");
-        NetworkManager.instance.roomInfos.Remove(roomId);
-        NetworkManager.instance.roomNameIds.Remove(roomId);
+        
+        NetworkManager.instance.MinusMemberCnt(roomId);
         
         ThreadManager.ExecuteOnMainThread(() =>
         {

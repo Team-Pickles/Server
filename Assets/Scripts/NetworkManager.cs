@@ -25,6 +25,7 @@ public class NetworkManager : MonoBehaviour
     public Dictionary<int, Server> servers = new Dictionary<int, Server>();
     public Dictionary<string, int> roomInfos = new Dictionary<string, int>();
     public Dictionary<string, string> roomNameIds = new Dictionary<string, string>();
+    public Dictionary<string, int> roomMemberCnts = new Dictionary<string, int>();
 
     private void Awake()
     {
@@ -81,9 +82,11 @@ public class NetworkManager : MonoBehaviour
             Sender _sender = new Sender();
             _sender.Start(clientSocket);
             string msg = "Welcome to Server";
+            Debug.Log(instance.roomInfos.Count);
             foreach (KeyValuePair<string, int> roomInfo in instance.roomInfos)
             {
-                msg += $",{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]}";
+                int _memberCnt = instance.roomMemberCnts[roomInfo.Key];
+                msg += $",{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]}-{_memberCnt}";
             }
 
             byte[] sendBuff = Encoding.UTF8.GetBytes(msg);
@@ -206,6 +209,7 @@ public class NetworkManager : MonoBehaviour
                             string _roomId = RoomManager.instance.CreateRoom(_roomName, _serverPort, Convert.ToInt32(requests[2]));
                             instance.roomInfos.Add(_roomId, _serverPort);
                             instance.roomNameIds.Add(_roomId, _roomName);
+                            instance.roomMemberCnts.Add(_roomId, 0);
                             string result = $"{_roomId}-{_roomName}";
                             byte[] sendBuff = Encoding.UTF8.GetBytes(result);
                             Debug.Log(result);
@@ -220,7 +224,8 @@ public class NetworkManager : MonoBehaviour
                         string result = "";
                         foreach (KeyValuePair<string, int> roomInfo in instance.roomInfos)
                         {
-                            result += $"{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]},";
+                            int _memberCnt = instance.servers[roomInfo.Value].rooms[roomInfo.Key].members.Count;
+                            result += $"{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]}-{_memberCnt},";
                         }
                         Debug.Log($"REFRESH {result}");
                         byte[] sendBuff = Encoding.UTF8.GetBytes(result);
@@ -231,6 +236,16 @@ public class NetworkManager : MonoBehaviour
                         string ReplaceResult = recvData.Replace("JoinRoom", "");
                         int result = -1;
                         instance.roomInfos.TryGetValue(ReplaceResult, out result);
+                        if(result != -1)
+                        {
+                            if(instance.roomMemberCnts[ReplaceResult] == 4)
+                            {
+                                result = -2;
+                            }
+                            else {
+                                instance.roomMemberCnts[ReplaceResult] += 1;
+                            }
+                        }
                         byte[] sendBuff = Encoding.UTF8.GetBytes(result.ToString());
                         Send(sendBuff);
                     }
@@ -344,6 +359,16 @@ public class NetworkManager : MonoBehaviour
 
             //다음 클라이언트 연결을위해서
             RegisterAccept(args);
+        }
+    }
+
+    public void MinusMemberCnt(string _roomId)
+    {
+        instance.roomMemberCnts[_roomId] -= 1;
+        int _memberCnt = instance.roomMemberCnts[_roomId];
+        if(_memberCnt == 0) {
+            roomInfos.Remove(_roomId);
+            roomNameIds.Remove(_roomId);
         }
     }
 

@@ -32,19 +32,24 @@ public class Server
 
         Debug.Log($"Starting Server....");
         InitalizeServerData();
+        try {
+            tcpListener = new TcpListener(IPAddress.Any, Port);
+            tcpListener.Start();
 
-        tcpListener = new TcpListener(IPAddress.Any, Port);
-        tcpListener.Start();
+            //비동기 연결
+            tcpListener.BeginAcceptTcpClient(TCPConnectionCallback, null);
 
-        //비동기 연결
-        tcpListener.BeginAcceptTcpClient(TCPConnectionCallback, null);
+            udpListener = new UdpClient(Port);
+            udpListener.BeginReceive(UDPReceiveCallback, null);
 
-        udpListener = new UdpClient(Port);
-        udpListener.BeginReceive(UDPReceiveCallback, null);
+            Debug.Log($"Server started on {Port}.");
 
-        Debug.Log($"Server started on {Port}.");
-
-        return true;
+            return true;
+        }
+        catch(Exception _e) {
+            Debug.Log(_e.Message);
+            return true;
+        }
     }
 
     private void TCPConnectionCallback(IAsyncResult _result)
