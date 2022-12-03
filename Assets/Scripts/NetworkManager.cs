@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Random = System.Random;
+using UnityEngine.Networking;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -82,13 +83,7 @@ public class NetworkManager : MonoBehaviour
             Sender _sender = new Sender();
             _sender.Start(clientSocket);
             string msg = "Welcome to Server";
-            Debug.Log(instance.roomInfos.Count);
-            foreach (KeyValuePair<string, int> roomInfo in instance.roomInfos)
-            {
-                int _memberCnt = instance.roomMemberCnts[roomInfo.Key];
-                msg += $",{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]}-{_memberCnt}";
-            }
-
+            //
             byte[] sendBuff = Encoding.UTF8.GetBytes(msg);
             _sender.Send(sendBuff);
 
@@ -164,7 +159,11 @@ public class NetworkManager : MonoBehaviour
                     Debug.Log($"[From Client]{recvData}");
                     string[] requests = recvData.Split('-');
                     Debug.Log(requests.Length);
-                    if(requests[0] == "RoomNameCheck")
+                    if(requests[0] == "Logout")
+                    {
+                        instance.LogoutProcess(recvData.Replace("Logout-", ""));
+                    }
+                    else if(requests[0] == "RoomNameCheck")
                     {
                         if(instance.roomInfos.ContainsKey(requests[1]))
                         {
@@ -372,6 +371,34 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    public void LogoutProcess(string _accessToken)
+    {
+        ThreadManager.ExecuteOnMainThread(() => {
+            StartCoroutine(Logout((isLogout)=>{
+                Debug.Log("log out complete");
+            }));
+            IEnumerator Logout(Action<bool> isLogout)
+            {
+                using (UnityWebRequest request = UnityWebRequest.Delete(APIMapDataLoader.instance.apiUrl + "api/auth/logout"))
+                {
+                    request.SetRequestHeader("Content-Type", "application/json");
+                    request.SetRequestHeader("Authorization", "Bearer " + _accessToken);
+                    yield return request.SendWebRequest();
+
+                    if (request.error != null)
+                    {
+                        Debug.Log("failed");
+                        Debug.Log(request.error);
+                    }
+                    else
+                    {
+                        isLogout(true);
+                    }
+                    request.Dispose();
+                }
+            }
+        });
+    }
 
     public GameObject InstantiatePlayer()
     {

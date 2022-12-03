@@ -31,6 +31,7 @@ public class APIMapDataLoader : MonoBehaviour
     public Dictionary<int, MapListItem> mapListItems = new Dictionary<int, MapListItem>();
 
     public static APIMapDataLoader instance;
+    public string apiUrl {get; private set;}
 
     private void Awake()
     {
@@ -44,6 +45,9 @@ public class APIMapDataLoader : MonoBehaviour
             Debug.Log("Instance already exists,destroying object!");
             Destroy(this);
         }
+
+        apiUrl = "http://localhost:3001/";
+
         string file = "MapData/" + "MyMap.json";
         if(File.Exists(file) == false){
             Debug.LogError("Load failed. There is no file(MyMap.json).");

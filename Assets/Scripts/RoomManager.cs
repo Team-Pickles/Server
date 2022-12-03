@@ -79,24 +79,24 @@ public class RoomManager : MonoBehaviour
         else
             _json = APIMapDataLoader.instance.mapListItems[map_id].map_info;
             
-        Dictionary<Vector3, DataClass> loaded = JsonUtility.FromJson<Serialization<Vector3, DataClass>>(_json).ToDictionary();
+        Dictionary<int, DataClass> loaded = JsonUtility.FromJson<Serialization<int, DataClass>>(_json).ToDictionary();
         
 
         int[] itemIds = new int[ItemPrefabs.Count];
         int[] enemyIds = new int[EnemyPrefabs.Count];
 
         foreach(DataClass data in loaded.Values) {
-            InfoTypes _infoType = data.GetInfoType();
-            if(_infoType == InfoTypes.tile) {
+            int _infoType = data.GetInfoType();
+            if(_infoType == (int)TileTypes.Empty / 100) {
                 int tileType = data.GetAdditionalInfo();
                 Vector3 _pos = data.GetPos();
                 Vector3Int _intPos = new Vector3Int((int)_pos.x, (int)_pos.y, (int)_pos.z);
                 _room.TileGroup.SetTile(_intPos, TileBases[tileType]);
             }
-            else if(_infoType == InfoTypes.item)
+            else if(_infoType == (int)TileTypes.Item / 100)
             {
                 int itemType = data.GetAdditionalInfo();
-                Debug.Log($"{itemType}, {itemType - (int)TileTypes.Item}, {ItemPrefabs.Count}");
+                Debug.Log($"{itemType}, {ItemPrefabs.Count}");
                 int itemIdx = itemType - (int)TileTypes.Item - 1;
                 GameObject itemClone = InstatiateItem(_room.ItemGroup, itemIdx);
                 Item _item = itemClone.GetComponent<Item>();
@@ -108,20 +108,27 @@ public class RoomManager : MonoBehaviour
                 itemClone.transform.localPosition = data.GetPos();
                 ++itemIds[itemIdx];
             }
-            else if(_infoType == InfoTypes.enemy)
+            else if(_infoType == (int)TileTypes.Enemy / 100)
             {
                 int enemyType = data.GetAdditionalInfo();
-                Debug.Log($"{enemyType}, {enemyType - (int)TileTypes.Enemy}, {EnemyPrefabs.Count}");
-                GameObject enemyClone = InstantiateEnemy(_room.EnemyGroup, 0);
+                Debug.Log($"{enemyType}, {enemyType - (int)TileTypes.Enemy - 1}, {EnemyPrefabs.Count}");
+                int enemyIdx = enemyType - (int)TileTypes.Enemy - 1;
+                GameObject enemyClone = InstantiateEnemy(_room.EnemyGroup, enemyIdx);
                 Enemy _enemy = enemyClone.GetComponent<Enemy>();
                 _enemy.Initialize(NetworkManager.instance.servers[_room.serverPort], _room);
                 _room.enemies.Add(_enemy.id, _enemy);
 
-                enemyClone.name = ((TileTypes)enemyType).ToString() + "_" + enemyIds[0];
+                enemyClone.name = ((TileTypes)enemyType).ToString() + "_" + enemyIds[enemyIdx];
                 enemyClone.transform.localPosition = data.GetPos();
-                ++enemyIds[enemyType - (int)TileTypes.Enemy];
-            } else {
+                ++enemyIds[enemyIdx];
+            }
+            else if(_infoType == (int)TileTypes.Player / 100)
+            {
                 _room.spawnPoint = data.GetPos();
+            }
+            else if(_infoType == (int)TileTypes.BackGround / 100)
+            {
+
             }
         }
 
