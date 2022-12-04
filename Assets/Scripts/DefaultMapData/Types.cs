@@ -1,15 +1,4 @@
-
-/*
-타일: 위치, 타입
-적 스포너: 위치, 적타입
-아이템 스포너:  위치, 아이템 타입
-플레이어 스포너: 위치, 캐릭터 타입
-*/
-
-public enum InfoTypes {
-    tile = 0, enemy, item, player
-}
-
+//
 public enum TileTypes
 {
     Empty = 0,
@@ -26,10 +15,23 @@ public enum TileTypes
     tiles_packed_102, tiles_packed_103, tiles_packed_120, tiles_packed_121, tiles_packed_122,
     tiles_packed_123, tiles_packed_140, tiles_packed_141, tiles_packed_142, tiles_packed_143,
     PlatformerTiles_0, PlatformerTiles_1, PlatformerTiles_2,
+    
     Item =100,
     tiles_packed_151, tiles_packed_44, Bullet, trash, grenade2,
+
     Enemy=200,
     Sprite_Boss,
+
     Player = 300,
     Charactor_Sheet_0,
+
+    BackGround = 400,
+    ArcadeGreyBackground,
+    BlueBackground,
+    BrickBackground,
+    DarkBackground,
+    DustyBackground,
+    FieldBackground,
+    GreenBackground,
+    SkyBackground,
 }

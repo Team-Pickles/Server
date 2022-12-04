@@ -22,8 +22,8 @@ public class DataClass {
         return pos;
     }
 
-    public InfoTypes GetInfoType() {
-        return (InfoTypes)infoType;
+    public int GetInfoType() {
+        return infoType;
     }
 
     public int GetAdditionalInfo() {
@@ -34,20 +34,20 @@ public class DataClass {
     {
         string datatype;
         string addInfo = "";
-        switch((InfoTypes)infoType) {
-            case InfoTypes.tile:
+        switch(infoType) {
+            case (int)TileTypes.Empty / 100:
                 datatype = "Tile";
                 addInfo = " - TileType: [" + additionalInfo + "]";
                 break;
-            case InfoTypes.enemy:
+            case (int)TileTypes.Enemy / 100:
                 datatype = "Enemy";
                 addInfo = " - EnemyType: [" + additionalInfo + "]";
                 break;
-            case InfoTypes.item:
+            case (int)TileTypes.Item / 100:
                 datatype = "Item";
                 addInfo = " - ItemType: [" + additionalInfo + "]";
                 break;
-            case InfoTypes.player:
+            case (int)TileTypes.Player / 100:
                 datatype = "Player";
                 addInfo = " - PlayerType: [" + additionalInfo + "]";
                 break;

@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Random = System.Random;
+using UnityEngine.Networking;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class NetworkManager : MonoBehaviour
     public Dictionary<int, Server> servers = new Dictionary<int, Server>();
     public Dictionary<string, int> roomInfos = new Dictionary<string, int>();
     public Dictionary<string, string> roomNameIds = new Dictionary<string, string>();
+    public Dictionary<string, int> roomMemberCnts = new Dictionary<string, int>();
 
     private void Awake()
     {
@@ -81,11 +83,7 @@ public class NetworkManager : MonoBehaviour
             Sender _sender = new Sender();
             _sender.Start(clientSocket);
             string msg = "Welcome to Server";
-            foreach (KeyValuePair<string, int> roomInfo in instance.roomInfos)
-            {
-                msg += $",{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]}";
-            }
-
+            //
             byte[] sendBuff = Encoding.UTF8.GetBytes(msg);
             _sender.Send(sendBuff);
 
@@ -161,7 +159,11 @@ public class NetworkManager : MonoBehaviour
                     Debug.Log($"[From Client]{recvData}");
                     string[] requests = recvData.Split('-');
                     Debug.Log(requests.Length);
-                    if(requests[0] == "RoomNameCheck")
+                    if(requests[0] == "Logout")
+                    {
+                        instance.LogoutProcess(recvData.Replace("Logout-", ""));
+                    }
+                    else if(requests[0] == "RoomNameCheck")
                     {
                         if(instance.roomInfos.ContainsKey(requests[1]))
                         {
@@ -206,6 +208,7 @@ public class NetworkManager : MonoBehaviour
                             string _roomId = RoomManager.instance.CreateRoom(_roomName, _serverPort, Convert.ToInt32(requests[2]));
                             instance.roomInfos.Add(_roomId, _serverPort);
                             instance.roomNameIds.Add(_roomId, _roomName);
+                            instance.roomMemberCnts.Add(_roomId, 0);
                             string result = $"{_roomId}-{_roomName}";
                             byte[] sendBuff = Encoding.UTF8.GetBytes(result);
                             Debug.Log(result);
@@ -220,7 +223,8 @@ public class NetworkManager : MonoBehaviour
                         string result = "";
                         foreach (KeyValuePair<string, int> roomInfo in instance.roomInfos)
                         {
-                            result += $"{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]},";
+                            int _memberCnt = instance.servers[roomInfo.Value].rooms[roomInfo.Key].members.Count;
+                            result += $"{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]}-{_memberCnt},";
                         }
                         Debug.Log($"REFRESH {result}");
                         byte[] sendBuff = Encoding.UTF8.GetBytes(result);
@@ -231,6 +235,16 @@ public class NetworkManager : MonoBehaviour
                         string ReplaceResult = recvData.Replace("JoinRoom", "");
                         int result = -1;
                         instance.roomInfos.TryGetValue(ReplaceResult, out result);
+                        if(result != -1)
+                        {
+                            if(instance.roomMemberCnts[ReplaceResult] == 4)
+                            {
+                                result = -2;
+                            }
+                            else {
+                                instance.roomMemberCnts[ReplaceResult] += 1;
+                            }
+                        }
                         byte[] sendBuff = Encoding.UTF8.GetBytes(result.ToString());
                         Send(sendBuff);
                     }
@@ -347,6 +361,44 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    public void MinusMemberCnt(string _roomId)
+    {
+        instance.roomMemberCnts[_roomId] -= 1;
+        int _memberCnt = instance.roomMemberCnts[_roomId];
+        if(_memberCnt == 0) {
+            roomInfos.Remove(_roomId);
+            roomNameIds.Remove(_roomId);
+        }
+    }
+
+    public void LogoutProcess(string _accessToken)
+    {
+        ThreadManager.ExecuteOnMainThread(() => {
+            StartCoroutine(Logout((isLogout)=>{
+                Debug.Log("log out complete");
+            }));
+            IEnumerator Logout(Action<bool> isLogout)
+            {
+                using (UnityWebRequest request = UnityWebRequest.Delete(APIMapDataLoader.instance.apiUrl + "api/auth/logout"))
+                {
+                    request.SetRequestHeader("Content-Type", "application/json");
+                    request.SetRequestHeader("Authorization", "Bearer " + _accessToken);
+                    yield return request.SendWebRequest();
+
+                    if (request.error != null)
+                    {
+                        Debug.Log("failed");
+                        Debug.Log(request.error);
+                    }
+                    else
+                    {
+                        isLogout(true);
+                    }
+                    request.Dispose();
+                }
+            }
+        });
+    }
 
     public GameObject InstantiatePlayer()
     {
