@@ -133,6 +133,7 @@ public class NetworkManager : MonoBehaviour
 
         public void Disconnect()
         {
+            Debug.Log("DISCONNECT");
             if (Interlocked.Exchange(ref _disconnected, 1) == 1)
                 return;
             _socket.Shutdown(SocketShutdown.Both);
@@ -225,6 +226,10 @@ public class NetworkManager : MonoBehaviour
                         {
                             int _memberCnt = instance.servers[roomInfo.Value].rooms[roomInfo.Key].members.Count;
                             result += $"{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]}-{_memberCnt},";
+                        }
+                        if(result.Length == 0)
+                        {
+                            result = "None";
                         }
                         Debug.Log($"REFRESH {result}");
                         byte[] sendBuff = Encoding.UTF8.GetBytes(result);
