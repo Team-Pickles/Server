@@ -132,6 +132,7 @@ public class ServerSend
         }
     }
 
+    #region PlayerSend
     public void PlayerDisnconnect(int _playerId, string _roomId)
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerDisconnected))
@@ -146,6 +147,7 @@ public class ServerSend
             sendTCPDataToAllInRoom(_roomId, _packet);
         }
     }
+
 
     //소환할 때 한번만 사용하기 때문에 TCP로 전송
     //TCP는 도착이 보장됨
@@ -191,7 +193,7 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.charactorFlip))
         {
             _packet.Write(_player.id);
-            _packet.Write(_player.isFlip);
+            _packet.Write(_player._flip);
             sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
         }
     }
@@ -202,11 +204,21 @@ public class ServerSend
         {
             _packet.Write(_player.id);
             _packet.Write(_player.isHanging);
-            sendTCPData(server.clients[_player.id].id, _packet);
+            sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
         }
     }
 
+    public void PlayerDamaged(Player _player)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.ropeACK))
+        {
+            _packet.Write(_player.id);
+            sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
+        }
+    }
+    #endregion
 
+    #region 투사체
     public void SpawnProjectile(Projectile _projectile, int _thrownByplayer)
     {
         using (Packet _packet = new Packet((int)ServerPackets.spawnProjectile))
@@ -273,7 +285,9 @@ public class ServerSend
             sendTCPDataToAllInRoom(server.clients[_bullet.thrownByPlayer].roomId, _packet);
         }
     }
+    #endregion
 
+    #region ITem
     public void SpawnItem(int _toclient, Item _item)
     {
         using (Packet _packet = new Packet((int)ServerPackets.spawnItem))
@@ -303,7 +317,9 @@ public class ServerSend
             sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
         }
     }
+    #endregion
 
+    #region Enemy
     public void SpawnEnemy(Enemy _enemy, int _toClient)
     {
         using (Packet _packet = new Packet((int)ServerPackets.spawnEnemy))
@@ -321,23 +337,23 @@ public class ServerSend
         {
             _packet.Write(_enemy.id);
             _packet.Write(_enemy.transform.localPosition);
+            _packet.Write(_enemy._isMove);
 
             sendUDPDataToAllInRoom(_enemy.room.roomId, _packet);
         }
     }
 
-    public void EnemyHealth(Enemy _enemy)
+    public void EnemyHit(Enemy _enemy)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.enemyHealth))
+        using (Packet _packet = new Packet((int)ServerPackets.enemyHit))
         {
-            // Now, enemy's health = 1. ATTACKED = ENEMY_DIE
             _packet.Write(_enemy.id);
 
             sendUDPDataToAllInRoom(_enemy.room.roomId, _packet);
         }
     }
 
-
+    #endregion
 
     public void StartGame(string _roomId, int _mapId)
     {

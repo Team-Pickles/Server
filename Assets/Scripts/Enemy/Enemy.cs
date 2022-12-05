@@ -15,156 +15,115 @@ public class Enemy : MonoBehaviour
     private Vector3Int enemyPosition;
     private const float _threshold = 1.0f;
     private float currentHold = 0.0f;
-    private bool onGround = false;
+    private GameObject _player;
+    private bool _onGround = false;
+    private bool _detectPlayer = false;
+    public bool _isMove = false;
     public bool OnGround
     {
-        get { return onGround; }
-        set { onGround = value; }
+        get { return _onGround; }
+        set { _onGround = value; }
+    }
+    public bool DetectPlayer
+    {
+        get { return _detectPlayer; }
+        set { _detectPlayer = value; }
+    }
+    public GameObject DetectedPlayer
+    {
+        get { return _player; }
+        set { _player = value; }
     }
     private bool isDead = false;
     private int hitPoint = 1;
 
     private EnemyState state = EnemyState.Normal;
 
-    public void Initialize(Server _server, Room _room) {
+    public void Initialize(Server _server, Room _room)
+    {
         id = nextEnemyId;
         nextEnemyId++;
         server = _server;
         room = _room;
-        mapManager = _room.TileGroupGrid.GetComponent<MapManager>();
-        enemyPosition = mapManager.GetTopLeftBasePosition(transform.position);
+    }
+    void FixedUpdate()
+    {
+        MoveEnemy();
+        server.serverSend.EnemyPosition(this);
     }
 
-    void Update()
+    private void MoveEnemy()
     {
-        enemyPosition = mapManager.GetTopLeftBasePosition(transform.position);
-
-        Dictionary<Vector3, float> playerEnemyDistances = new Dictionary<Vector3, float>();
-        foreach(Vector3 _playerPos in mapManager.playerPositions)
+        if (_onGround)
         {
-            playerEnemyDistances.TryAdd(_playerPos, Mathf.Pow(enemyPosition.x - _playerPos.x,2) + Mathf.Pow(enemyPosition.y - _playerPos.y,2));
-        }
-        Debug.Log(Mathf.Pow(enemyPosition.x - mapManager.playerPositions[0].x,2));
-        Debug.Log((enemyPosition.x - mapManager.playerPositions[0].x) * (enemyPosition.x - mapManager.playerPositions[0].x));
-        Debug.Log(Mathf.Pow(enemyPosition.y - mapManager.playerPositions[0].y,2));
-        Debug.Log((enemyPosition.y - mapManager.playerPositions[0].y) * (enemyPosition.y - mapManager.playerPositions[0].y));
-
-        if (playerEnemyDistances.Values.Min() <= 49)
-        {
-            Vector3 playerPosition = playerEnemyDistances.FirstOrDefault(entry =>
-            EqualityComparer<float>.Default.Equals(entry.Value, playerEnemyDistances.Values.Min())).Key;
-
-            if (onGround && enemyPosition.y > playerPosition.y)
+            if (_detectPlayer && _player != null)
             {
-                GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 5.0f);
-            }
+                _isMove = true;
 
-            if (GetComponent<Rigidbody2D>().velocity.x > 0.3f)
-            {
-                if (playerPosition.x < enemyPosition.x)
+                if (_player.transform.localPosition.x < transform.localPosition.x) // left
                 {
-                    currentHold += 5.0f * Time.deltaTime;
+                    Vector2 scale = transform.localScale;
+                    scale.x = scale.x > 0.0f ? scale.x : -scale.x;
+                    transform.localScale = scale;
+
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(-6.0f, 4.8f);
                 }
-                else
+                else // right
                 {
-                    currentHold = 0.0f;
-                }
-                if (currentHold >= _threshold && onGround)
-                {
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(-2.0f, GetComponent<Rigidbody2D>().velocity.y);
-                    currentHold = 0.0f;
-                }
-            }
-            else if (GetComponent<Rigidbody2D>().velocity.x < -0.3f)
-            {
-                if (playerPosition.x > enemyPosition.x)
-                {
-                    currentHold += 5.0f * Time.deltaTime;
-                }
-                else
-                {
-                    currentHold = 0.0f;
-                }
-                if (currentHold >= _threshold && onGround)
-                {
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(2.0f, GetComponent<Rigidbody2D>().velocity.y);
-                    currentHold = 0.0f;
+                    Vector2 scale = transform.localScale;
+                    scale.x = scale.x > 0.0f ? -scale.x : scale.x;
+                    transform.localScale = scale;
+
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(6.0f, 4.8f);
                 }
             }
             else
             {
-                if (playerPosition.x < enemyPosition.x)
-                {
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(-2.0f, GetComponent<Rigidbody2D>().velocity.y);
-                }
-                else if (playerPosition.x > enemyPosition.x)
-                {
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(2.0f, GetComponent<Rigidbody2D>().velocity.y);
-                }
-                if (onGround)
-                {
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 5.0f);
-                }
+                _isMove = false;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(0.0f, 0.0f);
             }
         }
-        else
-        {
-            if (GetComponent<Rigidbody2D>().velocity == new Vector2(0,0))
-            {
-                if (Random.Range(1,10) <= 5)
-                {
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(-2.0f, GetComponent<Rigidbody2D>().velocity.y);
-                }
-                else
-                {
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(2.0f, GetComponent<Rigidbody2D>().velocity.y);
-                }
-            }
-        }
-
-        server.serverSend.EnemyPosition(this);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.transform.tag == "bullet" && isDead == false)
+        switch (collision.transform.tag)
         {
-            OnDie();
-            Debug.Log(collision.transform.tag);
-            Destroy(collision.gameObject);
-            hitPoint -= 1;
-            if (hitPoint <= 0)
-            {
-                isDead = true;
-                Destroy(gameObject);
-            }
+            case "player":
+                {
+                    collision.transform.GetComponent<Player>().OnDamage();
+                    break;
+                }
+            case "bullet":
+                {
+                    StartCoroutine(HitAction());
+                    break;
+                }
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.transform.tag == "bullet" && isDead == false)
-        {
-            OnDie();
-            Debug.Log(collision.transform.tag);
-            Destroy(collision.gameObject);
-            hitPoint -= 1;
-            if (hitPoint <= 0)
-            {
-                isDead = true;
-                Destroy(gameObject);
-            }
-        }
-    }
-
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (state == EnemyState.Normal && collision.transform.tag == "player" && isDead == false)
+        switch (collision.transform.tag)
         {
-            collision.transform.GetComponent<Player>().OnDamaged();
+            case "player":
+                {
+                    collision.transform.GetComponent<Player>().OnDamage();
+                    break;
+                }
+            case "bullet":
+                {
+                    StartCoroutine(HitAction());
+                    break;
+                }
         }
     }
 
-    private void OnDie() {
-        server.serverSend.EnemyHealth(this);
+    IEnumerator HitAction()
+    {
+        GetComponent<BoxCollider2D>().enabled = false;
+        GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+        server.serverSend.EnemyHit(this);
+        yield return new WaitForSeconds(0.1f);
+        Destroy(gameObject);
     }
 }
