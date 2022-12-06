@@ -80,7 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_Sprite: {fileID: 1452547187, guid: 64396309f5b581242ace25a9446b5f54, type: 3}
+  m_Sprite: {fileID: 1452547187, guid: ca17ed6558a03824cac8eaa9abf5e943, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -126,23 +126,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   username: 
-  controller: {fileID: 0}
-  gravity: -9.18
-  moveSpeed: 5
-  dashSpeed: 7
-  jumpSpeed: 5
-  throwForce: 200
-  health: 0
-  maxHealth: 100
+  _hp: 0
   itemAmount: 0
   maxItemAmount: 3
   onGround: 0
   facing: {x: 0, y: 0, z: 0}
+  _state: 1
   _curItem: {fileID: 0}
   currnetShootObject: Bullet
   onRope: 0
   isHanging: 0
-  isFlip: 0
+  _flip: 0
   isJumping: 0
   _fromClient: 0
 --- !u!95 &5091156043021300385
