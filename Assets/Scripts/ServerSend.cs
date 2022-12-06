@@ -210,9 +210,11 @@ public class ServerSend
 
     public void PlayerDamaged(Player _player)
     {
-        using (Packet _packet = new Packet((int)ServerPackets.ropeACK))
+        using (Packet _packet = new Packet((int)ServerPackets.playerHealth))
         {
             _packet.Write(_player.id);
+            _packet.Write(_player._hp);
+            Debug.Log("Damaged : "+_player._hp);
             sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
         }
     }
@@ -294,6 +296,7 @@ public class ServerSend
         {
             _packet.Write(_item.id);
             _packet.Write(_item.transform.localPosition);
+            _packet.Write(_item.itemType);
             Debug.Log("spawn item");
             sendTCPData(_toclient, _packet);
         }
@@ -348,7 +351,7 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.enemyHit))
         {
             _packet.Write(_enemy.id);
-
+            Debug.Log("EnemyHit_" + _enemy.id);
             sendUDPDataToAllInRoom(_enemy.room.roomId, _packet);
         }
     }

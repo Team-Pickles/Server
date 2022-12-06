@@ -8,17 +8,19 @@ public class Item : MonoBehaviour
     private static int nextItemId = 1;
 
     public int id;
-    public Rigidbody2D rigidbody;
+    
     public Server server;
     public string roomId;
+    public int itemType;
 
 
-    public void Init(string _roomId)
+    public void Init(string _roomId, int _itemType)
     {
         id = nextItemId;
         nextItemId++;
         
         roomId = _roomId;
+        itemType = _itemType;
     }
 
     private void Update()

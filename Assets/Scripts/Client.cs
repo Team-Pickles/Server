@@ -44,7 +44,7 @@ public class Client
             if(server.rooms[roomId].members.Count == 0)
             {
                 UnityEngine.Object.Destroy(server.rooms[roomId].room);
-                RoomManager.instance.DeletedPosList.Add(server.rooms[roomId].mapAddPosition);
+                RoomManager.instance.DeletedPosList.Add(server.rooms[roomId].mapAddPosition, server.rooms[roomId].mapSize);
                 server.rooms.Remove(roomId);
             }
             else
