@@ -31322,6 +31322,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9c0e3d314a18e104996f8cd3d6346576, type: 2}
   - {fileID: 11400000, guid: 0582e301b0705ed46a46e9d85019dc58, type: 2}
   - {fileID: 11400000, guid: 2eb309b5f3412364e82040fc1f30172b, type: 2}
+  - {fileID: 11400000, guid: 470c76b0bdb69804b84261a75fa09fc1, type: 2}
   - {fileID: 11400000, guid: edac609f10c4fea4e92b0572accb7d53, type: 2}
   - {fileID: 11400000, guid: 077ca9c0a03e8314996f21aeafed227b, type: 2}
   - {fileID: 11400000, guid: 351c9dd21b0bab343bb1214c72d1d9dd, type: 2}
@@ -31343,17 +31344,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 615da4711c3d140449c19e831891413c, type: 2}
   ItemPrefabs:
   - {fileID: 8776486889826405664, guid: 4322894dc47fd9f4eb44ed937d8d1dd2, type: 3}
-  - {fileID: 7269334975357566379, guid: 1582ec89c3a34d6409142bcc70e664a1, type: 3}
+  - {fileID: 7389048374384852592, guid: a4fd31b4c628ef94bb74e5c4e2f81801, type: 3}
   - {fileID: 8324424231299544829, guid: 88fa4f87e7856c2428698880a153da94, type: 3}
   - {fileID: 8324424231299544829, guid: e1f533949d7350546992223decdc3727, type: 3}
   - {fileID: 3145263508006757812, guid: 6e4e1830652d4524a939451aee04c708, type: 3}
   PlayerPrefabs:
   - {fileID: 5091156043021300394, guid: 0360358f1f549094a8d107cdfc3c8b9e, type: 3}
   EnemyPrefabs:
-  - {fileID: 3801665731974859882, guid: 5c651779cfe9cc74a906485271807596, type: 3}
+  - {fileID: 99511372075380570, guid: 97f9ea3b77f3f16448134256fa38f2d7, type: 3}
   ProjectilePrefab: {fileID: 3305180255072280105, guid: 0aa89409d460d2040bd26e1954bf7afe, type: 3}
   BulletPrefab: {fileID: 8324424231299544829, guid: 88fa4f87e7856c2428698880a153da94, type: 3}
-  DeletedPosList: []
 --- !u!1 &1918009205
 GameObject:
   m_ObjectHideFlags: 0

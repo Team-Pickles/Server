@@ -17,21 +17,23 @@ public enum KeyInput
     //5: DOWN
 }
 
+public enum PlayerStateFlags
+{
+    Normal = 1 << 0,
+    Stun = 1 << 1,
+    Damaged = 1 << 2
+}
+
 public class Player : MonoBehaviour
 {
     public int id;
     public string username;
-    public float gravity = -9.18f;
-    public float moveSpeed = 5.0f;
-    public float dashSpeed = 7f;
-    public float jumpSpeed = 5f;
-    public float throwForce = 200f;
-    public float health;
-    public float maxHealth = 100f;
+    public float _hp;
     public int itemAmount = 0;
     public int maxItemAmount = 3;
     public bool onGround = false;
     public Vector3 facing = Vector3.zero;
+    public PlayerStateFlags _state = PlayerStateFlags.Normal;
 
     //Vacume
     public GameObject _curItem;
@@ -50,7 +52,7 @@ public class Player : MonoBehaviour
     private float _hPoint = 0, _vPoint = 0;
     private const float _hSpeed = 4.0f, _vSpeed = 5.0f;
     float speed = 1.5f;
-    public bool isFlip;
+    public bool _flip;
     public bool isJumping;
 
     private bool[] inputs;
@@ -62,6 +64,14 @@ public class Player : MonoBehaviour
     bool temp = false;
     public int _fromClient;
 
+    public void SetPlayerStateFlags(PlayerStateFlags flag)
+    {
+        _state |= flag;
+    }
+    public void ResetPlayerStateFlags(PlayerStateFlags flag)
+    {
+        _state &= ~flag;
+    }
 
     private void Start()
     {
@@ -72,7 +82,7 @@ public class Player : MonoBehaviour
     {
         id = _id;
         username = _username;
-        health = maxHealth;
+        _hp = 3;
         inputs = new bool[6];
     }
 
@@ -83,7 +93,7 @@ public class Player : MonoBehaviour
 
     public void FixedUpdate()
     {
-        if (health <= 0)
+        if (_hp <= 0)
             return;
 
         Move();
@@ -132,7 +142,7 @@ public class Player : MonoBehaviour
 
                 Vector2 offset = GetComponent<BoxCollider2D>().offset;
                 offset.x = 0.06f;
-                isFlip = false;
+                _flip = false;
             }
             else if (_hPoint < 0)
             {
@@ -141,7 +151,7 @@ public class Player : MonoBehaviour
 
                 Vector2 offset = GetComponent<BoxCollider2D>().offset;
                 offset.x = 0.06f;
-                isFlip = true;
+                _flip = true;
             }
         }
     }
@@ -205,14 +215,14 @@ public class Player : MonoBehaviour
     public void Shoot(Vector3 _viewDirection)
     {
         GameObject obj;
-        if (health <= 0f)
+        if (_hp <= 0f)
         {
             return;
         }
 
         if (currnetShootObject == "Bullet")
         {
-            int _isFlip = isFlip ? -1 : 1;
+            int _isFlip = _flip ? -1 : 1;
             obj = RoomManager.instance.InstatiateBullet(room.PlayerGroup, _firePoint.transform, id);
             Bullet bullet = obj.GetComponent<Bullet>();
             bullet.Initialize(id, this.server, _isFlip);
@@ -220,19 +230,12 @@ public class Player : MonoBehaviour
 
         if (currnetShootObject == "Grenade")
         {
-            int _isFlip = isFlip ? -1 : 1;
+            int _isFlip = _flip ? -1 : 1;
             obj = RoomManager.instance.InstatiateGrenade(room.PlayerGroup, _firePoint.transform, id);
             Projectile projectile = obj.GetComponent<Projectile>();
             projectile.Initialize(id, this.server, this.room, _isFlip);
         }
 
-
-        //if (currnetShootObject == "GlassBottIetem")
-        //{
-        //    obj = RoomManager.instance.InstatiateGlassBottIe(room.PlayerGroup, _firePoint);
-        //    GlassBottIe glassBottIe = obj.GetComponent<Bullet>();
-        //    glassBottIe.Initialize(_viewDirection, throwForce, id, this.server);
-        //}
     }
 
     public void StartVaccume(Vector3 _vaccumeDirection)
@@ -255,7 +258,7 @@ public class Player : MonoBehaviour
 
         for (int i = -5; i <= 5; i++)
         {
-            Vector2 _rayDirection = new Vector2(Mathf.Cos(i * Mathf.Deg2Rad) * (isFlip ? -1 : 1), Mathf.Sin(i * Mathf.Deg2Rad));
+            Vector2 _rayDirection = new Vector2(Mathf.Cos(i * Mathf.Deg2Rad) * (_flip ? -1 : 1), Mathf.Sin(i * Mathf.Deg2Rad));
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, _rayDirection, _rayLength, layerMask);
 
             if (hit.collider != null)
@@ -301,8 +304,32 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void OnDamaged(){
-        Debug.Log("Damaged");
+    public void OnDamage(){
+        if ((_state & PlayerStateFlags.Damaged) == 0)
+        {
+            if (_hp > 0)
+                _hp--;
+
+            SetPlayerStateFlags(PlayerStateFlags.Damaged);
+            SetPlayerStateFlags(PlayerStateFlags.Stun);
+            _hPoint = -0.7f * (_flip == false ? 1 : -1);
+            _vPoint = 0.5f;
+            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 0);
+            _hPoint = 0.0f;
+
+            server.serverSend.PlayerDamaged(this);
+        }
     }
 
+    public void OnDamagedEnd()
+    {
+        StartCoroutine(DamagedEnd());
+    }
+
+    private IEnumerator DamagedEnd()
+    {
+        ResetPlayerStateFlags(PlayerStateFlags.Stun);
+        yield return new WaitForSeconds(0.7f);
+        ResetPlayerStateFlags(PlayerStateFlags.Damaged);
+    }
 }

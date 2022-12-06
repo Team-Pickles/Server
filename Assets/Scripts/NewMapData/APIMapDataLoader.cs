@@ -10,10 +10,11 @@ public class MapListItem
 {
     public int map_id;
     public string map_tag;
-    public string map_info;
+    public Dictionary<int, DataClass> map_info = new Dictionary<int, DataClass>();
     public int map_grade;
     public int map_difficulty;
     public string map_maker;
+    public Vector2 map_size;
 }
 
 [Serializable]
@@ -47,19 +48,23 @@ public class APIMapDataLoader : MonoBehaviour
         }
 
         apiUrl = "http://localhost:3001/";
-
-        string file = "MapData/" + "MyMap.json";
+        string file = Application.streamingAssetsPath + "/MyMap.json";
         if(File.Exists(file) == false){
             Debug.LogError("Load failed. There is no file(MyMap.json).");
             return;
         }
         string fromJson = File.ReadAllText(file);
         MapListItem _item = new MapListItem();
+        Dictionary<int, DataClass> loaded = JsonUtility.FromJson<Serialization<int, DataClass>>(fromJson).ToDictionary();
         _item.map_id = 0;
-        _item.map_info = fromJson;
+        _item.map_info = loaded;
         _item.map_grade = 0;
         _item.map_difficulty = 0;
         _item.map_maker = "None";
+        int cnt = loaded.Count;
+        Vector3 minSize = loaded[cnt - 2].GetPos();
+        Vector3 maxSize = loaded[cnt - 1].GetPos();
+        _item.map_size = new Vector2(Math.Abs(maxSize.x - minSize.x), Math.Abs(maxSize.y - minSize.y));
         mapListItems.Add(0, _item);
         LoadAllProcess();
     }
@@ -97,9 +102,10 @@ public class APIMapDataLoader : MonoBehaviour
                 foreach(MapDataClass _mapInfo in mapInfos.Items)
                 {
                     MapListItem _item = new MapListItem();
+                    Dictionary<int, DataClass> loaded = JsonUtility.FromJson<Serialization<int, DataClass>>(_mapInfo.map_info).ToDictionary();
                     _item.map_id = _mapInfo.map_id;
                     _item.map_tag = _mapInfo.map_tag;
-                    _item.map_info = _mapInfo.map_info;
+                    _item.map_info = loaded;
                     _item.map_grade = _mapInfo.map_grade;
                     _item.map_difficulty = _mapInfo.map_difficulty;
                     _item.map_maker = _mapInfo.map_maker;

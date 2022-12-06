@@ -10,17 +10,17 @@ public enum TileTypes
     tiles_packed_36, tiles_packed_37, tiles_packed_38, tiles_packed_39, tiles_packed_40,
     tiles_packed_41, tiles_packed_42, tiles_packed_43, tiles_packed_53, tiles_packed_54,
     tiles_packed_55, tiles_packed_56, tiles_packed_57, tiles_packed_58, tiles_packed_59,
-    tiles_packed_60, tiles_packed_61, tiles_packed_62, tiles_packed_63, tiles_packed_80,
-    tiles_packed_81, tiles_packed_82, tiles_packed_83, tiles_packed_100, tiles_packed_101,
-    tiles_packed_102, tiles_packed_103, tiles_packed_120, tiles_packed_121, tiles_packed_122,
-    tiles_packed_123, tiles_packed_140, tiles_packed_141, tiles_packed_142, tiles_packed_143,
-    PlatformerTiles_0, PlatformerTiles_1, PlatformerTiles_2,
+    tiles_packed_60, tiles_packed_61, tiles_packed_62, tiles_packed_63, tiles_packed_68,
+    tiles_packed_80, tiles_packed_81, tiles_packed_82, tiles_packed_83, tiles_packed_100,
+    tiles_packed_101, tiles_packed_102, tiles_packed_103, tiles_packed_120, tiles_packed_121,
+    tiles_packed_122, tiles_packed_123, tiles_packed_140, tiles_packed_141, tiles_packed_142,
+    tiles_packed_143, PlatformerTiles_0, PlatformerTiles_1, PlatformerTiles_2,
     
     Item =100,
-    tiles_packed_151, tiles_packed_44, Bullet, trash, grenade2,
+    tiles_packed_151, Square, Bullet, trash, grenade2,
 
     Enemy=200,
-    Sprite_Boss,
+    can,
 
     Player = 300,
     Charactor_Sheet_0,
@@ -34,4 +34,6 @@ public enum TileTypes
     FieldBackground,
     GreenBackground,
     SkyBackground,
+    MapSize = 500,
+    minSize, maxSize
 }

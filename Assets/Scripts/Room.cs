@@ -6,6 +6,7 @@ public class Room
 {
     public string roomId;
     public int mapId;
+    public Vector2 mapSize = new Vector2(0, 0);
     public string roomName;
     public int maxPlayer;
     public int masterId;
@@ -20,6 +21,7 @@ public class Room
     public Tilemap TileGroup;
     public GameObject EnemyGroup;
     public GameObject ItemGroup;
+    public Tilemap DeathZone;
 
     public Dictionary<int, Client> members = new Dictionary<int, Client>();
     public Dictionary<Vector3, int> ItemInfos = new Dictionary<Vector3, int>();
@@ -43,7 +45,8 @@ public class Room
             {
                 case "TileGroup":
                     TileGroupGrid = now.GetComponent<Grid>();
-                    TileGroup = now.GetComponentInChildren<Tilemap>();
+                    TileGroup = now.transform.GetChild(0).GetComponent<Tilemap>();
+                    DeathZone = now.transform.GetChild(1).GetComponent<Tilemap>();
                     break;
                 case "ItemGroup":
                     ItemGroup = now;
