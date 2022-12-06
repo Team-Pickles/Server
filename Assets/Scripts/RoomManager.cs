@@ -4,6 +4,7 @@ using System.IO;
 using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Linq;
 
 public class RoomManager : MonoBehaviour
 {
@@ -22,6 +23,17 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    private class MapPosSizeData
+    {
+        public Vector3 pos;
+        public Vector2 size;
+        public MapPosSizeData(Vector3 _pos, Vector2 _size)
+        {
+            this.pos = _pos;
+            this.size = _size;
+        }
+    }
+
     public List<TileBase> TileBases;
     
     public List<GameObject> ItemPrefabs;
@@ -30,25 +42,54 @@ public class RoomManager : MonoBehaviour
     public GameObject ProjectilePrefab;
     public GameObject BulletPrefab;
     
-    public List<Vector3> DeletedPosList = new List<Vector3>();
-    private Vector3[] RoomPosList = new Vector3[] {new Vector3(0, 16f, 0), new Vector3(0, -16f, 0)};
+    public Dictionary<Vector3, Vector2> DeletedPosList = new Dictionary<Vector3, Vector2>();
+    private Vector3[] RoomPosList = new Vector3[] {new Vector3(0, 1f, 0), new Vector3(0, -1f, 0)};
+    private MapPosSizeData[] mapPosSizeList = new MapPosSizeData[]
+    {
+        new MapPosSizeData(new Vector3(0, 0, 0), new Vector2(0, 0)),
+        new MapPosSizeData(new Vector3(0, 0, 0), new Vector2(0, 0)),
+    };
     private Vector3 spawnPosition = new Vector3(0,0,0);
+    private int roomCnt = 0;
 
     public string CreateRoom(string _roomName, int _serverPort, int _mapId)
     {
         string _roomId = GenerateRoomId();
-        int roomCnt = NetworkManager.instance.roomInfos.Count;
-        Vector3 _roomPos;
+        Vector2 mapSize = APIMapDataLoader.instance.mapListItems[_mapId].map_size;
+        Debug.Log(mapSize);
+        Vector3 _roomPos = new Vector3(0, 0, 0);
         if(DeletedPosList.Count > 0)
         {
-            _roomPos = DeletedPosList[0];
-            DeletedPosList.Remove(_roomPos);
+            _roomPos = DeletedPosList.Keys.First();
+            Vector2 _data = APIMapDataLoader.instance.mapListItems[_mapId].map_size;
+            if(DeletedPosList[_roomPos].y - _data.y < 0)
+            {
+                _roomPos = mapPosSizeList[roomCnt % 2].pos;
+                float _roomPosY = mapPosSizeList[roomCnt % 2].size.y * RoomPosList[roomCnt % 2].y;
+                _roomPos += new Vector3(0, _roomPosY, 0);
+                mapPosSizeList[roomCnt % 2] = new MapPosSizeData(_roomPos, mapSize);
+            }
+            else {
+                DeletedPosList.Remove(_roomPos);
+                mapPosSizeList[roomCnt % 2] = new MapPosSizeData(_roomPos, mapSize);
+            }
         } else {
-            _roomPos = RoomPosList[roomCnt % 2] * Mathf.Ceil(roomCnt / 2.0f);
+            if(roomCnt != 0)
+            {
+                _roomPos = mapPosSizeList[roomCnt % 2].pos;
+                float _roomPosY = mapPosSizeList[roomCnt % 2].size.y * 2 * RoomPosList[roomCnt % 2].y;
+                _roomPos += new Vector3(0, _roomPosY, 0);
+                mapPosSizeList[roomCnt % 2] = new MapPosSizeData(_roomPos, mapSize);
+                Debug.Log(mapPosSizeList[roomCnt % 2].pos + "_" + mapPosSizeList[roomCnt % 2].size);
+            } else {
+                mapPosSizeList[0] = new MapPosSizeData(_roomPos, mapSize);
+                mapPosSizeList[1] = new MapPosSizeData(_roomPos, mapSize);
+            }
         }
         
         try {
-            ThreadManager.createRoomOnMainThread.Add(new CreateRoomData(_roomId, _roomName, _serverPort, _roomPos, _mapId));
+            ThreadManager.createRoomOnMainThread.Add(new CreateRoomData(_roomId, _roomName, _serverPort, _roomPos, mapSize, _mapId));
+            ++roomCnt;
             return _roomId;
         } catch(System.Exception e)
         {
@@ -66,24 +107,11 @@ public class RoomManager : MonoBehaviour
 
     public void LoadMap(Room _room, int map_id)
     {
-        string _json;
-        if(map_id == 0)
-        {
-            string path = "MapData/MyMap.json";
-            if(File.Exists(path) == false){
-                Debug.LogError("Load failed. There is no file(MyMap.json).");
-                return;
-            }
-            _json = File.ReadAllText(path);
-        }
-        else
-            _json = APIMapDataLoader.instance.mapListItems[map_id].map_info;
-            
-        Dictionary<int, DataClass> loaded = JsonUtility.FromJson<Serialization<int, DataClass>>(_json).ToDictionary();
+        Dictionary<int, DataClass> loaded = APIMapDataLoader.instance.mapListItems[map_id].map_info;
         
-
         int[] itemIds = new int[ItemPrefabs.Count];
         int[] enemyIds = new int[EnemyPrefabs.Count];
+        int[] _deathZone = new int[4];
 
         foreach(DataClass data in loaded.Values) {
             int _infoType = data.GetInfoType();
@@ -91,7 +119,7 @@ public class RoomManager : MonoBehaviour
                 int tileType = data.GetAdditionalInfo();
                 Vector3 _pos = data.GetPos();
                 Vector3Int _intPos = new Vector3Int((int)_pos.x, (int)_pos.y, (int)_pos.z);
-                _room.TileGroup.SetTile(_intPos, TileBases[tileType]);
+                _room.TileGroup.SetTile(_intPos, TileBases[tileType - 1]);
             }
             else if(_infoType == (int)TileTypes.Item / 100)
             {
@@ -100,7 +128,8 @@ public class RoomManager : MonoBehaviour
                 int itemIdx = itemType - (int)TileTypes.Item - 1;
                 GameObject itemClone = InstatiateItem(_room.ItemGroup, itemIdx);
                 Item _item = itemClone.GetComponent<Item>();
-                _item.Init(_room.roomId);
+
+                _item.Init(_room.roomId, itemType);
                 _item.server = NetworkManager.instance.servers[_room.serverPort];
                 _room.items.Add(_item.id, _item);
 
@@ -126,10 +155,34 @@ public class RoomManager : MonoBehaviour
             {
                 _room.spawnPoint = data.GetPos();
             }
-            else if(_infoType == (int)TileTypes.BackGround / 100)
+            else if(_infoType == (int)TileTypes.MapSize / 100)
             {
-
+                int _minMaxType = data.GetAdditionalInfo();
+                Vector3 _mapSize = data.GetPos();
+                if(_minMaxType == (int)TileTypes.minSize)
+                {
+                    _deathZone[0] = (int)_mapSize.x;
+                    _deathZone[1] = (int)_mapSize.y;
+                }
+                else if(_minMaxType == (int)TileTypes.maxSize)
+                {
+                    _deathZone[2] = (int)_mapSize.x;
+                    _deathZone[3] = (int)_mapSize.y;
+                }
             }
+        }
+        for(int _x = _deathZone[0] - 2; _x <= _deathZone[2] + 2; ++_x)
+        {
+            _room.DeathZone.SetTile(new Vector3Int(_x, _deathZone[1] - 2, 0), TileBases[0]);
+        }
+        for(int _y = _deathZone[1] - 1; _y <= _deathZone[3] + 1; ++_y)
+        {
+            _room.DeathZone.SetTile(new Vector3Int(_deathZone[0] - 2, _y, 0), TileBases[0]);
+            _room.DeathZone.SetTile(new Vector3Int(_deathZone[2] + 2, _y, 0), TileBases[0]);
+        }
+        for(int _x = _deathZone[0] - 2; _x <= _deathZone[2] + 2; ++_x)
+        {
+            _room.DeathZone.SetTile(new Vector3Int(_x, _deathZone[3] + 2, 0), TileBases[0]);
         }
 
         Debug.Log("load done");
