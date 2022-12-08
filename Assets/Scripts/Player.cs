@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
 {
     public int id;
     public string username;
-    public float _hp;
+    public int _hp;
     public int itemAmount = 0;
     public int maxItemAmount = 3;
     public bool onGround = false;
@@ -63,6 +63,9 @@ public class Player : MonoBehaviour
     private bool isJumpPressed = false;
     bool temp = false;
     public int _fromClient;
+
+    public int BulletCount = 0;
+    public int GrenadeCount = 0;
 
     public void SetPlayerStateFlags(PlayerStateFlags flag)
     {
@@ -239,6 +242,7 @@ public class Player : MonoBehaviour
             int _isFlip = _flip ? -1 : 1;
             obj = RoomManager.instance.InstatiateGrenade(room.PlayerGroup, _firePoint.transform, id);
             Projectile projectile = obj.GetComponent<Projectile>();
+            --GrenadeCount;
             projectile.Initialize(id, this.server, this.room, _isFlip);
         }
 
@@ -288,7 +292,7 @@ public class Player : MonoBehaviour
         {
             currnetShootObject = "Grenade";
         }
-
+        
         if (collision.gameObject.CompareTag("rope"))
         {
             onRope = true;
