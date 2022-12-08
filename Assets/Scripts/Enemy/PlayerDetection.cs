@@ -12,7 +12,7 @@ public class PlayerDetection : MonoBehaviour
         {
             case "player":
                 {
-                    if (transform.GetComponent<Enemy>().DetectPlayer == false)
+                    if (transform.parent.GetComponent<Enemy>().DetectPlayer == false)
                     {
                         transform.parent.GetComponent<Enemy>().DetectPlayer = true;
                         transform.parent.GetComponent<Enemy>().DetectedPlayer = collision.gameObject;
@@ -43,7 +43,7 @@ public class PlayerDetection : MonoBehaviour
         {
             case "player":
                 {
-                    Vector3 enemyTransform = GetComponent<Enemy>().transform.position;
+                    Vector3 enemyTransform = transform.parent.GetComponent<Enemy>().transform.position;
                     transform.parent.GetComponent<Enemy>().DetectPlayer = true;
                     List<float> distance = new List<float>();
                     foreach (GameObject player in Players)
