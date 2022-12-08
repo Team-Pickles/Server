@@ -193,6 +193,12 @@ public class Player : MonoBehaviour
 
     }
 
+    public void OnJumpSpringAction()
+    {
+        GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 0);
+        _vPoint = 1.5f;
+    }
+
     public bool IsGrouned()
     {
         RaycastHit2D _hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - transform.localScale.y / 2.0f), Vector2.down, 0.04f);
@@ -304,32 +310,35 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void OnDamage(){
+    public void OnDamage()
+    {
+        server.serverSend.PlayerDamaged(this);
+        StartCoroutine(Damaged());
+    }
+
+    private IEnumerator Damaged()
+    {
         if ((_state & PlayerStateFlags.Damaged) == 0)
         {
             if (_hp > 0)
                 _hp--;
-
             SetPlayerStateFlags(PlayerStateFlags.Damaged);
             SetPlayerStateFlags(PlayerStateFlags.Stun);
             _hPoint = -0.7f * (_flip == false ? 1 : -1);
             _vPoint = 0.5f;
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 0);
+            for (int i = 0; i < 6; i++)
+            {
+                yield return new WaitForSeconds(0.1f);
+            }
             _hPoint = 0.0f;
-
-            server.serverSend.PlayerDamaged(this);
+            // immortal state
+            {
+                ResetPlayerStateFlags(PlayerStateFlags.Stun);
+                yield return new WaitForSeconds(0.7f);
+                ResetPlayerStateFlags(PlayerStateFlags.Damaged);
+            }
+            yield break;
         }
-    }
-
-    public void OnDamagedEnd()
-    {
-        StartCoroutine(DamagedEnd());
-    }
-
-    private IEnumerator DamagedEnd()
-    {
-        ResetPlayerStateFlags(PlayerStateFlags.Stun);
-        yield return new WaitForSeconds(0.7f);
-        ResetPlayerStateFlags(PlayerStateFlags.Damaged);
     }
 }
