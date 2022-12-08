@@ -12,13 +12,11 @@ public class Enemy : MonoBehaviour
     public Server server;
     public Room room;
     public MapManager mapManager;
-    private Vector3Int enemyPosition;
-    private const float _threshold = 1.0f;
-    private float currentHold = 0.0f;
     private GameObject _player;
     private bool _onGround = false;
     private bool _detectPlayer = false;
     public bool _isMove = false;
+    private float _xSpeed = 5.0f;
     public bool OnGround
     {
         get { return _onGround; }
@@ -66,7 +64,7 @@ public class Enemy : MonoBehaviour
                     scale.x = scale.x > 0.0f ? scale.x : -scale.x;
                     transform.localScale = scale;
 
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(-6.0f, 4.8f);
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(_xSpeed, 4.8f);
                 }
                 else // right
                 {
@@ -74,7 +72,7 @@ public class Enemy : MonoBehaviour
                     scale.x = scale.x > 0.0f ? -scale.x : scale.x;
                     transform.localScale = scale;
 
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(6.0f, 4.8f);
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(_xSpeed, 4.8f);
                 }
             }
             else
