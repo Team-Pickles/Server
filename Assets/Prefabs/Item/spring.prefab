@@ -11,9 +11,11 @@ GameObject:
   - component: {fileID: 7848262806149152247}
   - component: {fileID: 4062336645036409540}
   - component: {fileID: 8406631964439888348}
+  - component: {fileID: -3464304005483881785}
+  - component: {fileID: 6448826454368251769}
   m_Layer: 0
   m_Name: spring
-  m_TagString: Untagged
+  m_TagString: spring
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -95,7 +97,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -111,3 +113,30 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &-3464304005483881785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2099721584905147228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 648c7ee9e7dcca842ab6c5636b304aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  roomId: 
+  itemType: 0
+--- !u!114 &6448826454368251769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2099721584905147228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e331889ffd998d742958990bd8dd9e2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

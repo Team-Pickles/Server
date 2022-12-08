@@ -64,7 +64,7 @@ public class Enemy : MonoBehaviour
                     scale.x = scale.x > 0.0f ? scale.x : -scale.x;
                     transform.localScale = scale;
 
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(_xSpeed, 4.8f);
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(-_xSpeed, 4.8f);
                 }
                 else // right
                 {

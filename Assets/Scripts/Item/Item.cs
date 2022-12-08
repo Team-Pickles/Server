@@ -34,4 +34,9 @@ public class Item : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public void SpringColorChange()
+    {
+        server.serverSend.SpringColorChange(this);
+    }
+
 }

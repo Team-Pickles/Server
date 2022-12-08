@@ -14,7 +14,7 @@ TagManager:
   - trash
   - rope
   - GrenadeItem
-  - GlassBottleItem
+  - spring
   layers:
   - Default
   - TransparentFX
