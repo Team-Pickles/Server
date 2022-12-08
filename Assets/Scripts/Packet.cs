@@ -34,7 +34,8 @@ public enum ServerPackets
     charactorFlip,
     ropeACK,
     startGame,
-    allSpawned
+    springColorChange,
+    allSpawned,
 }
 
 /// <summary>Sent from client to server.</summary>
