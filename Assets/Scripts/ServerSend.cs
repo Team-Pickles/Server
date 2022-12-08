@@ -215,7 +215,7 @@ public class ServerSend
             _packet.Write(_player.id);
             _packet.Write(_player._hp);
             Debug.Log("Damaged : "+_player._hp);
-            sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
+            sendTCPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
         }
     }
     #endregion
