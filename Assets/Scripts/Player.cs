@@ -287,10 +287,10 @@ public class Player : MonoBehaviour
             currnetShootObject = "Grenade";
         }
 
-        if (collision.gameObject.CompareTag("GlassBottIetem") && inputs[(int)KeyInput.CHANGE])
-        {
-            currnetShootObject = "GlassBottom";
-        }
+        // if (collision.gameObject.CompareTag("GlassBottIetem") && inputs[(int)KeyInput.CHANGE])
+        // {
+        //     currnetShootObject = "GlassBottom";
+        // }
 
         if (collision.gameObject.CompareTag("rope"))
         {

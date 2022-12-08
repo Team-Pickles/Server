@@ -9,12 +9,7 @@ using System.Linq;
 public class RoomManager : MonoBehaviour
 {
     public static RoomManager instance;
-    public delegate void controlHandler(int map_id);
-    private void BindingHandler(object data1, object data2)
-    {
-
-    }
-
+//
     private void Awake()
     {
         if (instance == null)
