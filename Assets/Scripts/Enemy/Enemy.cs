@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour
     private static int nextEnemyId = 1;
     public Server server;
     public Room room;
-    public MapManager mapManager;
+    
     private Vector3Int enemyPosition;
     private const float _threshold = 1.0f;
     private float currentHold = 0.0f;

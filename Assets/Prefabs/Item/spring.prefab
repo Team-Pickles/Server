@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7848262806149152247}
   - component: {fileID: 4062336645036409540}
+  - component: {fileID: -8598754627049751127}
   - component: {fileID: 8406631964439888348}
   m_Layer: 0
   m_Name: spring
@@ -85,6 +86,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-8598754627049751127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2099721584905147228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 648c7ee9e7dcca842ab6c5636b304aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  roomId: 
+  itemType: 0
 --- !u!61 &8406631964439888348
 BoxCollider2D:
   m_ObjectHideFlags: 0
