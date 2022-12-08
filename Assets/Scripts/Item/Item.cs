@@ -25,12 +25,18 @@ public class Item : MonoBehaviour
 
     private void Update()
     {
-        server.serverSend.ItemPosition(this);
+        if (this.tag == "trash")
+            server.serverSend.ItemPosition(this);
     }
 
    public void DeleteItem()
     {
         Destroy(gameObject);
+    }
+
+    public void SpringColorChange()
+    {
+        server.serverSend.SpringColorChange(this);
     }
 
 }

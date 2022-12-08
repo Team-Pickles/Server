@@ -215,7 +215,7 @@ public class ServerSend
             _packet.Write(_player.id);
             _packet.Write(_player._hp);
             Debug.Log("Damaged : "+_player._hp);
-            sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
+            sendTCPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
         }
     }
     #endregion
@@ -318,6 +318,15 @@ public class ServerSend
         {
             _packet.Write(_itemID);
             sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
+        }
+    }
+
+    public void SpringColorChange(Item _item)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.springColorChange))
+        {
+            _packet.Write(_item.id);
+            sendTCPDataToAllInRoom(_item.roomId, _packet);
         }
     }
     #endregion
