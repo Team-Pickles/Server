@@ -396,6 +396,18 @@ public class ServerSend
 
     #endregion
 
+    public void SpawnDoor(Door _door, int _toClient)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.spawnDoor))
+        {
+            _packet.Write(_door.id);
+            _packet.Write(_door.transform.localPosition + new Vector3(0,0,1));
+            _packet.Write(_door.isInDoor);
+            Debug.Log("spawn enemy");
+            sendTCPData(_toClient, _packet);
+        }
+    }
+
     public void StartGame(string _roomId, int _mapId)
     {
         using (Packet _packet = new Packet((int)ServerPackets.startGame))

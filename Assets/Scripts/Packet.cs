@@ -36,6 +36,7 @@ public enum ServerPackets
     startGame,
     springColorChange,
     allSpawned,
+    spawnDoor
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -52,7 +53,7 @@ public enum ClientPackets
     readyToStartGame,
     playerJump,
     playerRopeMove,
-    
+    goToNextPortal,
 }
 
 public class Packet : IDisposable

@@ -131,7 +131,7 @@ public class APIMapDataLoader : MonoBehaviour
     }
 
     IEnumerator GetMapList(Action<int> ResultHandler){
-        using ( UnityWebRequest request = UnityWebRequest.Get("http://localhost:3001/api/map/getAllList"))
+        using ( UnityWebRequest request = UnityWebRequest.Get(apiUrl + "api/map/getAllList"))
         {
             request.downloadHandler = new DownloadHandlerBuffer();
 
@@ -171,11 +171,11 @@ public class APIMapDataLoader : MonoBehaviour
 
     IEnumerator IneternetConnectCheck(Action<bool> action)
     {
-        using (UnityWebRequest request = new UnityWebRequest("http://localhost:3001/"))
+        using (UnityWebRequest request = new UnityWebRequest(apiUrl))
         {
 
             request.downloadHandler = new DownloadHandlerBuffer();
-;
+
             yield return request.SendWebRequest();
             if (request.error != null)
             {

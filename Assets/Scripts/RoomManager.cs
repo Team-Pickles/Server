@@ -41,6 +41,7 @@ public class RoomManager : MonoBehaviour
     public List<GameObject> EnemyPrefabs;
     public GameObject ProjectilePrefab;
     public GameObject BulletPrefab;
+    public GameObject[] DoorPrefabs;
     
     public Dictionary<Vector3, Vector2> DeletedPosList = new Dictionary<Vector3, Vector2>();
     public Dictionary<int, Vector3> MapSizeList = new Dictionary<int, Vector3>();
@@ -198,6 +199,38 @@ public class RoomManager : MonoBehaviour
                     _deathZone[3] = (int)_mapSize.y;
                 }
             }
+            else if(_infoType == (int)TileTypes.door)
+            {
+                int doorInfo = data.GetAdditionalInfo();
+                int doorIdx = (doorInfo % 1000) - (int)TileTypes.door - 1;
+                GameObject doorClone;
+                doorClone = InstatiateDoor(_room.MapUtilGroup, doorIdx);
+                
+                Door _door = doorClone.GetComponent<Door>();
+
+                _door.Initialize(doorInfo, doorInfo%1000 == (int)TileTypes.indoor, _room);
+                _door.server = NetworkManager.instance.servers[_room.serverPort];
+                foreach(KeyValuePair<int, Door> doorItem in _room.doors)
+                {
+                    if(doorItem.Value == _door.isInDoor)
+                        continue;
+                    if(doorItem.Key / 1000 == _door.id / 1000)
+                    {
+                        if(_door.isInDoor)
+                        {
+                            _door.nextPortal = doorItem.Value;
+                        }
+                        else
+                        {
+                            doorItem.Value.nextPortal = _door;
+                        }
+                    }
+                }
+                _room.doors.Add(_door.id, _door);
+
+                doorClone.name = ((TileTypes)(doorInfo % 1000)).ToString() + "_" + doorInfo/1000;
+                doorClone.transform.localPosition = data.GetPos();
+            }
         }
         for(int _x = _deathZone[0] - 2; _x <= _deathZone[2] + 2; ++_x)
         {
@@ -291,5 +324,10 @@ public class RoomManager : MonoBehaviour
     public GameObject InstantiateEnemy(GameObject _enemyGroup, int _enemyType)
     {
         return Instantiate(EnemyPrefabs[_enemyType], _enemyGroup.transform);
+    }
+
+    public GameObject InstatiateDoor(GameObject _doorGroup, int _doorType)
+    {
+        return Instantiate(DoorPrefabs[_doorType], _doorGroup.transform);
     }
 }

@@ -109,5 +109,11 @@ public class ServerHandle
         //
     }
 
-    
+    public void GoToNextPortal(int _fromClient, Packet _packet)
+    {
+        string _roomId = _packet.ReadString();
+        int _doorId = _packet.ReadInt();
+        Door _door = server.rooms[_roomId].doors[_doorId];
+        _door.GoToNextPortal();
+    }
 }
