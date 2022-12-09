@@ -69,8 +69,8 @@ public class APIMapDataLoader : MonoBehaviour
         _item.map_difficulty = 0;
         _item.map_maker = "None";
         int cnt = loaded.Count;
-        Vector3 minSize = loaded[cnt - 2].GetPos();
-        Vector3 maxSize = loaded[cnt - 1].GetPos();
+        Vector3 minSize = loaded[cnt - 1].GetPos();
+        Vector3 maxSize = loaded[cnt].GetPos();
         _item.map_size = new Vector2(Math.Abs(maxSize.x - minSize.x), Math.Abs(maxSize.y - minSize.y));
         mapListItems.Add(0, _item);
         //
@@ -105,8 +105,8 @@ public class APIMapDataLoader : MonoBehaviour
         _item.map_difficulty = 0;
         _item.map_maker = "None";
         int cnt = loaded.Count;
-        Vector3 minSize = loaded[cnt - 2].GetPos();
-        Vector3 maxSize = loaded[cnt - 1].GetPos();
+        Vector3 minSize = loaded[cnt - 1].GetPos();
+        Vector3 maxSize = loaded[cnt].GetPos();
         _item.map_size = new Vector2(Math.Abs(maxSize.x - minSize.x), Math.Abs(maxSize.y - minSize.y));
         mapListItems.Add(0, _item);
         //
@@ -150,8 +150,8 @@ public class APIMapDataLoader : MonoBehaviour
                 _item.map_difficulty = _mapInfo.map_difficulty;
                 _item.map_maker = _mapInfo.map_maker;
                 int cnt = loaded.Count;
-                Vector3 minSize = loaded[cnt - 2].GetPos();
-                Vector3 maxSize = loaded[cnt - 1].GetPos();
+                Vector3 minSize = loaded[cnt - 1].GetPos();
+                Vector3 maxSize = loaded[cnt].GetPos();
                 _item.map_size = new Vector2(Math.Abs(maxSize.x - minSize.x), Math.Abs(maxSize.y - minSize.y));
                 mapListItems.Add(_item.map_id, _item);
             }

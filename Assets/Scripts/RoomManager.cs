@@ -77,7 +77,7 @@ public class RoomManager : MonoBehaviour
 
     private void InitRoomPosProcess(int _mapId, int _serverPort, string _roomId){
         Vector2 mapSize = APIMapDataLoader.instance.mapListItems[_mapId].map_size;
-        
+
         Vector3 _roomPos = new Vector3(0, 0, 0);
         if(DeletedPosList.Count > 0)
         {
@@ -86,7 +86,7 @@ public class RoomManager : MonoBehaviour
             if(DeletedPosList[_roomPos].y - _data.y < 0)
             {
                 _roomPos = mapPosSizeList[roomCnt % 2].pos;
-                float _roomPosY = mapPosSizeList[roomCnt % 2].size.y * RoomPosList[roomCnt % 2].y;
+                float _roomPosY = (mapPosSizeList[roomCnt % 2].size.y / 2) + (RoomPosList[roomCnt % 2].y * mapSize.y);
                 _roomPos += new Vector3(0, _roomPosY, 0);
                 mapPosSizeList[roomCnt % 2] = new MapPosSizeData(_roomPos, mapSize);
             }
@@ -95,10 +95,10 @@ public class RoomManager : MonoBehaviour
                 mapPosSizeList[roomCnt % 2] = new MapPosSizeData(_roomPos, mapSize);
             }
         } else {
-            if(roomCnt != 0)
+            if(roomCnt > 1)
             {
                 _roomPos = mapPosSizeList[roomCnt % 2].pos;
-                float _roomPosY = mapPosSizeList[roomCnt % 2].size.y * 2 * RoomPosList[roomCnt % 2].y;
+                float _roomPosY = (mapPosSizeList[roomCnt % 2].size.y / 2) + (RoomPosList[roomCnt % 2].y * mapSize.y);
                 _roomPos += new Vector3(0, _roomPosY, 0);
                 mapPosSizeList[roomCnt % 2] = new MapPosSizeData(_roomPos, mapSize);
                 Debug.Log(mapPosSizeList[roomCnt % 2].pos + "_" + mapPosSizeList[roomCnt % 2].size);
@@ -107,6 +107,7 @@ public class RoomManager : MonoBehaviour
                 mapPosSizeList[1] = new MapPosSizeData(_roomPos, mapSize);
             }
         }
+        Debug.Log(_roomPos.x + ", " + _roomPos.y + ", ");
         NetworkManager.instance.servers[_serverPort].rooms[_roomId].InitRoomPos(_roomPos, mapSize);
     }
 

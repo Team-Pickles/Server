@@ -68,6 +68,7 @@ public class ServerHandle
     {
         int _ItemID = _packet.ReadInt();
         string _roomId = server.clients[_fromClient].roomId;
+        Debug.Log(_roomId + "_" + _ItemID);
         int _itemType = server.rooms[_roomId].items[_ItemID].itemType;
         server.rooms[_roomId].items[_ItemID].DeleteItem();
         int _cnt = 0;
@@ -78,6 +79,7 @@ public class ServerHandle
         else if(_itemType == (int)TileTypes.grenade2)
         {
             _cnt = ++server.clients[_fromClient].player.GrenadeCount;
+            server.clients[_fromClient].player.currnetShootObject = "Grenade";
         }
         
         server.serverSend.ItemCollide(_ItemID, _roomId, _fromClient);

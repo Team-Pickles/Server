@@ -242,7 +242,7 @@ public class Player : MonoBehaviour
             int _isFlip = _flip ? -1 : 1;
             obj = RoomManager.instance.InstatiateGrenade(room.PlayerGroup, _firePoint.transform, id);
             Projectile projectile = obj.GetComponent<Projectile>();
-            --GrenadeCount;
+
             projectile.Initialize(id, this.server, this.room, _isFlip);
         }
 

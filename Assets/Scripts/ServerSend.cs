@@ -329,7 +329,12 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.itemCollide))
         {
             _packet.Write(_itemID);
-            sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
+            if(_exceptClient == -1) {
+                sendTCPDataToAllInRoom( _roomId, _packet);
+            }
+            else {
+                sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
+            }
         }
     }
 

@@ -337,9 +337,9 @@ GameObject:
   - component: {fileID: 7176780128267129}
   - component: {fileID: 5647516978420197246}
   - component: {fileID: 820867024378274818}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Fragile
-  m_TagString: Untagged
+  m_TagString: floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -647,9 +647,9 @@ GameObject:
   - component: {fileID: 4888095015343083211}
   - component: {fileID: 3439224032488012974}
   - component: {fileID: 6349253404762019574}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Block
-  m_TagString: Untagged
+  m_TagString: floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
