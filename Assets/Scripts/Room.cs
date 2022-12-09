@@ -22,6 +22,9 @@ public class Room
     public GameObject EnemyGroup;
     public GameObject ItemGroup;
     public Tilemap DeathZone;
+    public Tilemap FragileGroup;
+    public Tilemap BlockGroup;
+    public GameObject MapUtilGroup;
 
     public Dictionary<int, Client> members = new Dictionary<int, Client>();
     public Dictionary<Vector3, int> ItemInfos = new Dictionary<Vector3, int>();
@@ -30,35 +33,14 @@ public class Room
     public Dictionary<int, Item> items = new Dictionary<int, Item>();
     public Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();
 
-    public Room(string _roomId, string _roomName, int _serverPort, Vector3 _mapAddPosition, GameObject _room)
+    public Room(string _roomId, string _roomName, int _serverPort, GameObject _room)
     {
         roomId = _roomId;
         roomName = _roomName;
         serverPort = _serverPort;
-        mapAddPosition = _mapAddPosition;
+
         room = _room;
-        room.transform.localPosition = new Vector3(0, 0, 0) + _mapAddPosition;
-        for(int i = 0; i < room.transform.childCount; ++i)
-        {
-            GameObject now = room.transform.GetChild(i).gameObject;
-            switch(now.name)
-            {
-                case "TileGroup":
-                    TileGroupGrid = now.GetComponent<Grid>();
-                    TileGroup = now.transform.GetChild(0).GetComponent<Tilemap>();
-                    DeathZone = now.transform.GetChild(1).GetComponent<Tilemap>();
-                    break;
-                case "ItemGroup":
-                    ItemGroup = now;
-                    break;
-                case "EnemyGroup":
-                    EnemyGroup = now;
-                    break;
-                case "PlayerGroup":
-                    PlayerGroup = now;
-                    break;
-            }
-        }
+
     }
 
     public void StartGame(int map_id)
@@ -75,8 +57,42 @@ public class Room
                 SpawnPlayerAndItems();
             }
         );
-        
+
     }
+
+    public void InitRoomPos(Vector3 _mapAddPosition, Vector2 _mapsize) {
+        mapAddPosition = _mapAddPosition;
+        mapSize = _mapsize;
+        room.transform.localPosition = new Vector3(0, 0, 0) + _mapAddPosition;
+        for(int i = 0; i < room.transform.childCount; ++i)
+        {
+            GameObject now = room.transform.GetChild(i).gameObject;
+            switch(now.name)
+            {
+                case "TileGroup":
+                    TileGroupGrid = now.GetComponent<Grid>();
+                    TileGroup = now.transform.GetChild(0).GetComponent<Tilemap>();
+                    DeathZone = now.transform.GetChild(1).GetComponent<Tilemap>();
+                    FragileGroup = now.transform.GetChild(2).GetComponent<Tilemap>();
+                    BlockGroup = now.transform.GetChild(3).GetComponent<Tilemap>();
+                    break;
+                case "ItemGroup":
+                    ItemGroup = now;
+                    break;
+                case "EnemyGroup":
+                    EnemyGroup = now;
+                    break;
+                case "PlayerGroup":
+                    PlayerGroup = now;
+                    break;
+                case "MapUtilGroup":
+                    MapUtilGroup = now;
+                    break;
+            }
+        }
+    }
+
+//
 
     public void SpawnPlayerAndItems()
     {
@@ -92,10 +108,10 @@ public class Room
             _player.room = this;
             _member.player = _player;
 
-            TileGroupGrid.GetComponent<MapManager>().players.Add(playerClone);
+            // TileGroupGrid.GetComponent<MapManager>().players.Add(playerClone);
         }
 
-        TileGroupGrid.GetComponent<MapManager>().Init();
+        // TileGroupGrid.GetComponent<MapManager>().Init();
 
         foreach(Client _member in members.Values)
         {
@@ -122,7 +138,7 @@ public class Room
                 }
             }
         }
-        //
+        NetworkManager.instance.servers[serverPort].serverSend.AllSpawned(roomId);
     }
 
     private void SetMapInfo(int map_id)

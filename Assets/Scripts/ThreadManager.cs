@@ -7,18 +7,17 @@ public class CreateRoomData {
     public string roomId;
     public string roomName;
     public int serverPort;
-    public Vector3 roomPos;
-    public Vector2 mapSize;
+
     public int mapId;
 
-    public CreateRoomData(string _roomId, string _roomName, int _serverPort, Vector3 _roomPos, Vector2 _mapSize, int _mapId)
+    public CreateRoomData(string _roomId, string _roomName, int _serverPort, int _mapId)
     {
         this.roomId = _roomId;
         this.roomName = _roomName;
         this.serverPort = _serverPort;
-        this.roomPos = _roomPos;
+
         this.mapId = _mapId;
-        this.mapSize = _mapSize;
+
     }
 }
 
@@ -78,11 +77,11 @@ public class ThreadManager : MonoBehaviour
                 GameObject _room = NetworkManager.instance.InstantiateRoomPrefab();
                 _room.name = _roomData.roomId;
 
-                Room _roomObject = new Room(_roomData.roomId, _roomData.roomName, _roomData.serverPort, _roomData.roomPos, _room);
+                Room _roomObject = new Room(_roomData.roomId, _roomData.roomName, _roomData.serverPort, _room);
                 _roomObject.mapId = _roomData.mapId;
-                _roomObject.mapSize = _roomData.mapSize;
+
                 NetworkManager.instance.servers[_roomData.serverPort].rooms.Add(_roomData.roomId, _roomObject);
-                //
+                RoomManager.instance.InitRoomPos(_roomData.roomId, _roomData.mapId, _roomData.serverPort);
             }
             createRoomOnMainThread.Clear();
             executeCreateRoomOnMainThread = false;

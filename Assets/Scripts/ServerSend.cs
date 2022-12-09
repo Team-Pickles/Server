@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -171,10 +172,13 @@ public class ServerSend
     {
         using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
         {
-            _packet.Write(_player.id);
-            _packet.Write(_player.transform.localPosition);
-
-            sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
+            try {
+                _packet.Write(_player.id);
+                _packet.Write(_player.transform.localPosition);
+                sendUDPDataToAllInRoom(server.clients[_player.id].roomId, _packet);
+            } catch(Exception _e) {
+                Debug.Log(_e.Message);
+            }
         }
     }
 
@@ -225,10 +229,15 @@ public class ServerSend
     {
         using (Packet _packet = new Packet((int)ServerPackets.spawnProjectile))
         {
-            _packet.Write(_projectile.id);
-            _packet.Write(_projectile.transform.localPosition);
-            _packet.Write(_thrownByplayer);
-            sendTCPDataToAllInRoom(server.clients[_thrownByplayer].roomId, _packet);
+            int _cnt = server.clients[_thrownByplayer].player.GrenadeCount;
+            if(_cnt > 0) {
+                _packet.Write(_projectile.id);
+                _packet.Write(_projectile.transform.localPosition);
+                _packet.Write(_thrownByplayer);
+                _packet.Write(--server.clients[_thrownByplayer].player.GrenadeCount);
+                sendTCPDataToAllInRoom(server.clients[_thrownByplayer].roomId, _packet);
+            }
+           
         }
     }
 
@@ -260,11 +269,14 @@ public class ServerSend
     {
         using(Packet _packet = new Packet((int)ServerPackets.spawnBullet))
         {
-            _packet.Write(_bullet.id);
-            _packet.Write(_bullet.transform.localPosition);
-            _packet.Write(_thrownByplayer);
-
-            sendTCPDataToAllInRoom(server.clients[_thrownByplayer].roomId, _packet);
+            int _cnt = server.clients[_thrownByplayer].player.BulletCount;
+            if(_cnt > 0) {
+                _packet.Write(_bullet.id);
+                _packet.Write(_bullet.transform.localPosition);
+                _packet.Write(_thrownByplayer);
+                _packet.Write(--server.clients[_thrownByplayer].player.BulletCount);
+                sendTCPDataToAllInRoom(server.clients[_thrownByplayer].roomId, _packet);
+            }
         }
     }
 
@@ -317,9 +329,15 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.itemCollide))
         {
             _packet.Write(_itemID);
-            sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
+            if(_exceptClient == -1) {
+                sendTCPDataToAllInRoom( _roomId, _packet);
+            }
+            else {
+                sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
+            }
         }
     }
+
 
     public void SpringColorChange(Item _item)
     {
@@ -327,6 +345,17 @@ public class ServerSend
         {
             _packet.Write(_item.id);
             sendTCPDataToAllInRoom(_item.roomId, _packet);
+        }
+    }
+
+    public void ItemPickedUp(int _itemType, int _cnt, int _toClient)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.itemPickedUp))
+        {
+            _packet.Write(_itemType);
+            _packet.Write(_cnt);
+            _packet.Write(_toClient);
+            sendTCPData(_toClient, _packet);
         }
     }
     #endregion
@@ -372,6 +401,15 @@ public class ServerSend
         using (Packet _packet = new Packet((int)ServerPackets.startGame))
         {
             _packet.Write(_mapId);
+            sendTCPDataToAllInRoom(_roomId, _packet);
+        }
+    }
+
+    public void AllSpawned(string _roomId)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.allSpawned))
+        {
+            _packet.Write(true);
             sendTCPDataToAllInRoom(_roomId, _packet);
         }
     }

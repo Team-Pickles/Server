@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour
     private static int nextEnemyId = 1;
     public Server server;
     public Room room;
-    public MapManager mapManager;
+    
     private GameObject _player;
     private bool _onGround = false;
     private bool _detectPlayer = false;

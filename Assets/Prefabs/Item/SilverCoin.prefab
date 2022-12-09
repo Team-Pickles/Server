@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3114408299533303574}
   - component: {fileID: 1228186219203585027}
+  - component: {fileID: -5983852165931048083}
   - component: {fileID: -3142202191655515159}
   m_Layer: 0
   m_Name: SilverCoin
@@ -74,8 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1407142116297543257, guid: cff9d297bd887344f878091b0dfe4d0c,
-    type: 3}
+  m_Sprite: {fileID: 1407142116297543257, guid: cff9d297bd887344f878091b0dfe4d0c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -86,6 +86,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-5983852165931048083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8544323532627771704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 648c7ee9e7dcca842ab6c5636b304aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  roomId: 
+  itemType: 0
 --- !u!58 &-3142202191655515159
 CircleCollider2D:
   m_ObjectHideFlags: 0
