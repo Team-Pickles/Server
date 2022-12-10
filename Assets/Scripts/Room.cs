@@ -33,6 +33,7 @@ public class Room
     public Dictionary<int, Item> items = new Dictionary<int, Item>();
     public Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();
     public Dictionary<int, Door> doors = new Dictionary<int, Door>();
+    public Dictionary<int, Boss1> boss = new Dictionary<int, Boss1>();
 
     public Room(string _roomId, string _roomName, int _serverPort, GameObject _room)
     {
@@ -68,6 +69,9 @@ public class Room
         {
             if (_client.player != null)
             {
+                _client.player.isHanging = false;
+                _client.player.isJumping = false;
+                _client.player.server.serverSend.RopeACK(_client.player);
                 _client.player.gameObject.transform.localPosition = spawnPoint;
             }
         }
@@ -150,7 +154,14 @@ public class Room
                     NetworkManager.instance.servers[serverPort].serverSend.SpawnEnemy(_enemy, _member.id);
                 }
             }
-            if(doors != null) {
+            //if (enemies != null)
+            //{
+            //    foreach (Boss1 _boss in boss.Values)
+            //    {
+            //        NetworkManager.instance.servers[serverPort].serverSend.SpawnBoss(_boss, _member.id);
+            //    }
+            //}
+            if (doors != null) {
                 foreach(KeyValuePair<int, Door> _door in doors)
                 {
                     NetworkManager.instance.servers[serverPort].serverSend.SpawnDoor(_door.Value, _member.id);
