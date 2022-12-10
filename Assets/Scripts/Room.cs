@@ -33,7 +33,7 @@ public class Room
     public Dictionary<int, Item> items = new Dictionary<int, Item>();
     public Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();
     public Dictionary<int, Door> doors = new Dictionary<int, Door>();
-    public Dictionary<int, Boss1> boss = new Dictionary<int, Boss1>();
+    // public Dictionary<int, Boss1> boss = new Dictionary<int, Boss1>();
 
     public Room(string _roomId, string _roomName, int _serverPort, GameObject _room)
     {

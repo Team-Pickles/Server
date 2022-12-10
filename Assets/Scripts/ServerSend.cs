@@ -367,16 +367,16 @@ public class ServerSend
             sendTCPData(_toClient, _packet);
         }
     }
-    public void SpawnBoss(Boss1 _boss, int _toClient)
-    {
-        using (Packet _packet = new Packet((int)ServerPackets.spawnBoss))
-        {
-            _packet.Write(_boss.id);
-            _packet.Write(_boss.transform.localPosition);
-            Debug.Log("spawn Boss");
-            sendTCPData(_toClient, _packet);
-        }
-    }
+    // public void SpawnBoss(Boss1 _boss, int _toClient)
+    // {
+    //     using (Packet _packet = new Packet((int)ServerPackets.spawnBoss))
+    //     {
+    //         _packet.Write(_boss.id);
+    //         _packet.Write(_boss.transform.localPosition);
+    //         Debug.Log("spawn Boss");
+    //         sendTCPData(_toClient, _packet);
+    //     }
+    // }
 
 
 
