@@ -21,7 +21,7 @@ public class PlayerDetection : MonoBehaviour
 
                     else
                     {
-                        Vector3 enemyTransform = GetComponent<Enemy>().transform.position;
+                        Vector3 enemyTransform = transform.parent.GetComponent<Enemy>().transform.position;
                         List<float> distance = new List<float>();
                         Players.Add(collision.gameObject);
                         foreach (GameObject player in Players)

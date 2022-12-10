@@ -152,6 +152,7 @@ public class Server
             { (int)ClientPackets.playerJump, serverHandle.PlayerJump },
             { (int)ClientPackets.playerRopeMove, serverHandle.PlayerRopeMove },
             { (int)ClientPackets.goToNextPortal, serverHandle.GoToNextPortal },
+            { (int)ClientPackets.readyToRestart, serverHandle.ReadyToRestartGame },
         };
 
         Debug.Log("Initialized pakcets.");
