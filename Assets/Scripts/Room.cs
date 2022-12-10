@@ -27,8 +27,7 @@ public class Room
     public GameObject MapUtilGroup;
 
     public Dictionary<int, Client> members = new Dictionary<int, Client>();
-    public Dictionary<Vector3, int> ItemInfos = new Dictionary<Vector3, int>();
-    public Dictionary<Vector3, int> EnemyInfos = new Dictionary<Vector3, int>();
+    
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
     public Dictionary<int, Item> items = new Dictionary<int, Item>();
     public Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();

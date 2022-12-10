@@ -182,7 +182,8 @@ public class RoomManager : MonoBehaviour
             }
             else if(_infoType == (int)TileTypes.Player / 100)
             {
-                _room.spawnPoint = data.GetPos();
+                if(_room.spawnPoint == new Vector3(0, 0, 0))
+                    _room.spawnPoint = data.GetPos();
             }
             else if(_infoType == (int)TileTypes.MapSize / 100)
             {
@@ -247,6 +248,40 @@ public class RoomManager : MonoBehaviour
         }
 
         Debug.Log("load done");
+    }
+
+    public void ResetRoom(Room _room)
+    {
+        _room.items.Clear();
+        _room.enemies.Clear();
+        _room.doors.Clear();
+        foreach(Client _client in _room.members.Values)
+        {
+            _client.player._hp = _client.player.maxHealth;
+        }
+        for(int i = 0; i < _room.room.transform.childCount; ++i)
+        {
+            GameObject now = _room.room.transform.GetChild(i).gameObject;
+            switch(now.name)
+            {
+                case "TileGroup":
+                    _room.TileGroup.RefreshAllTiles();
+                    _room.DeathZone.RefreshAllTiles();
+                    _room.FragileGroup.RefreshAllTiles();
+                    _room.BlockGroup.RefreshAllTiles();
+                    break;
+                default:
+                    Transform[] childList = now.GetComponentsInChildren<Transform>();
+                    for(int childIdx = 0; childIdx < childList.Length; ++childIdx)
+                    {
+                        if(childList[childIdx] != now.transform)
+                        {
+                            Destroy(childList[childIdx].gameObject);
+                        }
+                    }
+                    break;
+            }
+        }
     }
 
     public void InitRoomPos(string _roomId, int _mapId, int _serverPort)

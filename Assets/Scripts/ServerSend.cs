@@ -433,4 +433,22 @@ public class ServerSend
             sendTCPDataToAllInRoom(_roomId, _packet);
         }
     }
+
+    public void askToRestart(string _roomId, int _exceptClient)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.askToRestart))
+        {
+            sendTCPDataToAllInRoom(_exceptClient, _roomId, _packet);
+        }
+    }
+
+    public void RestartGame(string _roomId, bool _isRestart)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.restart))
+        {
+            _packet.Write(server.rooms[_roomId].mapId);
+            _packet.Write(_isRestart);
+            sendTCPDataToAllInRoom(_roomId, _packet);
+        }
+    }
 }
