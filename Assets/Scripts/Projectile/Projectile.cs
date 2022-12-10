@@ -1,11 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class Projectile : MonoBehaviour
 {
     public Dictionary<int, Projectile> projectiles = new Dictionary<int, Projectile>();
+    private GameObject _tilemapFragile, _tilemapBlock;
     private static int nextProjectiledId = 1;
+    private int _x, _y;
 
     public int id;
     public Rigidbody2D rigidbody;
@@ -22,10 +26,6 @@ public class Projectile : MonoBehaviour
         server.serverSend.ProjectilesPosition(this);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        //Debug.Log($"{collision.collider.name} - {collision.otherCollider.name}");
-    }
 
     public void Initialize(int _thrownByPlayer, Server server, Room room, int isFlip)
     {
@@ -37,26 +37,31 @@ public class Projectile : MonoBehaviour
         nextProjectiledId++;
         projectiles.Add(id, this);
 
+        _tilemapFragile = GameObject.Find("Fragile");
+        _tilemapBlock = GameObject.Find("Block");
+
         server.serverSend.SpawnProjectile(this, thrownByPlayer);
 
         GetComponent<Rigidbody2D>().AddForce(new Vector2(100.0f * isFlip, 500.0f));
+        GetComponent<Rigidbody2D>().angularVelocity = 300.0f;
         StartCoroutine(ExplodeAfterTime());
 
     }
 
     private void Explode()
     {
-        List<Vector3Int> positions = new List<Vector3Int>();
-        for (int i=-3;i<=3;i++)
+        _x = (int)Math.Floor(transform.position.x);
+        _y = (int)Math.Floor(transform.position.y);
+        for (int i = -2; i <= 2; i++)
         {
-            for (int j=-3;j<=3;j++)
+            for (int j = -2; j <= 2; j++)
             {
-                Vector3Int position = new Vector3Int((int)this.transform.localPosition.x + i, (int)this.transform.localPosition.y + j, 0);
-                room.TileGroup.SetTile(position, null);
-                positions.Add(position);
+                Vector3Int position = new Vector3Int(_x + i, _y + j, 0);
+                _tilemapFragile.GetComponent<Tilemap>().SetTile(position, null);
+                _tilemapBlock.GetComponent<Tilemap>().SetTile(position, null);
             }
         }
-        server.serverSend.ProjectilesExploded(this, positions);
+        server.serverSend.ProjectilesExploded(this);
         projectiles.Remove(id);
         Destroy(gameObject);
     }
@@ -67,6 +72,5 @@ public class Projectile : MonoBehaviour
 
         Explode();
     }
-
 
 }

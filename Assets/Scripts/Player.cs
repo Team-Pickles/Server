@@ -6,12 +6,10 @@ public enum KeyInput
     RIGHT = 0,
     LEFT,
     DASH,
-    CHANGE,
     UPARROW,
     DOWNARROW,
     //0: RIGHT
     //1: LEFT
-    //2: DASH (X)
     //3: CHANGE (Z)
     //4: UP
     //5: DOWN
@@ -40,7 +38,6 @@ public class Player : MonoBehaviour
     private bool isVaccume = false;
 
     //Shoot
-    public string currnetShootObject = "Bullet";
     private GameObject _firePoint;
 
     //Hanging
@@ -86,7 +83,7 @@ public class Player : MonoBehaviour
         id = _id;
         username = _username;
         _hp = 3;
-        inputs = new bool[6];
+        inputs = new bool[5];
     }
 
     public void SetInput(bool[] _inputs, Quaternion _rotation)
@@ -221,31 +218,34 @@ public class Player : MonoBehaviour
         return false;
     }
 
-    public void Shoot(Vector3 _viewDirection)
+    public void ShootBullet(Vector3 _viewDirection)
     {
         GameObject obj;
-        if (_hp <= 0f)
+        if (_hp <= 0f || BulletCount <=0)
+        {
+            return;
+        }
+        
+        int _isFlip = _flip ? -1 : 1;
+        obj = RoomManager.instance.InstatiateBullet(room.PlayerGroup, _firePoint.transform, id);
+        Bullet bullet = obj.GetComponent<Bullet>();
+        bullet.Initialize(id, this.server, _isFlip);
+        BulletCount--;
+    }
+
+    public void ShootGrenade(Vector3 _viewDirection)
+    {
+        GameObject obj;
+        if (_hp <= 0f || GrenadeCount <= 0)
         {
             return;
         }
 
-        if (currnetShootObject == "Bullet")
-        {
-            int _isFlip = _flip ? -1 : 1;
-            obj = RoomManager.instance.InstatiateBullet(room.PlayerGroup, _firePoint.transform, id);
-            Bullet bullet = obj.GetComponent<Bullet>();
-            bullet.Initialize(id, this.server, _isFlip);
-        }
-
-        if (currnetShootObject == "Grenade")
-        {
-            int _isFlip = _flip ? -1 : 1;
-            obj = RoomManager.instance.InstatiateGrenade(room.PlayerGroup, _firePoint.transform, id);
-            Projectile projectile = obj.GetComponent<Projectile>();
-
-            projectile.Initialize(id, this.server, this.room, _isFlip);
-        }
-
+        int _isFlip = _flip ? -1 : 1;
+        obj = RoomManager.instance.InstatiateGrenade(room.PlayerGroup, _firePoint.transform, id);
+        Projectile projectile = obj.GetComponent<Projectile>();
+        projectile.Initialize(id, this.server, this.room, _isFlip);
+        GrenadeCount--;
     }
 
     public void StartVaccume(Vector3 _vaccumeDirection)
@@ -287,12 +287,7 @@ public class Player : MonoBehaviour
     }
 
     private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("GrenadeItem") && inputs[(int)KeyInput.CHANGE])
-        {
-            currnetShootObject = "Grenade";
-        }
-        
+    {    
         if (collision.gameObject.CompareTag("rope"))
         {
             onRope = true;
