@@ -45,11 +45,18 @@ public class ServerHandle
         server.clients[_fromClient].player.SetInput(_inputs, _rotation);
     }
 
-    public void PlayerShoot(int _fromClient, Packet _packet)
+    public void PlayerBullet(int _fromClient, Packet _packet)
     {
         Vector3 _shootDirection = _packet.ReadVector3();
 
-        server.clients[_fromClient].player.Shoot(_shootDirection);
+        server.clients[_fromClient].player.ShootBullet(_shootDirection);
+    }
+
+    public void PlayerGrenade(int _fromClient, Packet _packet)
+    {
+        Vector3 _shootDirection = _packet.ReadVector3();
+
+        server.clients[_fromClient].player.ShootGrenade(_shootDirection);
     }
 
 
@@ -74,12 +81,13 @@ public class ServerHandle
         int _cnt = 0;
         if(_itemType == (int)TileTypes.trash)
         {
-            _cnt = ++server.clients[_fromClient].player.BulletCount;
+            server.clients[_fromClient].player.BulletCount += 10;
+            _cnt = server.clients[_fromClient].player.BulletCount;
         }
         else if(_itemType == (int)TileTypes.grenade2)
         {
-            _cnt = ++server.clients[_fromClient].player.GrenadeCount;
-            server.clients[_fromClient].player.currnetShootObject = "Grenade";
+            server.clients[_fromClient].player.GrenadeCount += 5;
+            _cnt = server.clients[_fromClient].player.GrenadeCount;
         }
         
         server.serverSend.ItemCollide(_ItemID, _roomId, _fromClient);

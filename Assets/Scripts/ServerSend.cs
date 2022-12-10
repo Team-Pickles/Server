@@ -234,7 +234,7 @@ public class ServerSend
                 _packet.Write(_projectile.id);
                 _packet.Write(_projectile.transform.localPosition);
                 _packet.Write(_thrownByplayer);
-                _packet.Write(--server.clients[_thrownByplayer].player.GrenadeCount);
+                _packet.Write(server.clients[_thrownByplayer].player.GrenadeCount);
                 sendTCPDataToAllInRoom(server.clients[_thrownByplayer].roomId, _packet);
             }
            
@@ -251,16 +251,12 @@ public class ServerSend
         }
     }
 
-    public void ProjectilesExploded(Projectile _projectile, List<Vector3Int> _positions)
+    public void ProjectilesExploded(Projectile _projectile)
     {
         using (Packet _packet = new Packet((int)ServerPackets.projectileExploded))
         {
             _packet.Write(_projectile.id);
             _packet.Write(_projectile.transform.localPosition);
-            _packet.Write(_positions.Count);
-            foreach (Vector3Int _position in _positions) {
-                _packet.Write(_position);
-            }
             sendTCPDataToAllInRoom(server.clients[_projectile.thrownByPlayer].roomId, _packet);
         }
     }
@@ -274,7 +270,7 @@ public class ServerSend
                 _packet.Write(_bullet.id);
                 _packet.Write(_bullet.transform.localPosition);
                 _packet.Write(_thrownByplayer);
-                _packet.Write(--server.clients[_thrownByplayer].player.BulletCount);
+                _packet.Write(server.clients[_thrownByplayer].player.BulletCount);
                 sendTCPDataToAllInRoom(server.clients[_thrownByplayer].roomId, _packet);
             }
         }
@@ -371,6 +367,18 @@ public class ServerSend
             sendTCPData(_toClient, _packet);
         }
     }
+    public void SpawnBoss(Boss1 _boss, int _toClient)
+    {
+        using (Packet _packet = new Packet((int)ServerPackets.spawnBoss))
+        {
+            _packet.Write(_boss.id);
+            _packet.Write(_boss.transform.localPosition);
+            Debug.Log("spawn Boss");
+            sendTCPData(_toClient, _packet);
+        }
+    }
+
+
 
     public void EnemyPosition(Enemy _enemy)
     {

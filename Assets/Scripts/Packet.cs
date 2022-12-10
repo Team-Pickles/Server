@@ -36,7 +36,8 @@ public enum ServerPackets
     startGame,
     springColorChange,
     allSpawned,
-    spawnDoor
+    spawnDoor,
+    spawnBoss
 }
 
 /// <summary>Sent from client to server.</summary>
@@ -44,7 +45,8 @@ public enum ClientPackets
 {
     TCPConnenctinCheckReceived = 1,
     playerMovement,
-    playerShoot,
+    playerShootBullet,
+    playerShootGrenade,
     playerThrowItem,
     udpTestReceive,
     playerStartVacuume,
