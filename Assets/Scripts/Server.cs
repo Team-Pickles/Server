@@ -150,7 +150,7 @@ public class Server
             { (int)ClientPackets.readyToStartGame, serverHandle.ReadyToStartGame},
             { (int)ClientPackets.playerJump, serverHandle.PlayerJump },
             { (int)ClientPackets.playerRopeMove, serverHandle.PlayerRopeMove },
-            
+            { (int)ClientPackets.goToNextPortal, serverHandle.GoToNextPortal },
         };
 
         Debug.Log("Initialized pakcets.");

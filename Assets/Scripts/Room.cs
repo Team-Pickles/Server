@@ -32,6 +32,7 @@ public class Room
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
     public Dictionary<int, Item> items = new Dictionary<int, Item>();
     public Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();
+    public Dictionary<int, Door> doors = new Dictionary<int, Door>();
 
     public Room(string _roomId, string _roomName, int _serverPort, GameObject _room)
     {
@@ -58,6 +59,18 @@ public class Room
             }
         );
 
+    }
+
+    public void GoToNextPortal(Vector3 _nextPos)
+    {
+        spawnPoint = _nextPos;
+        foreach (Client _client in members.Values)
+        {
+            if (_client.player != null)
+            {
+                _client.player.gameObject.transform.localPosition = spawnPoint;
+            }
+        }
     }
 
     public void InitRoomPos(Vector3 _mapAddPosition, Vector2 _mapsize) {
@@ -135,6 +148,12 @@ public class Room
                 foreach (Enemy _enemy in enemies.Values)
                 {
                     NetworkManager.instance.servers[serverPort].serverSend.SpawnEnemy(_enemy, _member.id);
+                }
+            }
+            if(doors != null) {
+                foreach(KeyValuePair<int, Door> _door in doors)
+                {
+                    NetworkManager.instance.servers[serverPort].serverSend.SpawnDoor(_door.Value, _member.id);
                 }
             }
         }

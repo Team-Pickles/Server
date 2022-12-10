@@ -31336,6 +31336,9 @@ MonoBehaviour:
   - {fileID: 99511372075380570, guid: 97f9ea3b77f3f16448134256fa38f2d7, type: 3}
   ProjectilePrefab: {fileID: 3305180255072280105, guid: 0aa89409d460d2040bd26e1954bf7afe, type: 3}
   BulletPrefab: {fileID: 8324424231299544829, guid: 88fa4f87e7856c2428698880a153da94, type: 3}
+  DoorPrefabs:
+  - {fileID: 7389048374384852592, guid: 72cbecc06bde8f9419582867556fd00d, type: 3}
+  - {fileID: 7389048374384852592, guid: 5c7f674c6709e8e46b052d28dd07a543, type: 3}
 --- !u!1 &1918009205
 GameObject:
   m_ObjectHideFlags: 0
