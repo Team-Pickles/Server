@@ -5,14 +5,13 @@ public enum KeyInput
 {
     RIGHT = 0,
     LEFT,
-    DASH,
+
     UPARROW,
     DOWNARROW,
     //0: RIGHT
     //1: LEFT
-    //3: CHANGE (Z)
-    //4: UP
-    //5: DOWN
+    //2: UP
+    //3: DOWN
 }
 
 public enum PlayerStateFlags
@@ -84,7 +83,7 @@ public class Player : MonoBehaviour
         id = _id;
         username = _username;
         _hp = maxHealth;
-        inputs = new bool[5];
+        inputs = new bool[4];
     }
 
     public void SetInput(bool[] _inputs, Quaternion _rotation)
@@ -133,7 +132,7 @@ public class Player : MonoBehaviour
 
         else if (!isHanging)
         {
-            speed += inputs[(int)KeyInput.DASH] ? 1 : 0;
+
             _hPoint = (inputs[(int)KeyInput.LEFT] ? -speed : 0) + (inputs[(int)KeyInput.RIGHT] ? speed : 0);
 
             if (_hPoint > 0)
