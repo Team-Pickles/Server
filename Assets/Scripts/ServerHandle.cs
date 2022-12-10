@@ -105,6 +105,7 @@ public class ServerHandle
         {
             server.serverSend.StartGame(_roomId, server.rooms[_roomId].mapId);
             server.rooms[_roomId].StartGame(server.rooms[_roomId].mapId);
+            server.rooms[_roomId].readyPlayerCount = 0;
         }
         //
     }
@@ -115,5 +116,33 @@ public class ServerHandle
         int _doorId = _packet.ReadInt();
         Door _door = server.rooms[_roomId].doors[_doorId];
         _door.GoToNextPortal();
+    }
+
+    public void ReadyToRestartGame(int _fromClient, Packet _packet)
+    {
+        string _roomId = _packet.ReadString();
+        bool _sayYes = _packet.ReadBool();
+        if(_sayYes)
+        {
+            server.rooms[_roomId].readyPlayerCount += 1;
+            Debug.Log("READY TO RESTART: " + server.rooms[_roomId].readyPlayerCount);
+            if(server.rooms[_roomId].readyPlayerCount == server.rooms[_roomId].members.Count)
+            {
+                server.serverSend.RestartGame(_roomId, true);
+                RoomManager.instance.ResetRoom(server.rooms[_roomId]);
+                server.rooms[_roomId].StartGame(server.rooms[_roomId].mapId);
+                server.rooms[_roomId].readyPlayerCount = 0;
+            }
+            else
+            {
+                server.serverSend.askToRestart(_roomId, _fromClient);
+            }
+        }
+        else
+        {
+            server.rooms[_roomId].readyPlayerCount = 0;
+            Debug.Log("Do not restart");
+            server.serverSend.RestartGame(_roomId, false);
+        }
     }
 }

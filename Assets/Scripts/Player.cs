@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     public int id;
     public string username;
     public int _hp;
+    public int maxHealth = 3;
     public int itemAmount = 0;
     public int maxItemAmount = 3;
     public bool onGround = false;
@@ -85,7 +86,7 @@ public class Player : MonoBehaviour
     {
         id = _id;
         username = _username;
-        _hp = 3;
+        _hp = maxHealth;
         inputs = new bool[6];
     }
 
