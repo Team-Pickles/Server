@@ -54,20 +54,26 @@ public class Server
 
     private void TCPConnectionCallback(IAsyncResult _result)
     {
-        TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
-        tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectionCallback), null);
+        try {
+            TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
+            tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectionCallback), null);
 
-        Debug.Log($"Incomming connenction from {_client.Client.RemoteEndPoint}...");
-        for (int i = 1; i <= MaxPlayer; i++)
-        {
-            //해당 객체가 비어있다면
-            if (clients[i].tcp.socket == null)
+            Debug.Log($"Incomming connenction from {_client.Client.RemoteEndPoint}...");
+            for (int i = 1; i <= MaxPlayer; i++)
             {
-                clients[i].tcp.Connect(_client);
-                return;
+                //해당 객체가 비어있다면
+                if (clients[i].tcp.socket == null)
+                {
+                    clients[i].tcp.Connect(_client);
+                    return;
+                }
             }
+            Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server Full!");
         }
-        Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server Full!");
+        catch(Exception _ex)
+        {
+            Debug.Log($"Error occured with : {_ex}");
+        }
     }
 
     private void UDPReceiveCallback(IAsyncResult _result)
