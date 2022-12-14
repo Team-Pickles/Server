@@ -89,6 +89,7 @@ public class Room
                     TileGroup = now.transform.GetChild(0).GetComponent<Tilemap>();
                     DeathZone = now.transform.GetChild(1).GetComponent<Tilemap>();
                     FragileGroup = now.transform.GetChild(2).GetComponent<Tilemap>();
+                    FragileGroup.GetComponent<Fragile>().room = this;
                     BlockGroup = now.transform.GetChild(3).GetComponent<Tilemap>();
                     break;
                 case "ItemGroup":

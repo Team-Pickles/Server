@@ -40,6 +40,7 @@ public enum ServerPackets
     spawnBoss,
     askToRestart,
     restart,
+    fragileBreak,
 }
 
 /// <summary>Sent from client to server.</summary>
