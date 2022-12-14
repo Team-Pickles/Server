@@ -123,7 +123,7 @@ public class ServerHandle
         string _roomId = _packet.ReadString();
         int _doorId = _packet.ReadInt();
         Door _door = server.rooms[_roomId].doors[_doorId];
-        _door.GoToNextPortal();
+        _door.GoToNextPortal(server.clients[_fromClient]);
     }
 
     public void ReadyToRestartGame(int _fromClient, Packet _packet)

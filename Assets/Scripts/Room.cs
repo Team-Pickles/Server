@@ -61,19 +61,18 @@ public class Room
 
     }
 
-    public void GoToNextPortal(Vector3 _nextPos)
+    public void GoToNextPortal(Client _client, Vector3 _nextPos)
     {
         spawnPoint = _nextPos;
-        foreach (Client _client in members.Values)
+
+        if (_client.player != null)
         {
-            if (_client.player != null)
-            {
-                _client.player.isHanging = false;
-                _client.player.isJumping = false;
-                _client.player.server.serverSend.RopeACK(_client.player);
-                _client.player.gameObject.transform.localPosition = spawnPoint;
-            }
+            _client.player.isHanging = false;
+            _client.player.isJumping = false;
+            _client.player.server.serverSend.RopeACK(_client.player);
+            _client.player.gameObject.transform.localPosition = spawnPoint;
         }
+        
     }
 
     public void InitRoomPos(Vector3 _mapAddPosition, Vector2 _mapsize) {
