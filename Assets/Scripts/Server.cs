@@ -17,23 +17,29 @@ public class Server
     private TcpListener tcpListener;
     private UdpClient udpListener;
 
-    public Dictionary<int,Client> clients = new Dictionary<int, Client>();
+    public Dictionary<int, Client> clients = new Dictionary<int, Client>();
     public Dictionary<string, Room> rooms = new Dictionary<string, Room>();
     public delegate void PacketHandler(int _fromClient, Packet _packet);
     public Dictionary<int, PacketHandler> packetHandler;
 
     public ServerHandle serverHandle;
     public ServerSend serverSend;
-
+    string host = "ec2-3-36-114-195.ap-northeast-2.compute.amazonaws.com";
     public bool Start(int _maxPlayer, int _port)
     {
+        if (NetworkManager.instance.isEditor == true)
+            host = "127.0.0.1";
         MaxPlayer = _maxPlayer;
         Port = _port;
 
         Debug.Log($"Starting Server....");
+        IPHostEntry ipHost = Dns.GetHostEntry(host);
+        IPAddress ipAddr = ipHost.AddressList[0];
+        IPEndPoint ipLocalEndPoint = new IPEndPoint(ipAddr, _port);
         InitalizeServerData();
-        try {
-            tcpListener = new TcpListener(IPAddress.Any, Port);
+        try
+        {
+            tcpListener = new TcpListener(ipLocalEndPoint);
             tcpListener.Start();
 
             //비동기 연결
@@ -46,7 +52,8 @@ public class Server
 
             return true;
         }
-        catch(Exception _e) {
+        catch (Exception _e)
+        {
             Debug.Log(_e.Message);
             return true;
         }
@@ -128,13 +135,13 @@ public class Server
             Debug.Log($"Error occured with : {_ex}");
         }
     }
-    
+
 
     private void InitalizeServerData()
     {
-        for (int i=1; i<= MaxPlayer; i++)
+        for (int i = 1; i <= MaxPlayer; i++)
         {
-            clients.Add(i,new Client(i, $"tester_{i}", this));
+            clients.Add(i, new Client(i, $"tester_{i}", this));
         }
         serverHandle = new ServerHandle(this);
         serverSend = new ServerSend(this);

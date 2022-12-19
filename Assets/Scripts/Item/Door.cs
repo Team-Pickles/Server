@@ -18,6 +18,6 @@ public class Door : MonoBehaviour
     }
 
     public void GoToNextPortal(){
-        room.GoToNextPortal(nextPortal.transform.position);
+        room.GoToNextPortal(nextPortal.transform.localPosition);
     }
 }

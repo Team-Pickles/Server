@@ -75,21 +75,20 @@ public class ServerHandle
     {
         int _ItemID = _packet.ReadInt();
         string _roomId = server.clients[_fromClient].roomId;
-        Debug.Log(_roomId + "_" + _ItemID);
         int _itemType = server.rooms[_roomId].items[_ItemID].itemType;
         server.rooms[_roomId].items[_ItemID].DeleteItem();
         int _cnt = 0;
-        if(_itemType == (int)TileTypes.trash)
+        if (_itemType == (int)TileTypes.trash)
         {
             server.clients[_fromClient].player.BulletCount += 10;
             _cnt = server.clients[_fromClient].player.BulletCount;
         }
-        else if(_itemType == (int)TileTypes.grenade2)
+        else if (_itemType == (int)TileTypes.grenade2)
         {
             server.clients[_fromClient].player.GrenadeCount += 5;
             _cnt = server.clients[_fromClient].player.GrenadeCount;
         }
-        
+
         server.serverSend.ItemCollide(_ItemID, _roomId, _fromClient);
         server.serverSend.ItemPickedUp(_itemType, _cnt, _fromClient);
     }
@@ -109,7 +108,7 @@ public class ServerHandle
         string _roomId = _packet.ReadString();
         server.rooms[_roomId].readyPlayerCount += 1;
         Debug.Log("READY TO START: " + server.rooms[_roomId].readyPlayerCount + "/" + server.rooms[_roomId].members.Count);
-        if(server.rooms[_roomId].readyPlayerCount == server.rooms[_roomId].members.Count)
+        if (server.rooms[_roomId].readyPlayerCount == server.rooms[_roomId].members.Count)
         {
             server.serverSend.StartGame(_roomId, server.rooms[_roomId].mapId);
             server.rooms[_roomId].StartGame(server.rooms[_roomId].mapId);
@@ -130,11 +129,11 @@ public class ServerHandle
     {
         string _roomId = _packet.ReadString();
         bool _sayYes = _packet.ReadBool();
-        if(_sayYes)
+        if (_sayYes)
         {
             server.rooms[_roomId].readyPlayerCount += 1;
             Debug.Log("READY TO RESTART: " + server.rooms[_roomId].readyPlayerCount);
-            if(server.rooms[_roomId].readyPlayerCount == server.rooms[_roomId].members.Count)
+            if (server.rooms[_roomId].readyPlayerCount == server.rooms[_roomId].members.Count)
             {
                 server.serverSend.RestartGame(_roomId, true);
                 RoomManager.instance.ResetRoom(server.rooms[_roomId]);

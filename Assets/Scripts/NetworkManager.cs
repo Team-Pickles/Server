@@ -22,6 +22,7 @@ public class NetworkManager : MonoBehaviour
     public Transform RoomGroup;
 
     private int _port;
+    public bool isEditor=false;
 
     public Dictionary<int, Server> servers = new Dictionary<int, Server>();
     public Dictionary<string, int> roomInfos = new Dictionary<string, int>();
@@ -46,9 +47,13 @@ public class NetworkManager : MonoBehaviour
         Listener _listener = new Listener();
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
-
-        string host = "127.0.0.1";
+        string host = "ec2-3-36-114-195.ap-northeast-2.compute.amazonaws.com";
+#if UNITY_EDITOR
+        host = "127.0.0.1";
+        isEditor = true;
+#endif
         IPHostEntry ipHost = Dns.GetHostEntry(host);
+        Debug.Log(ipHost.AddressList[0]);
         //주소가 여러개일 수 있어서 배열로 받음
         IPAddress ipAddr = ipHost.AddressList[0];
         //최종적인 주소
@@ -140,7 +145,7 @@ public class NetworkManager : MonoBehaviour
             _socket.Close();
         }
 //
-        #region Network comuunication, creat join room
+#region Network comuunication, creat join room
         void RegisterRecv(SocketAsyncEventArgs recvArgs)
         {
             bool pending = _socket.ReceiveAsync(recvArgs);
@@ -160,18 +165,20 @@ public class NetworkManager : MonoBehaviour
                     Debug.Log($"[From Client]{recvData}");
                     string[] requests = recvData.Split('-');
                     Debug.Log(requests.Length);
-                    if(requests[0] == "Logout")
+                    if (requests[0] == "Logout")
                     {
                         instance.LogoutProcess(recvData.Replace("Logout-", ""));
                     }
-                    else if(requests[0] == "RoomNameCheck")
+                    else if (requests[0] == "RoomNameCheck")
                     {
-                        if(instance.roomInfos.ContainsKey(requests[1]))
+                        if (instance.roomInfos.ContainsKey(requests[1]))
                         {
                             string result = "Duplicated";
                             byte[] sendBuff = Encoding.UTF8.GetBytes(result);
                             Send(sendBuff);
-                        } else {
+                        }
+                        else
+                        {
                             string result = "Ok";
                             byte[] sendBuff = Encoding.UTF8.GetBytes(result);
                             Send(sendBuff);
@@ -186,25 +193,27 @@ public class NetworkManager : MonoBehaviour
                         l.Stop();
 
                         int _serverPort = port;
-                        foreach(Server _server in instance.servers.Values)
+                        foreach (Server _server in instance.servers.Values)
                         {
-                            if(_server.rooms.Count < 20)
+                            if (_server.rooms.Count < 20)
                             {
                                 _serverPort = _server.Port;
                                 break;
                             }
                         }
-                        
-                        if(_serverPort == port)
+
+                        if (_serverPort == port)
                         {
                             bool isDone = false;
-                            while(!isDone) {
+                            while (!isDone)
+                            {
                                 Server server = new Server();
-                                isDone = server.Start(4,port);
+                                isDone = server.Start(4, port);
                                 instance.servers.Add(port, server);
                             }
                         }
-                        try {
+                        try
+                        {
                             string _roomName = requests[1];
                             string _roomId = RoomManager.instance.CreateRoom(_roomName, _serverPort, Convert.ToInt32(requests[2]));
                             instance.roomInfos.Add(_roomId, _serverPort);
@@ -214,7 +223,8 @@ public class NetworkManager : MonoBehaviour
                             byte[] sendBuff = Encoding.UTF8.GetBytes(result);
                             Debug.Log(result);
                             Send(sendBuff);
-                        } catch(Exception _e)
+                        }
+                        catch (Exception _e)
                         {
                             Debug.Log(_e.Message);
                         }
@@ -227,7 +237,7 @@ public class NetworkManager : MonoBehaviour
                             int _memberCnt = instance.servers[roomInfo.Value].rooms[roomInfo.Key].members.Count;
                             result += $"{roomInfo.Key}-{instance.roomNameIds[roomInfo.Key]}-{_memberCnt},";
                         }
-                        if(result.Length == 0)
+                        if (result.Length == 0)
                         {
                             result = "None";
                         }
@@ -240,13 +250,14 @@ public class NetworkManager : MonoBehaviour
                         string ReplaceResult = recvData.Replace("JoinRoom", "");
                         int result = -1;
                         instance.roomInfos.TryGetValue(ReplaceResult, out result);
-                        if(result != -1)
+                        if (result != -1)
                         {
-                            if(instance.roomMemberCnts[ReplaceResult] == 4)
+                            if (instance.roomMemberCnts[ReplaceResult] == 4)
                             {
                                 result = -2;
                             }
-                            else {
+                            else
+                            {
                                 instance.roomMemberCnts[ReplaceResult] += 1;
                             }
                         }
@@ -274,7 +285,7 @@ public class NetworkManager : MonoBehaviour
             _sendArgs.SetBuffer(buff, 0, buff.Length);
 
             bool pending = _socket.SendAsync(_sendArgs);
-            
+
             if (pending == false)
                 OnSendCompleted(null, _sendArgs);
         }
@@ -311,7 +322,7 @@ public class NetworkManager : MonoBehaviour
                     Disconnect();
                 }
             }
-            #endregion
+#endregion
         }
     }
     public class Listener
@@ -370,7 +381,8 @@ public class NetworkManager : MonoBehaviour
     {
         instance.roomMemberCnts[_roomId] -= 1;
         int _memberCnt = instance.roomMemberCnts[_roomId];
-        if(_memberCnt == 0) {
+        if (_memberCnt == 0)
+        {
             roomInfos.Remove(_roomId);
             roomNameIds.Remove(_roomId);
         }
@@ -379,7 +391,7 @@ public class NetworkManager : MonoBehaviour
     public void LogoutProcess(string _accessToken)
     {
         ThreadManager.ExecuteOnMainThread(() => {
-            StartCoroutine(Logout((isLogout)=>{
+            StartCoroutine(Logout((isLogout) => {
                 Debug.Log("log out complete");
             }));
             IEnumerator Logout(Action<bool> isLogout)
@@ -424,8 +436,9 @@ public class NetworkManager : MonoBehaviour
     {
         return Instantiate(itemPrefab, new Vector3(5f, -2.5f, 0f), Quaternion.identity);
     }
-    
-    public GameObject InstantiateRoomPrefab() {
+
+    public GameObject InstantiateRoomPrefab()
+    {
         return Instantiate(DefaultMapPrefab, RoomGroup);
     }
 }
