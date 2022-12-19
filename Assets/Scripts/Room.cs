@@ -61,19 +61,18 @@ public class Room
 
     }
 
-    public void GoToNextPortal(Vector3 _nextPos)
+    public void GoToNextPortal(Client _client, Vector3 _nextPos)
     {
         spawnPoint = _nextPos;
-        foreach (Client _client in members.Values)
+
+        if (_client.player != null)
         {
-            if (_client.player != null)
-            {
-                _client.player.isHanging = false;
-                _client.player.isJumping = false;
-                _client.player.server.serverSend.RopeACK(_client.player);
-                _client.player.gameObject.transform.localPosition = spawnPoint;
-            }
+            _client.player.isHanging = false;
+            _client.player.isJumping = false;
+            _client.player.server.serverSend.RopeACK(_client.player);
+            _client.player.gameObject.transform.localPosition = spawnPoint;
         }
+        
     }
 
     public void InitRoomPos(Vector3 _mapAddPosition, Vector2 _mapsize) {
@@ -90,6 +89,7 @@ public class Room
                     TileGroup = now.transform.GetChild(0).GetComponent<Tilemap>();
                     DeathZone = now.transform.GetChild(1).GetComponent<Tilemap>();
                     FragileGroup = now.transform.GetChild(2).GetComponent<Tilemap>();
+                    FragileGroup.GetComponent<Fragile>().room = this;
                     BlockGroup = now.transform.GetChild(3).GetComponent<Tilemap>();
                     break;
                 case "ItemGroup":
