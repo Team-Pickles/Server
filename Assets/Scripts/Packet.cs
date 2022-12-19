@@ -40,12 +40,12 @@ public enum ServerPackets
     spawnBoss,
     askToRestart,
     restart,
+    fragileBreak,
     itemDestroy,
     enemyDestroy,
     bossHit,
     bossClear,
     attackIndeicator,
-    fragileBreak,
 }
 
 /// <summary>Sent from client to server.</summary>
