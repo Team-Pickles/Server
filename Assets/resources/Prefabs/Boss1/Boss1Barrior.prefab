@@ -11,12 +11,12 @@ GameObject:
   - component: {fileID: 5121378400887899132}
   - component: {fileID: 5121378400887899121}
   - component: {fileID: 5121378400887899134}
-  - component: {fileID: 5121378400887899123}
   - component: {fileID: 3923735362472438252}
+  - component: {fileID: 6101383373515057457}
   - component: {fileID: 1675357351111690868}
   m_Layer: 10
   m_Name: Boss1Barrior
-  m_TagString: enemy
+  m_TagString: ImmortalEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5121378400887899133}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.58, y: 4.51, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -109,18 +109,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &5121378400887899123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5121378400887899133}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edcb0a42ee9741342bb7a8fbdf8d3223, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3923735362472438252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,6 +123,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boss: {fileID: 711762697794150649, guid: 89661cdcbcfdc6f4aa632bcefb8015fd, type: 3}
   radius: 1
+  _fixedPosition: {x: 0, y: 0}
+--- !u!114 &6101383373515057457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5121378400887899133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2fe6c21141593a4f953df98d91aa338, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  _isMove: 0
+  type: 0
 --- !u!58 &1675357351111690868
 CircleCollider2D:
   m_ObjectHideFlags: 0

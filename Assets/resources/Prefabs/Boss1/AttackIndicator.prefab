@@ -97,3 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbb2d808707d1f4696be116544144ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dummy: {fileID: 5121378400887899133, guid: 1ec6506f76ae50841a84bf170edbde8f, type: 3}
+  _trash: {fileID: 8324424231299544829, guid: e1f533949d7350546992223decdc3727, type: 3}
+  Itemgroup: {fileID: 0}
+  Enemygroup: {fileID: 0}

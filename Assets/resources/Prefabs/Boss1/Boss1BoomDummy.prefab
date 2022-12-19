@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 8278347934994359976}
   m_Layer: 10
   m_Name: Boss1BoomDummy
-  m_TagString: enemy
+  m_TagString: ImmortalEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -124,6 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   _isMove: 0
+  type: 0
 --- !u!114 &8369117609238312713
 MonoBehaviour:
   m_ObjectHideFlags: 0
