@@ -545,4 +545,18 @@ public class ServerSend
             sendTCPDataToAllInRoom(_roomId, _packet);
         }
     }
+
+    public void FragileBreak(string _roomId, List<Vector3Int> _positions)
+    {
+        Debug.Log("FragileBreak");
+        using (Packet _packet = new Packet((int)ServerPackets.fragileBreak))
+        {
+            _packet.Write(_positions.Count);
+            foreach(Vector3Int _pos in _positions)
+            {
+                _packet.Write(_pos);
+            }
+            sendTCPDataToAllInRoom(_roomId, _packet);
+        }
+    }
 }

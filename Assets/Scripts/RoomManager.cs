@@ -91,7 +91,7 @@ public class RoomManager : MonoBehaviour
             if (DeletedPosList[_roomPos].y - _data.y < 0)
             {
                 _roomPos = mapPosSizeList[roomCnt % 2].pos;
-                float _roomPosY = (mapPosSizeList[roomCnt % 2].size.y / 2) + (RoomPosList[roomCnt % 2].y * mapSize.y);
+                float _roomPosY = RoomPosList[roomCnt % 2].y * ((mapPosSizeList[roomCnt % 2].size.y / 2) + mapSize.y + 4);
                 _roomPos += new Vector3(0, _roomPosY, 0);
                 mapPosSizeList[roomCnt % 2] = new MapPosSizeData(_roomPos, mapSize);
             }
@@ -106,7 +106,7 @@ public class RoomManager : MonoBehaviour
             if (roomCnt > 1)
             {
                 _roomPos = mapPosSizeList[roomCnt % 2].pos;
-                float _roomPosY = (mapPosSizeList[roomCnt % 2].size.y / 2) + (RoomPosList[roomCnt % 2].y * mapSize.y);
+                float _roomPosY = RoomPosList[roomCnt % 2].y * ((mapPosSizeList[roomCnt % 2].size.y / 2) + mapSize.y + 4);
                 _roomPos += new Vector3(0, _roomPosY, 0);
                 mapPosSizeList[roomCnt % 2] = new MapPosSizeData(_roomPos, mapSize);
                 Debug.Log(mapPosSizeList[roomCnt % 2].pos + "_" + mapPosSizeList[roomCnt % 2].size);

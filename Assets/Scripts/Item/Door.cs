@@ -17,7 +17,7 @@ public class Door : MonoBehaviour
         room = _room;
     }
 
-    public void GoToNextPortal(){
-        room.GoToNextPortal(nextPortal.transform.localPosition);
+    public void GoToNextPortal(Client _client){
+        room.GoToNextPortal(_client, nextPortal.transform.position);
     }
 }

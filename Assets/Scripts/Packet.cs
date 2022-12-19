@@ -45,6 +45,7 @@ public enum ServerPackets
     bossHit,
     bossClear,
     attackIndeicator,
+    fragileBreak,
 }
 
 /// <summary>Sent from client to server.</summary>
