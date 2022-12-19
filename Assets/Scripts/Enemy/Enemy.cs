@@ -94,6 +94,7 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        Debug.Log(collision.transform.tag);
             switch (collision.transform.tag)
             {
                 case "player":
@@ -103,7 +104,7 @@ public class Enemy : MonoBehaviour
                     }
                 case "bullet":
                     {
-                    if (CompareTag("enemy"))
+                    if (CompareTag("enemy") || CompareTag("immortalenemy"))
                             StartCoroutine(HitAction());
                         break;
                     }
@@ -120,7 +121,42 @@ public class Enemy : MonoBehaviour
                 }
             case "bullet":
                 {
-                    if (CompareTag("enemy"))
+                    if (CompareTag("enemy") || CompareTag("immortalenemy"))
+                        StartCoroutine(HitAction());
+                    break;
+                }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        switch (other.transform.tag)
+        {
+            case "player":
+                {
+                    other.transform.GetComponent<Player>().OnDamage();
+                    break;
+                }
+            case "bullet":
+                {
+                    if (CompareTag("enemy") || CompareTag("immortalenemy"))
+                        StartCoroutine(HitAction());
+                    break;
+                }
+        }
+    }
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        switch (other.transform.tag)
+        {
+            case "player":
+                {
+                    other.transform.GetComponent<Player>().OnDamage();
+                    break;
+                }
+            case "bullet":
+                {
+                    if (CompareTag("enemy") || CompareTag("immortalenemy"))
                         StartCoroutine(HitAction());
                     break;
                 }

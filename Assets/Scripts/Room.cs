@@ -157,7 +157,7 @@ public class Room
                     NetworkManager.instance.servers[serverPort].serverSend.SpawnEnemy(_enemy, _member.id, can);
                 }
             }
-            if (enemies != null)
+            if (boss != null)
             {
                 foreach (Boss1 _boss in boss.Values)
                 {

@@ -283,6 +283,7 @@ public class RoomManager : MonoBehaviour
         _room.items.Clear();
         _room.enemies.Clear();
         _room.doors.Clear();
+        _room.boss.Clear();
         foreach (Client _client in _room.members.Values)
         {
             _client.player._hp = _client.player.maxHealth;
