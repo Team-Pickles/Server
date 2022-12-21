@@ -127,18 +127,20 @@ MonoBehaviour:
   id: 0
   username: 
   _hp: 0
+  maxHealth: 3
   itemAmount: 0
   maxItemAmount: 3
   onGround: 0
   facing: {x: 0, y: 0, z: 0}
   _state: 1
   _curItem: {fileID: 0}
-  currnetShootObject: Bullet
   onRope: 0
   isHanging: 0
   _flip: 0
   isJumping: 0
   _fromClient: 0
+  BulletCount: 0
+  GrenadeCount: 0
 --- !u!95 &5091156043021300385
 Animator:
   serializedVersion: 4
@@ -169,7 +171,7 @@ PolygonCollider2D:
   m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 6200000, guid: a48993daa010d6147a0f44da82d0cedf, type: 2}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}

@@ -56,7 +56,7 @@ public class Player : MonoBehaviour
 
     public Server server;
     public Room room;
-   
+
     private bool isJumpPressed = false;
     bool temp = false;
     public int _fromClient;
@@ -210,7 +210,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if (_hit.collider.CompareTag("floor") == true)
+            if (_hit.collider.CompareTag("floor") == true || _hit.collider.CompareTag("barricade"))
             {
                 return true;
             }
@@ -221,11 +221,11 @@ public class Player : MonoBehaviour
     public void ShootBullet(Vector3 _viewDirection)
     {
         GameObject obj;
-        if (_hp <= 0f || BulletCount <=0)
+        if (_hp <= 0f || BulletCount <= 0)
         {
             return;
         }
-        
+
         int _isFlip = _flip ? -1 : 1;
         obj = RoomManager.instance.InstatiateBullet(room.PlayerGroup, _firePoint.transform, id);
         Bullet bullet = obj.GetComponent<Bullet>();
@@ -287,7 +287,7 @@ public class Player : MonoBehaviour
     }
 
     private void OnTriggerStay2D(Collider2D collision)
-    {    
+    {
         if (collision.gameObject.CompareTag("rope"))
         {
             onRope = true;

@@ -31265,6 +31265,7 @@ MonoBehaviour:
   itemPrefab: {fileID: 8776486889826405664, guid: 4322894dc47fd9f4eb44ed937d8d1dd2, type: 3}
   DefaultMapPrefab: {fileID: 7871891743824491412, guid: 0d62935be4ee0b848b76668abadee8d3, type: 3}
   RoomGroup: {fileID: 849119942}
+  isEditor: 0
 --- !u!114 &1913049111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31329,6 +31330,7 @@ MonoBehaviour:
   - {fileID: 4740775085839822780, guid: bf14e8f5155bc2a4e93ded43d9f03da4, type: 3}
   - {fileID: 4740775085839822780, guid: 6e7ccd3f26772294e8a486b7fd52d2d9, type: 3}
   - {fileID: 2099721584905147228, guid: d5b2c93ae97c0c1499cf92d36fbc61b1, type: 3}
+  - {fileID: 4740775085839822780, guid: 75818d87a1c529e4f9b33108e9a5160e, type: 3}
   PlayerPrefabs:
   - {fileID: 5091156043021300394, guid: 0360358f1f549094a8d107cdfc3c8b9e, type: 3}
   EnemyPrefabs:

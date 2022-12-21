@@ -41,6 +41,11 @@ public enum ServerPackets
     askToRestart,
     restart,
     fragileBreak,
+    itemDestroy,
+    enemyDestroy,
+    bossHit,
+    bossClear,
+    attackIndeicator,
 }
 
 /// <summary>Sent from client to server.</summary>

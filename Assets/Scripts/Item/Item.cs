@@ -23,10 +23,9 @@ public class Item : MonoBehaviour
         itemType = _itemType;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (this.tag == "trash")
-            server.serverSend.ItemPosition(this);
+        server.serverSend.ItemPosition(this);
     }
 
    public void DeleteItem()

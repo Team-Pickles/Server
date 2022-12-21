@@ -12,7 +12,7 @@ public class Room
     public int masterId;
     public int serverPort;
     public int readyPlayerCount = 0;
-    
+
     public Vector3 mapAddPosition;
 
     public GameObject room;
@@ -27,12 +27,12 @@ public class Room
     public GameObject MapUtilGroup;
 
     public Dictionary<int, Client> members = new Dictionary<int, Client>();
-    
+
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
     public Dictionary<int, Item> items = new Dictionary<int, Item>();
     public Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();
     public Dictionary<int, Door> doors = new Dictionary<int, Door>();
-    // public Dictionary<int, Boss1> boss = new Dictionary<int, Boss1>();
+    public Dictionary<int, Boss1> boss = new Dictionary<int, Boss1>();
 
     public Room(string _roomId, string _roomName, int _serverPort, GameObject _room)
     {
@@ -46,17 +46,17 @@ public class Room
 
     public void StartGame(int map_id)
     {
-        if(room == null)
+        if (room == null)
         {
             Debug.Log("There is no mapInfo.");
             return;
         }
         Debug.Log("Spawn");
-        ThreadManager.ExecuteOnMainThread(() => 
-            {
-                SetMapInfo(map_id);
-                SpawnPlayerAndItems();
-            }
+        ThreadManager.ExecuteOnMainThread(() =>
+        {
+            SetMapInfo(map_id);
+            SpawnPlayerAndItems();
+        }
         );
 
     }
@@ -75,14 +75,15 @@ public class Room
         
     }
 
-    public void InitRoomPos(Vector3 _mapAddPosition, Vector2 _mapsize) {
+    public void InitRoomPos(Vector3 _mapAddPosition, Vector2 _mapsize)
+    {
         mapAddPosition = _mapAddPosition;
         mapSize = _mapsize;
         room.transform.localPosition = new Vector3(0, 0, 0) + _mapAddPosition;
-        for(int i = 0; i < room.transform.childCount; ++i)
+        for (int i = 0; i < room.transform.childCount; ++i)
         {
             GameObject now = room.transform.GetChild(i).gameObject;
-            switch(now.name)
+            switch (now.name)
             {
                 case "TileGroup":
                     TileGroupGrid = now.GetComponent<Grid>();
@@ -108,11 +109,11 @@ public class Room
         }
     }
 
-//
+    //
 
     public void SpawnPlayerAndItems()
     {
-        foreach(Client _member in members.Values)
+        foreach (Client _member in members.Values)
         {
             GameObject playerClone = RoomManager.instance.InstatiatePlayer(PlayerGroup, 0);
             playerClone.name = "Player " + _member.id;
@@ -129,7 +130,7 @@ public class Room
 
         // TileGroupGrid.GetComponent<MapManager>().Init();
 
-        foreach(Client _member in members.Values)
+        foreach (Client _member in members.Values)
         {
             // 내 클론을 스폰
             foreach (Client _client in members.Values)
@@ -141,27 +142,32 @@ public class Room
                     NetworkManager.instance.servers[serverPort].serverSend.SpawnPlayer(_client.id, _member.player);
                 }
             }
-            if(items != null) {
+            if (items != null)
+            {
                 foreach (Item _item in items.Values)
                 {
                     NetworkManager.instance.servers[serverPort].serverSend.SpawnItem(_member.id, _item);
                 }
             }
-            if(enemies != null) {
+            if (enemies != null)
+            {
                 foreach (Enemy _enemy in enemies.Values)
                 {
-                    NetworkManager.instance.servers[serverPort].serverSend.SpawnEnemy(_enemy, _member.id);
+                    int can = 0;
+                    NetworkManager.instance.servers[serverPort].serverSend.SpawnEnemy(_enemy, _member.id, can);
                 }
             }
-            //if (enemies != null)
-            //{
-            //    foreach (Boss1 _boss in boss.Values)
-            //    {
-            //        NetworkManager.instance.servers[serverPort].serverSend.SpawnBoss(_boss, _member.id);
-            //    }
-            //}
-            if (doors != null) {
-                foreach(KeyValuePair<int, Door> _door in doors)
+            if (boss != null)
+            {
+                foreach (Boss1 _boss in boss.Values)
+                {
+                    int boss = 1;
+                    NetworkManager.instance.servers[serverPort].serverSend.SpawnBoss(_boss, _member.id, boss);
+                }
+            }
+            if (doors != null)
+            {
+                foreach (KeyValuePair<int, Door> _door in doors)
                 {
                     NetworkManager.instance.servers[serverPort].serverSend.SpawnDoor(_door.Value, _member.id);
                 }

@@ -17,6 +17,7 @@ public class Enemy : MonoBehaviour
     private bool _detectPlayer = false;
     public bool _isMove = false;
     private float _xSpeed = 5.0f;
+    public int type=0;
     public bool OnGround
     {
         get { return _onGround; }
@@ -37,22 +38,30 @@ public class Enemy : MonoBehaviour
 
     private EnemyState state = EnemyState.Normal;
 
-    public void Initialize(Server _server, Room _room)
+    public void Initialize(Server _server, Room _room, int _type)
     {
         id = nextEnemyId;
         nextEnemyId++;
         server = _server;
         room = _room;
+        type = _type;
     }
     void FixedUpdate()
     {
-        MoveEnemy();
-        server.serverSend.EnemyPosition(this);
+       if(tag != "Boss")
+        {
+            MoveEnemy();
+            if (GetComponent<Rigidbody2D>().velocity.x != 0 || GetComponent<Rigidbody2D>().velocity.y != 0 || CompareTag("ImmortalEnemy"))
+            {
+                server.serverSend.EnemyPosition(this);
+            }
+                
+        }
     }
 
     private void MoveEnemy()
     {
-        if (_onGround)
+        if (_onGround && CompareTag("enemy"))
         {
             if (_detectPlayer && _player != null)
             {
@@ -85,19 +94,21 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        switch (collision.transform.tag)
-        {
-            case "player":
-                {
-                    collision.transform.GetComponent<Player>().OnDamage();
-                    break;
-                }
-            case "bullet":
-                {
-                    StartCoroutine(HitAction());
-                    break;
-                }
-        }
+        Debug.Log(collision.transform.tag);
+            switch (collision.transform.tag)
+            {
+                case "player":
+                    {
+                        collision.transform.GetComponent<Player>().OnDamage();
+                        break;
+                    }
+                case "bullet":
+                    {
+                    if (CompareTag("enemy") || CompareTag("immortalenemy"))
+                            StartCoroutine(HitAction());
+                        break;
+                    }
+            }
     }
     private void OnCollisionStay2D(Collision2D collision)
     {
@@ -110,7 +121,43 @@ public class Enemy : MonoBehaviour
                 }
             case "bullet":
                 {
-                    StartCoroutine(HitAction());
+                    if (CompareTag("enemy") || CompareTag("immortalenemy"))
+                        StartCoroutine(HitAction());
+                    break;
+                }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        switch (other.transform.tag)
+        {
+            case "player":
+                {
+                    other.transform.GetComponent<Player>().OnDamage();
+                    break;
+                }
+            case "bullet":
+                {
+                    if (CompareTag("enemy") || CompareTag("immortalenemy"))
+                        StartCoroutine(HitAction());
+                    break;
+                }
+        }
+    }
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        switch (other.transform.tag)
+        {
+            case "player":
+                {
+                    other.transform.GetComponent<Player>().OnDamage();
+                    break;
+                }
+            case "bullet":
+                {
+                    if (CompareTag("enemy") || CompareTag("immortalenemy"))
+                        StartCoroutine(HitAction());
                     break;
                 }
         }

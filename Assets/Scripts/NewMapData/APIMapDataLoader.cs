@@ -18,7 +18,8 @@ public class MapListItem
 }
 
 [Serializable]
-public class MapDataClass {
+public class MapDataClass
+{
     [SerializeField] public int map_id;
     [SerializeField] public string map_info;
     [SerializeField] public string map_tag;
@@ -32,7 +33,7 @@ public class APIMapDataLoader : MonoBehaviour
     public Dictionary<int, MapListItem> mapListItems = new Dictionary<int, MapListItem>();
 
     public static APIMapDataLoader instance;
-    public string apiUrl {get; private set;}
+    public string apiUrl { get; private set; }
 
     private void Awake()
     {
@@ -47,16 +48,19 @@ public class APIMapDataLoader : MonoBehaviour
             Destroy(this);
         }
 
-        apiUrl = "http://localhost:3001/";
-        
+        //apiUrl = "http://localhost:3001/";
+        apiUrl = "http://3.36.100.68:3001/";
+
         LoadAllProcess();
     }
 
-    public void LoadForMapInfo(Action<int> doneProcess) {
+    public void LoadForMapInfo(Action<int> doneProcess)
+    {
         mapListItems.Clear();
-        
+
         string file = Application.streamingAssetsPath + "/MyMap.json";
-        if(File.Exists(file) == false){
+        if (File.Exists(file) == false)
+        {
             Debug.LogError("Load failed. There is no file(MyMap.json).");
             return;
         }
@@ -90,9 +94,10 @@ public class APIMapDataLoader : MonoBehaviour
     public void LoadAllProcess()
     {
         mapListItems.Clear();
-        
+
         string file = Application.streamingAssetsPath + "/MyMap.json";
-        if(File.Exists(file) == false){
+        if (File.Exists(file) == false)
+        {
             Debug.LogError("Load failed. There is no file(MyMap.json).");
             return;
         }
@@ -115,10 +120,12 @@ public class APIMapDataLoader : MonoBehaviour
             {
                 Debug.Log("Server Available!");
                 StartCoroutine(GetMapList(mapListItemCnt => {
-                    if(mapListItemCnt == 0)
+                    if (mapListItemCnt == 0)
                     {
                         Debug.Log("There is no map.");
-                    } else {
+                    }
+                    else
+                    {
                         Debug.Log($"Map is loaded.(Count: {mapListItemCnt})");
                     }
                 }));
@@ -130,8 +137,9 @@ public class APIMapDataLoader : MonoBehaviour
         }));
     }
 
-    IEnumerator GetMapList(Action<int> ResultHandler){
-        using ( UnityWebRequest request = UnityWebRequest.Get(apiUrl + "api/map/getAllList"))
+    IEnumerator GetMapList(Action<int> ResultHandler)
+    {
+        using (UnityWebRequest request = UnityWebRequest.Get(apiUrl + "api/map/getAllList"))
         {
             request.downloadHandler = new DownloadHandlerBuffer();
 
@@ -139,7 +147,7 @@ public class APIMapDataLoader : MonoBehaviour
             string _result = request.downloadHandler.text;
             string _forparse = "{\"Items\":" + _result + "}";
             MapDatas mapInfos = JsonUtility.FromJson<MapDatas>(_forparse);
-            foreach(MapDataClass _mapInfo in mapInfos.Items)
+            foreach (MapDataClass _mapInfo in mapInfos.Items)
             {
                 MapListItem _item = new MapListItem();
                 Dictionary<int, DataClass> loaded = JsonUtility.FromJson<Serialization<int, DataClass>>(_mapInfo.map_info).ToDictionary();

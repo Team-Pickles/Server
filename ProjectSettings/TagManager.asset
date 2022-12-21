@@ -15,6 +15,9 @@ TagManager:
   - rope
   - GrenadeItem
   - spring
+  - barricade
+  - ImmortalEnemy
+  - Boss
   layers:
   - Default
   - TransparentFX

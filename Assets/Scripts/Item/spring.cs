@@ -19,7 +19,7 @@ public class spring : MonoBehaviour
                     }
                     break;
                 }
-            case "stool":
+            case "barricade":
                 {
                     Vector2 velocity = collision.transform.GetComponent<Rigidbody2D>().velocity;
                     collision.transform.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x, 10.0f);
@@ -31,7 +31,7 @@ public class spring : MonoBehaviour
     {
         switch (collision.tag)
         {
-            case "stool":
+            case "barricade":
                 {
                     Vector2 velocity = collision.transform.GetComponent<Rigidbody2D>().velocity;
                     collision.transform.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x, 10.0f);
